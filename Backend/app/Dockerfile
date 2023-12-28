@@ -1,5 +1,5 @@
 # Usa una imagen base oficial de Python
-FROM python:3.9-slim
+FROM python:3.10
 
 # Establece variables de entorno utilizadas por el intérprete de Python, útiles para Python ejecutándose en contenedores
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -22,8 +22,5 @@ RUN pip install --no-cache-dir --upgrade -r requirements.txt
 # Copia el contenido del directorio de trabajo local al contenedor
 COPY . /code/
 
-# Expone el puerto que la aplicación utilizará
-EXPOSE 8000
-
 # Comando para ejecutar la aplicación
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
