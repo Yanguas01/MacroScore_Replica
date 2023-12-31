@@ -12,7 +12,7 @@ async def connect_to_mongo():
 
 async def close_mongo_connection():
     global __client__
-    await __client__.close()
+    __client__.close()
 
 
 async def get_db_client() -> AsyncIOMotorClient:

@@ -238,12 +238,13 @@ async def perform_bulk_meal_updates(
 
 async def add_new_food_item(
     db: AsyncIOMotorDatabase,
+    user_id: str,
     meal_id: str,
     food_data: dict
 ) -> int:
     try:
         result: UpdateResult = await db.get_collection('meals').update_one(
-            filter={'_id': ObjectId(meal_id)},
+            filter={'_id': ObjectId(meal_id), 'user_id': user_id},
             update={'$push': {'items': food_data}}
         )
         return result.modified_count
@@ -254,13 +255,18 @@ async def add_new_food_item(
 
 async def set_food_weight_by_id(
     db: AsyncIOMotorDatabase,
+    user_id: str,
     meal_id: str,
     food_id: str,
     weight: float
 ) -> int:
     try:
         result: UpdateResult = await db.get_collection('meals').update_one(
-            filter={'_id': ObjectId(meal_id), 'items.id': ObjectId(food_id)},
+            filter={
+                '_id': ObjectId(meal_id),
+                'user_id': user_id,
+                'items.id': ObjectId(food_id)
+            },
             update={'$set': {'items.$[item].weight': weight}},
             array_filters=[{'item.id': ObjectId(food_id)}]
         )
@@ -272,12 +278,17 @@ async def set_food_weight_by_id(
 
 async def delete_food_by_id(
     db: AsyncIOMotorDatabase,
+    user_id: str,
     meal_id: str,
     food_id: str
 ) -> int:
     try:
         result: UpdateResult = await db.get_collection('meals').update_one(
-            filter={'_id': ObjectId(meal_id), 'items.id': ObjectId(food_id)},
+            filter={
+                '_id': ObjectId(meal_id),
+                'user_id': user_id,
+                'items.id': ObjectId(food_id)
+            },
             update={'$pull': {'items': {'id': ObjectId(food_id)}}}
         )
         return result.modified_count

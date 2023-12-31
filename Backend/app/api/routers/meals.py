@@ -109,7 +109,7 @@ async def reorder_meals(
     user: User = Depends(get_current_user),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ) -> dict:
-    modified_count: int = await set_new_indexes(db, meals)
+    modified_count: int = await set_new_indexes(db, user.id, meals)
     order_mapping: dict = {meal.name: meal.index for meal in meals}
     default_meals_list: list = sorted(
         {meal for meal in user.order_meal if meal in order_mapping},
@@ -126,9 +126,10 @@ async def reorder_meals(
 async def add_food(
     meal_id: str,
     food_in: FoodIn,
+    user: User = Depends(get_current_user),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ) -> FoodItem:
-    food_out: FoodItem = await add_new_food(db, meal_id, FoodWeight(**food_in.model_dump()))
+    food_out: FoodItem = await add_new_food(db, user.id, meal_id, FoodWeight(**food_in.model_dump()))
     return food_out
 
 
@@ -137,11 +138,12 @@ async def patch_new_weight(
     meal_id: str,
     food_id: str,
     weight: float = Body(...),
+    user: User = Depends(get_current_user),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ) -> dict:
-    await set_food_weight_by_id(db, meal_id, food_id, weight)
+    modified_count: int = await set_food_weight_by_id(db, user.id, meal_id, food_id, weight)
     return {
-        'message': 'Peso actualizado con éxito',
+        'message': f'Peso actualizado en {modified_count} alimentos con éxito',
         'meal_id': meal_id,
         'food_id': food_id
     }
@@ -151,6 +153,7 @@ async def patch_new_weight(
 async def delete_food(
     meal_id: str,
     food_id: str,
+    user: User = Depends(get_current_user),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ) -> None:
-    await delete_food_by_id(db, meal_id, food_id)
+    await delete_food_by_id(db, user.id, meal_id, food_id)

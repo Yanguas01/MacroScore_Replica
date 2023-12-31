@@ -61,11 +61,12 @@ async def set_new_names(
 
 async def set_new_indexes(
     db: AsyncIOMotorDatabase,
+    user_id: str,
     meals: List[MealOrder]
 ) -> int:
     bulk_updates = list(
         map(lambda meal: UpdateOne(
-            {'_id': ObjectId(meal.id)},
+            {'_id': ObjectId(meal.id), 'user_id': user_id},
             {'$set': {'index': meal.index}}
         ), meals))
     return await perform_bulk_meal_updates(db, bulk_updates)
@@ -73,10 +74,11 @@ async def set_new_indexes(
 
 async def add_new_food(
     db: AsyncIOMotorDatabase,
+    user_id: str,
     meal_id: str,
     food_weight: FoodWeight
 ) -> FoodItem:
     food_dict = food_weight.model_dump()
-    await add_new_food_item(db, meal_id, {'id': ObjectId(food_dict['id']), 'weight': food_dict['weight']})
+    await add_new_food_item(db, user_id, meal_id, {'id': ObjectId(food_dict['id']), 'weight': food_dict['weight']})
     food: Food = await get_food_by_id(db, food_weight.id)
     return FoodItem(**{**food.model_dump(), **{k: v for k, v in food_weight.model_dump().items() if k != 'id'}})
