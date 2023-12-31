@@ -41,10 +41,10 @@ async def set_new_names(
     new_name: str
 ) -> int:
     user_id: str = user.id
-    meal: Meal = await get_meal_by_id(db, user_id, meal_id)
+    meal: dict = await get_meal_by_id(db, user_id, meal_id)
     if meal is None:
         raise ValueError('Meal not found')
-    old_name: str = meal.name
+    old_name: str = meal['name']
     order_meal_set: set = set(user.order_meal)
     if new_name in order_meal_set:
         raise ValueError('New name already exists in order_meal list')

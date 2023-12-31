@@ -143,12 +143,12 @@ async def get_meal_by_id(
     db: AsyncIOMotorDatabase,
     user_id: str,
     meal_id: str
-) -> Meal | None:
+) -> dict | None:
     try:
         meal: dict = await db.get_collection('meals').find_one(
             filter={'user_id': user_id, '_id': ObjectId(meal_id)}
         )
-        return meal_mongo_to_domain(meal) if meal else None
+        return meal
     except Exception as e:
         logging.error(f'An error occurred during the database operation: {e}')
         raise
