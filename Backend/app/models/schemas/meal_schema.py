@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel
 
 
@@ -16,4 +18,4 @@ class MealOrder(BaseModel):
 class MealOut(BaseModel):
     id: str
     name: str
-    datetime: str
+    datetime: datetime

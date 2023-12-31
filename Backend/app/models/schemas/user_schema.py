@@ -1,8 +1,25 @@
 from pydantic import BaseModel
 
+
 class UserOut(BaseModel):
+    id: str
     username: str
     email: str
+    order_meal: list
+    profile: dict
 
-class UserIn(UserOut):
+
+class UserIn(BaseModel):
+    username: str
+    email: str
+    profile: dict
     password: str
+
+
+class UserUpdateRequest(BaseModel):
+    email: str | None = None
+    gender: str | None = None
+    height: int | None = None
+    weight: int | None = None
+    age: int | None = None
+    physical_activity_level: int | None = None

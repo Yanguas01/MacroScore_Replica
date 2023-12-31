@@ -1,34 +1,44 @@
 from typing import Generator
 
+from aioredis import Redis
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from motor.motor_asyncio import AsyncIOMotorDatabase
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
+from app.cache.client import get_redis_client
 from app.core.security import verify_access_token
 from app.crud.crud_user import get_user_by_username
 from app.db.client import get_db_client
 from app.models.domain import User
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/login/token')
 
 
 async def get_db() -> Generator:
-    client = await get_db_client()
+    client: AsyncIOMotorClient = await get_db_client()
     try:
-        db = client.local
+        db: AsyncIOMotorDatabase = client.local
         yield db
     finally:
         pass
 
 
+async def get_cache() -> Generator:
+    client: Redis = await get_redis_client()
+    try:
+        yield client
+    finally:
+        pass
+
+
 async def get_current_user(db: AsyncIOMotorDatabase = Depends(get_db), token: str = Depends(oauth2_scheme)) -> User:
-    credentials_exception = HTTPException(
+    credentials_exception: HTTPException = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
+        detail='Could not validate credentials',
+        headers={'WWW-Authenticate': 'Bearer'}
     )
-    username = verify_access_token(token, credentials_exception)
-    user = await get_user_by_username(db, username)
+    username: str = verify_access_token(token, credentials_exception)
+    user: User = await get_user_by_username(db, username)
     if user is None:
         raise credentials_exception
     return user

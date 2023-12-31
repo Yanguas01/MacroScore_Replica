@@ -1,52 +1,53 @@
 from datetime import datetime, timedelta
+from uuid import uuid4
 
+from aioredis import Redis
 from fastapi import HTTPException
 from jose import JWTError, jwt
-from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.core.config import settings
-from app.crud.crud_token import delete_token_by_id, get_token_by_id, save_token
 
 
-def create_access_token(data: dict):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
-    to_encode.update({"exp": expire.timestamp(), "type": "access"})
-    encoded_jwt = jwt.encode(
+def create_access_token(data: dict) -> str:
+    to_encode: dict = data.copy()
+    expire: datetime = datetime.utcnow(
+    ) + timedelta(minutes=settings.access_token_expire_minutes)
+    to_encode.update({'exp': expire.timestamp(), 'type': 'access'})
+    return jwt.encode(
         claims=to_encode,
         key=settings.secret_key,
         algorithm=settings.algorithm
     )
-    return encoded_jwt
 
 
-async def create_refresh_token(db: AsyncIOMotorDatabase, data: dict):
-    to_encode = data.copy()
-    jti = await save_token(db, {"created_at": datetime.utcnow()})
-    expire = datetime.utcnow() + timedelta(minutes=settings.refresh_token_expire_minutes)
+async def create_refresh_token(cache: Redis, data: dict) -> str:
+    jti: str = str(uuid4())
+    ttl: int = settings.refresh_token_expire_minutes * 60
+    await cache.setex(name=jti, time=ttl, value='active')
+    expire: datetime = datetime.utcnow() + timedelta(seconds=ttl)
+    to_encode: dict = data.copy()
     to_encode.update({
-        "jti": jti,
-        "exp": expire.timestamp(),
-        "type": "refresh"
+        'jti': jti,
+        'exp': expire.timestamp(),
+        'type': 'refresh'
     })
-    encoded_jwt = jwt.encode(
+    return jwt.encode(
         claims=to_encode,
         key=settings.secret_key,
         algorithm=settings.algorithm
     )
-    return encoded_jwt
 
 
-def verify_access_token(token: str, credentials_exception: HTTPException):
+def verify_access_token(token: str, credentials_exception: HTTPException) -> str:
     try:
-        payload = jwt.decode(
+        payload: dict = jwt.decode(
             token=token,
             key=settings.secret_key,
             algorithms=[settings.algorithm]
         )
-        if payload.get("type") != "access":
+        if payload.get('type') != 'access':
             raise credentials_exception
-        username: str = payload.get("sub")
+        username: str = payload.get('sub')
         if username is None:
             raise credentials_exception
     except JWTError:
@@ -54,22 +55,22 @@ def verify_access_token(token: str, credentials_exception: HTTPException):
     return username
 
 
-async def verify_refresh_token(db: AsyncIOMotorDatabase, token: str, exception: HTTPException):
+async def verify_refresh_token(cache: Redis, token: str, exception: HTTPException):
     try:
-        payload = jwt.decode(
+        payload: dict = jwt.decode(
             token=token,
             key=settings.secret_key,
             algorithms=[settings.algorithm]
         )
-        if payload.get("type") != "refresh":
+        if payload.get('type') != 'refresh':
             raise exception
-        jti = payload.get("jti")
-        if await get_token_by_id(db, jti) is None:
+        jti: str = payload.get('jti')
+        if await cache.get(jti) is None:
             raise exception
-        username: str = payload.get("sub")
+        username: str = payload.get('sub')
         if username is None:
             raise exception
     except JWTError:
         raise exception
-    await delete_token_by_id(db, jti)
+    await cache.delete(jti)
     return username

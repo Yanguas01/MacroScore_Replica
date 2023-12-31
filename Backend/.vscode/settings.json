@@ -1,4 +1,11 @@
 {
-    "python.autoComplete.extraPaths": [],
-    "python.analysis.extraPaths": []
+  "python.autoComplete.extraPaths": [],
+  "python.analysis.extraPaths": [],
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.autopep8",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  }
 }
