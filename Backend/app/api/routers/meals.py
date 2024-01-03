@@ -19,7 +19,7 @@ from app.utils.helpers import convert_date
 router = APIRouter(prefix='/meals')
 
 
-@router.post('/', response_model=MealOut)
+@router.post('', response_model=MealOut)
 async def create_meal(
     meal_in: MealIn,
     user: User = Depends(get_current_user),
@@ -72,19 +72,7 @@ async def delete_meal(
     )
 
 
-@router.get('/{target_date}', response_model=List[Meal])
-async def get_meals(
-    target_date: str,
-    user: User = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db)
-) -> List[Meal]:
-    meals: list = await get_meals_by_date(db, user.id, target_date)
-    if not meals:
-        meals: list = await create_default_meals(db, user, target_date)
-    return meals
-
-
-@router.get('/week/')
+@router.get('/week')
 async def get_weekly_meals(
     start_week_date: str = Query(None),
     end_week_date: str = Query(None),
@@ -101,6 +89,18 @@ async def get_weekly_meals(
         'meals': meals,
         'user_profile': user.profile
     }
+
+
+@router.get('/{target_date}', response_model=List[Meal])
+async def get_meals(
+    target_date: str,
+    user: User = Depends(get_current_user),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+) -> List[Meal]:
+    meals: list = await get_meals_by_date(db, user.id, target_date)
+    if not meals:
+        meals: list = await create_default_meals(db, user, target_date)
+    return meals
 
 
 @router.patch('/reorder')
@@ -122,7 +122,7 @@ async def reorder_meals(
     }
 
 
-@router.post('/{meal_id}/foods/', response_model=FoodItem)
+@router.post('/{meal_id}/foods', response_model=FoodItem)
 async def add_food(
     meal_id: str,
     food_in: FoodIn,

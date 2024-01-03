@@ -8,7 +8,7 @@ from app.services.user_service import register_new_user
 router: APIRouter = APIRouter(prefix='/signup')
 
 
-@router.post('/', response_model=UserOut)
+@router.post('', response_model=UserOut)
 async def signup(
     user_in: UserIn,
     db: AsyncIOMotorDatabase = Depends(get_db)

@@ -11,7 +11,7 @@ from app.models.domain import User
 router: APIRouter = APIRouter(prefix='/refresh')
 
 
-@router.post('/')
+@router.post('')
 async def refresh_token(
     cache: Redis = Depends(get_cache),
     db: AsyncIOMotorDatabase = Depends(get_db),

@@ -15,12 +15,12 @@ async def get_user_data(user: User = Depends(get_current_user)) -> UserOut:
     return UserOut(**user.model_dump(exclude='hashed_password'))
 
 
-@router.delete('/me/{meal_name}')
+@router.delete('/me/{meal_name}', status_code=status.HTTP_204_NO_CONTENT)
 async def remove_meal_in_template(
     meal_name: str,
     user: User = Depends(get_current_user),
     db: AsyncIOMotorDatabase = Depends(get_db)
-) -> dict:
+):
     if meal_name not in user.order_meal:
         return
     new_order_meal = [meal for meal in user.order_meal if meal != meal_name]
@@ -29,7 +29,6 @@ async def remove_meal_in_template(
         user_id=user.id,
         new_order_meal=new_order_meal
     )
-    return {'message': 'Meal removed successfully'}
 
 
 @router.patch('/me/update', status_code=status.HTTP_200_OK)
@@ -57,13 +56,13 @@ async def update_user(
     }
 
 
-@router.patch('me/update_password', status_code=status.HTTP_200_OK)
+@router.patch('/me/update_password', status_code=status.HTTP_200_OK)
 async def update_password(
     new_password: str = Body(...),
     user: User = Depends(get_current_user),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ) -> dict:
-    message: str = 'Se ha actualizado correctamente la contraseña' if set_new_password(
+    message: str = 'Se ha actualizado correctamente la contraseña' if await set_new_password(
         db=db,
         user_id=user.id,
         new_password=new_password

@@ -8,7 +8,7 @@ from app.crud.crud_foods import get_foods_by_pattern, get_total_count
 router: APIRouter = APIRouter(prefix='/foods')
 
 
-@router.get('/', status_code=status.HTTP_200_OK)
+@router.get('', status_code=status.HTTP_200_OK)
 async def search_foods(
     request: Request,
     pattern: str = Query(None, min_length=3),

@@ -23,6 +23,7 @@ def create_access_token(data: dict) -> str:
 async def create_refresh_token(cache: Redis, data: dict) -> str:
     jti: str = str(uuid4())
     ttl: int = settings.refresh_token_expire_minutes * 60
+    print(jti)
     await cache.setex(name=jti, time=ttl, value='active')
     expire: datetime = datetime.utcnow() + timedelta(seconds=ttl)
     to_encode: dict = data.copy()
@@ -55,7 +56,7 @@ def verify_access_token(token: str, credentials_exception: HTTPException) -> str
     return username
 
 
-async def verify_refresh_token(cache: Redis, token: str, exception: HTTPException):
+async def verify_refresh_token(cache: Redis, token: str, exception: HTTPException) -> str:
     try:
         payload: dict = jwt.decode(
             token=token,
