@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">MacroScore</string>
+
+    <!-- Bottom Menu -->
+    <string name="stats">Estadísticas</string>
+    <string name="feed">Inicio</string>
+    <string name="profile">Perfil</string>
+
+    <!-- Bottom Search Food Menu -->
+    <string name="search">Buscar</string>
+    <string name="favourites">Favoritos</string>
+
+    <!-- FeedFragment -->
+    <string name="add_food">Añadir alimento</string>
+
+    <!-- Item Recycler View Feed -->
+    <string name="total_kcal">%.2f kcal</string>
+    <string name="total_carbs">%.2f\nCarbohidratos</string>
+    <string name="total_prots">%.2f\nProteínas</string>
+    <string name="total_fats">%.2f\nGrasas</string>
+
+    <!-- Item Recycler View Meal -->
+    <string name="kcal_per_100">%.2f kcal</string>
+    <string name="carbs_per_100">C: %.2fg</string>
+    <string name="prots_per_100">P: %.2fg</string>
+    <string name="fats_per_100">G: %.2fg</string>
+</resources>
