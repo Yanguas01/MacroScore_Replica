@@ -7,14 +7,124 @@
     android:background="@color/primary"
     tools:context=".presentation.home.statistics.StatisticsFragment">
 
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:background="@color/primaryDark"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="32dp"
+            app:icon="@drawable/ic_back"
+            app:iconTint="@color/text" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            tools:text="Semana\n23" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="32dp"
+            app:icon="@drawable/ic_next"
+            app:iconTint="@color/text" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/text_view_kcal_title"
+        android:layout_width="0dp"
+        android:text="Ingesta Calórica Semanal"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@id/bar_chart_kcal"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
         android:layout_height="wrap_content"
-        android:text="Stats"
-        android:textSize="64sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginVertical="8dp"
+        android:gravity="center"/>
+
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/bar_chart_kcal"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/text_view_macros_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_view_kcal_title" />
+
+    <TextView
+        android:id="@+id/text_view_macros_title"
+        android:layout_width="0dp"
+        android:text="Ingesta Macronutricional Diaria"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/bar_chart_kcal"
+        app:layout_constraintBottom_toTopOf="@id/linear_layout_macros"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginVertical="8dp"
+        android:gravity="center"/>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/linear_layout_macros"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:background="@drawable/background_macros"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/text_view_macros_title">
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="0dp"
+            app:backgroundTint="@color/primaryDark"
+            app:icon="@drawable/ic_back"
+            app:iconTint="@color/secondaryDark" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/view_pager_macros"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bar_chart_kcal" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="0dp"
+            app:backgroundTint="@color/primaryDark"
+            app:icon="@drawable/ic_next"
+            app:iconTint="@color/secondaryDark" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

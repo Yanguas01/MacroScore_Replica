@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Array Gender -->
+    <string-array name="gender">
+        <item>@string/male</item>
+        <item>@string/female</item>
+    </string-array>
+
+    <!-- Array Physical Activity Level -->
+    <string-array name="physical_activity_level">
+        <item>@string/sedentary</item>
+        <item>@string/light_exercise</item>
+        <item>@string/moderate_exercise</item>
+        <item>@string/hard_exercise</item>
+        <item>@string/physical_job</item>
+    </string-array>
+</resources>

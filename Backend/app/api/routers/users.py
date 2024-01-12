@@ -1,13 +1,44 @@
-from fastapi import APIRouter, Body, Depends, status
+from fastapi import APIRouter, Body, Depends, Query, status
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.api.dependencies import get_current_user, get_db
-from app.crud.crud_user import update_order_meal, update_user_by_id
+from app.crud.crud_user import (get_user_by_email, get_user_by_username,
+                                update_order_meal, update_user_by_id)
 from app.models.domain import User
 from app.models.schemas.user_schema import UserOut, UserUpdateRequest
 from app.services.user_service import set_new_password
 
 router: APIRouter = APIRouter(prefix='/users')
+
+
+router.get('/check-email')
+
+
+async def check_user_by_email(
+    email: str = Query(...),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    user: User = get_user_by_email(email=email, db=db)
+    return {
+        'message': 'The email is already used'if user else 'Email is not used',
+        'status': '0' if user else '1',
+        'email': email
+    }
+
+
+router.get('/check-username')
+
+
+async def check_user_by_username(
+    username: str = Query(...),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    user: User = get_user_by_username(username=username, db=db)
+    return {
+        'message': 'The username is already used'if user else 'Email is not used',
+        'status': '0' if user else '1',
+        'username': username
+    }
 
 
 @router.get('/me', response_model=UserOut, status_code=status.HTTP_200_OK)

@@ -48,5 +48,4 @@ class FeedViewModel @Inject constructor(
             _closeDialogEvent.emit(Unit)
         }
     }
-
 }

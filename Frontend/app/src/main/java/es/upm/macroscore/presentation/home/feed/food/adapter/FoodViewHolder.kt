@@ -17,6 +17,7 @@ class FoodViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         val context = binding.root.context
 
+        binding.foodName.isSelected = true
         binding.foodName.text = foodModel.name
         binding.foodKcal.text = context.getString(R.string.kcal_per_100, foodModel.kcalPer100)
         binding.foodCarbs.text = context.getString(R.string.carbs_per_100, foodModel.carbsPer100)

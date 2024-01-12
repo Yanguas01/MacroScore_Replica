@@ -1,11 +1,14 @@
 package es.upm.macroscore.presentation.home
 
 import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.appcompat.app.AppCompatActivity
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.onNavDestinationSelected
@@ -13,17 +16,19 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import dagger.hilt.android.AndroidEntryPoint
 import es.upm.macroscore.R
-import es.upm.macroscore.databinding.ActivityMainBinding
+import es.upm.macroscore.databinding.ActivityHomeBinding
+
+private const val ANIMATION_DURATION : Long = 250
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class HomeActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityHomeBinding
     private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initUi()
     }
@@ -74,7 +79,7 @@ class MainActivity : AppCompatActivity() {
         val animatorSet = AnimatorSet()
         animatorSet.interpolator = AccelerateDecelerateInterpolator()
         animatorSet.playTogether(startXAnimation, widthAnimation)
-        animatorSet.duration = 250
+        animatorSet.duration = ANIMATION_DURATION
         animatorSet.start()
     }
 

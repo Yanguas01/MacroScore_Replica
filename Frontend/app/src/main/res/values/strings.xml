@@ -24,4 +24,38 @@
     <string name="carbs_per_100">C: %.2fg</string>
     <string name="prots_per_100">P: %.2fg</string>
     <string name="fats_per_100">G: %.2fg</string>
+
+    <!-- String array Gender -->
+    <string name="male">Masculino</string>
+    <string name="female">Femenino</string>
+
+    <!-- String array Physical Activity Level -->
+    <string name="sedentary">Sedentario</string>
+    <string name="light_exercise">Actividad física ligera</string>
+    <string name="moderate_exercise">Actividad física moderada</string>
+    <string name="hard_exercise">Actividad física intensa</string>
+    <string name="physical_job">Actividad física muy intensa</string>
+
+    <!-- SignupFragment -->
+    <string name="username">Nombre de usuario</string>
+    <string name="email">Correo electrónico</string>
+    <string name="password">Contraseña</string>
+    <string name="repeat_password">Repita contraseña</string>
+    <string name="next">Continuar</string>
+    <string name="gender">Género</string>
+    <string name="physical_activity_level">Nivel de actividad física</string>
+    <string name="height">Altura (cm)</string>
+    <string name="weight">Peso (kg)</string>
+    <string name="age">Edad</string>
+    <string name="finish">Finalizar</string>
+
+
+    <!-- ProfileFormFragment -->
+
+
+    <!-- LayoutMacrosChart -->
+    <string name="carbs_summarize">%.2fg/%2.fg\nCarbohidratos</string>
+    <string name="prots_summarize">%.2fg/%2.fg\nProteínas</string>
+    <string name="fats_summarize">%.2fg/%2.fg\nGrasas</string>
+
 </resources>
