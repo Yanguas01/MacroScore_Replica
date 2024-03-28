@@ -55,6 +55,7 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
+
     private fun updateIndicatorPosition(itemId: Int) {
         val menuView = binding.bottomNavigationView.getChildAt(0) as BottomNavigationMenuView
         val menuItemIndex = getMenuItemIndex(itemId)

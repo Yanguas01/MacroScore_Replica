@@ -18,5 +18,14 @@
     <color name="carbohydrate">#FF3E4D</color>
     <color name="fat">#F3DA34</color>
 
+    <!-- Specific colors for macros charts -->
+    <color name="proteinChart">#4D3A86FF</color>
+    <color name="carbohydrateChart">#4DFF3E4D</color>
+    <color name="fatChart">#4DF3DA34</color>
+
+    <!-- Specific colors for pie charts buttons -->
+    <color name="iconDisabledButton">#9D989F</color>
+    <color name="backgroundDisabledButton">#E2DDE4</color>
+
     <color name="error">#E84545</color>
 </resources>

@@ -65,7 +65,7 @@ class AuthViewModel @Inject constructor(
     private fun validateEmail(email: String) {
         _authViewState.update {
             it.copy(
-                emailError = if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email)
+                emailError = if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email.trim())
                         .matches()
                 ) "Dirección de correo electrónico inválido" else null
             )

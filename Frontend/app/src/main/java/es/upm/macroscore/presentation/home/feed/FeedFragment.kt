@@ -37,14 +37,14 @@ class FeedFragment : Fragment() {
 
     private fun initUI() {
         initUIState()
-        setItemTouchHelper()
+        initItemTouchHelper()
         initRecyclerView()
         binding.addMeal.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_mealDialogFragment)
         }
     }
 
-    private fun setItemTouchHelper() {
+    private fun initItemTouchHelper() {
         val itemTouchHelperCallback =
             object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
 
