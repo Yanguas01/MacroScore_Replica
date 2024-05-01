@@ -4,10 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/secondaryDark"
-    android:gravity="center"
-    android:orientation="vertical"
-    tools:context=".presentation.auth.signup.SignupFragment">
+    tools:background="@color/secondaryDark"
+    tools:context=".presentation.auth.login.LoginFragment">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/container_layout"
@@ -27,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_marginVertical="24dp"
             android:fontFamily="@font/montserrat"
-            android:text="Regístrate para continuar"
+            android:text="Bienvenido de nuevo"
             android:textColor="@color/secondaryDark"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -43,23 +41,7 @@
                 android:id="@+id/edit_text_username"
                 style="@style/Widget.App.EditText.Outlined"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/text_input_layout_email"
-            style="@style/Widget.App.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/email">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_text_email"
-                style="@style/Widget.App.EditText.Outlined"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:inputType="text" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -81,32 +63,28 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/text_input_layout_repeated_password"
-            style="@style/Widget.App.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/repeat_password"
-            app:endIconMode="password_toggle">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_text_repeated_password"
-                style="@style/Widget.App.EditText.Outlined"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="textPassword" />
-
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_gravity="start"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            android:fontFamily="@font/montserrat"
+            android:text="Mantener la sesión inciada"
+            android:textColor="@color/secondaryDark"
+            app:buttonTint="@color/secondaryDark" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_next"
+            android:id="@+id/button_login"
             style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            android:text="@string/next"
+            android:fontFamily="@font/montserrat"
+            android:text="@string/login"
             android:textAllCaps="true"
             android:textColor="@color/primary"
+            android:textStyle="bold"
             app:backgroundTint="@color/secondaryDark" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -141,15 +119,17 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_login"
+            android:id="@+id/button_signup"
             style="@style/Widget.Material3.Button.IconButton.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="16dp"
-            android:text="¿Ya tienes una cuenta? Inicia sesión"
+            android:fontFamily="@font/montserrat"
+            android:text="¿No tienes cuenta? Regístrate aquí"
             android:textAllCaps="true"
             android:textColor="@color/secondaryDark"
+            android:textStyle="bold"
             app:strokeColor="@color/secondaryDark" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>

@@ -2,7 +2,7 @@ package es.upm.macroscore.presentation.auth.signup
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +26,12 @@ class ProfileFormFragment : Fragment() {
     private var _binding: FragmentProfileFormBinding? = null
     private val binding get() = _binding!!
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        sharedElementEnterTransition =
+            TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -41,14 +47,22 @@ class ProfileFormFragment : Fragment() {
 
     private fun initUI() {
         initUIState()
+        initButtons()
+    }
+
+    private fun initButtons() {
+        binding.buttonGetBack.setOnClickListener {
+            activity?.onBackPressedDispatcher?.onBackPressed()
+        }
         binding.buttonSignup.setOnClickListener {
             if (viewModel.isAbleToSignUp(
-                binding.autocompleteTextViewGender.text.toString(),
-                binding.autocompleteTextViewPhysicalActivityLevel.text.toString(),
-                binding.editTextHeight.text.toString(),
-                binding.editTextWeight.text.toString(),
-                binding.editTextAge.text.toString()
-            )) {
+                    binding.autocompleteTextViewGender.text.toString(),
+                    binding.autocompleteTextViewPhysicalActivityLevel.text.toString(),
+                    binding.editTextHeight.text.toString(),
+                    binding.editTextWeight.text.toString(),
+                    binding.editTextAge.text.toString()
+                )
+            ) {
                 binding.circularProgressBar.visibility = View.VISIBLE
                 navigateToHome()
             }

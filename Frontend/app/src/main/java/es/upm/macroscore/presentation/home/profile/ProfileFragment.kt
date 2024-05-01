@@ -1,5 +1,7 @@
 package es.upm.macroscore.presentation.home.profile
 
+import android.graphics.drawable.Animatable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,4 +22,16 @@ class ProfileFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initUI()
+    }
+
+    private fun initUI() {
+        val loadingIcon: Drawable? = binding.textInputLayoutUsername.endIconDrawable
+
+        if (loadingIcon is Animatable) {
+            (loadingIcon as Animatable).start()
+        }
+    }
 }

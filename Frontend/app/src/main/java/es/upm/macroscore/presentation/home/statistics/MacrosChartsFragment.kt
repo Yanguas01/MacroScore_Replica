@@ -1,19 +1,12 @@
 package es.upm.macroscore.presentation.home.statistics
 
 import android.animation.ObjectAnimator
-import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
-import com.github.mikephil.charting.animation.Easing
-import com.github.mikephil.charting.components.Description
-import com.github.mikephil.charting.data.PieData
-import com.github.mikephil.charting.data.PieDataSet
-import com.github.mikephil.charting.data.PieEntry
-import es.upm.macroscore.R
+import androidx.fragment.app.Fragment
 import es.upm.macroscore.databinding.FragmentMacrosChartsBinding
 
 class MacrosChartsFragment : Fragment() {

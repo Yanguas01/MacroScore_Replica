@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="colorText" format="color" />
+    <attr name="colorOnText" format="color" />
+    <attr name="colorTextContainer" format="color" />
+    <attr name="colorOnTextContainer" format="color" />
+    <attr name="harmonizeText" format="boolean" />
+
     <declare-styleable name="PieChart">
         <attr name="progressColor" format="color" />
         <attr name="maxProgress" format="float" />

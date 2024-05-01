@@ -12,10 +12,14 @@
         tools:layout="@layout/fragment_feed">
         <action
             android:id="@+id/action_feedFragment_to_mealDialogFragment"
-            app:destination="@id/mealDialogFragment" />
+            app:destination="@id/mealDialogFragment"
+            app:enterAnim="@anim/slide_up_dialog"
+            app:exitAnim="@anim/slide_down_dialog" />
         <action
             android:id="@+id/action_feedFragment_to_foodDialogFragment"
-            app:destination="@id/foodDialogFragment" />
+            app:destination="@id/foodDialogFragment"
+            app:enterAnim="@anim/slide_up_dialog"
+            app:exitAnim="@anim/slide_down_dialog" />
     </fragment>
 
     <fragment

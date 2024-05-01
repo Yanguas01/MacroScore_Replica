@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="FormTextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
-        <item name="android:gravity">center_vertical</item>
+    <!-- Form Text Fields -->
+    <style name="Widget.App.TextInputLayout.OutlinedBox" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
         <item name="errorEnabled">true</item>
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">16dp</item>
@@ -10,20 +10,10 @@
         <item name="boxStrokeColor">@color/secondary</item>
         <item name="boxStrokeWidth">1dp</item>
         <item name="errorTextColor">@color/error</item>
+        <item name="editTextStyle">@style/Widget.App.EditText.Outlined</item>
     </style>
 
-    <style name="DropdownMenuLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
-        <item name="android:gravity">center_vertical</item>
-        <item name="errorEnabled">true</item>
-        <item name="android:layout_marginLeft">16dp</item>
-        <item name="android:layout_marginRight">16dp</item>
-        <item name="android:textColorHint">@color/secondaryDark</item>
-        <item name="boxStrokeColor">@color/secondary</item>
-        <item name="boxStrokeWidth">1dp</item>
-        <item name="errorTextColor">@color/error</item>
-    </style>
-
-    <style name="FormEditText" parent="Widget.AppCompat.EditText">
+    <style name="Widget.App.EditText.Outlined" parent="Widget.AppCompat.EditText">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/text</item>
         <item name="android:paddingLeft">16dp</item>
@@ -33,14 +23,148 @@
         <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
-    <style name="FormAutocompleteTextView" parent="ThemeOverlay.Material3.AutoCompleteTextView.OutlinedBox.Dense">
+    <!-- Profile Text Fields -->
+    <style name="Widget.App.TextInputLayout.FilledBox" parent="Widget.Material3.TextInputLayout.FilledBox.Dense">
+        <item name="errorEnabled">true</item>
+        <item name="boxBackgroundColor">@color/primaryDark</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:enabled">false</item>
+        <item name="android:textColorHint">@color/secondaryDark</item>
+        <item name="boxStrokeColor">@color/secondary</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="errorTextColor">@color/error</item>
+    </style>
+
+    <style name="Widget.App.EditText.Filled" parent="Widget.AppCompat.EditText">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/text</item>
         <item name="android:paddingLeft">16dp</item>
         <item name="singleLine">true</item>
         <item name="maxLines">1</item>
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:enabled">false</item>
         <item name="android:paddingRight">16dp</item>
         <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+
+    <!-- Dropdown Menu -->
+    <style name="Widget.App.DropdownMenu.Outlined" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+        <item name="errorEnabled">true</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:textColorHint">@color/secondaryDark</item>
+        <item name="boxStrokeColor">@color/secondary</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="errorTextColor">@color/error</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.ExposedDropdownMenu.Outlined
+        </item>
+    </style>
+
+    <style name="ThemeOverlay.App.ExposedDropdownMenu.Outlined" parent="">
+        <item name="colorPrimary">@color/primaryDark</item>
+        <item name="colorOnSurface">@color/md_theme_light_surface</item>
+        <item name="colorError">@color/error</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.App.BodyLarge</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.App.BodySmall</item>
+        <item name="autoCompleteTextViewStyle">@style/Widget.App.AutoCompleteTextView.Outlined
+        </item>
+    </style>
+
+    <style name="TextAppearance.App.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="fontFamily">@font/montserrat</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+
+    <style name="TextAppearance.App.BodySmall" parent="TextAppearance.Material3.BodySmall">
+        <item name="fontFamily">@font/montserrat</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+
+    <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="Widget.App.AutoCompleteTextView.Outlined" parent="ThemeOverlay.Material3.AutoCompleteTextView.FilledBox.Dense">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="singleLine">true</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="maxLines">1</item>
+        <item name="android:dropDownVerticalOffset">1dp</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+
+    <!-- Profile Dropdown Menu -->
+    <style name="Widget.App.DropdownMenu.Filled" parent="Widget.Material3.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu">
+        <item name="errorEnabled">true</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:textColorHint">@color/secondaryDark</item>
+        <item name="boxStrokeColor">@color/secondary</item>
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:enabled">false</item>
+        <item name="boxBackgroundColor">@color/primaryDark</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="errorTextColor">@color/error</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.ExposedDropdownMenu.Filled</item>
+    </style>
+
+    <style name="ThemeOverlay.App.ExposedDropdownMenu.Filled" parent="">
+        <item name="colorPrimary">@color/primaryDark</item>
+        <item name="colorOnSurface">@color/md_theme_light_surface</item>
+        <item name="colorError">@color/error</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.App.BodyLarge</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.App.BodySmall</item>
+        <item name="autoCompleteTextViewStyle">@style/Widget.App.AutoCompleteTextView.Filled</item>
+    </style>
+
+    <style name="Widget.App.AutoCompleteTextView.Filled" parent="ThemeOverlay.Material3.AutoCompleteTextView.FilledBox.Dense">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="singleLine">true</item>
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:enabled">false</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="maxLines">1</item>
+        <item name="android:gravity">bottom</item>
+        <item name="android:dropDownVerticalOffset">1dp</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+
+    <!-- Date Picker -->
+    <style name="DatePicker" parent="@style/ThemeOverlay.Material3.MaterialCalendar.Fullscreen">
+        <item name="materialCalendarHeaderLayout">@style/DatePickerHeaderLayout</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:gravity">bottom</item>
+        <item name="android:windowAnimationStyle">@style/DatePickerAnimationStyle</item>
+    </style>
+
+    <style name="DatePickerAnimationStyle">
+        <item name="android:windowEnterAnimation">@anim/slide_up_dialog</item>
+        <item name="android:windowExitAnimation">@anim/slide_down_dialog</item>
+    </style>
+
+    <style name="DatePickerHeaderLayout" parent="Widget.Material3.MaterialCalendar.HeaderLayout.Fullscreen">
+        <item name="android:background">@color/primaryDark</item>
+    </style>
+
+    <!-- Icon Button -->
+    <style name="Widget.App.IconButton" parent="Widget.Material3.Button.IconButton.Filled">
+        <item name="android:layout_width">56dp</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:inset">0dp</item>
+        <item name="iconGravity">textStart</item>
     </style>
 
 </resources>

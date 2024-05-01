@@ -1,35 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent"
+    android:paddingVertical="24dp"
+    tools:background="@color/secondaryDark">
 
     <ImageView
         android:id="@+id/image_view_logo"
-        android:layout_width="100dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:src="@drawable/logo"
-        app:layout_constraintTop_toTopOf="@id/text_view_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/text_view_title"
+        app:layout_constraintBottom_toTopOf="@id/text_view_app_name"
         android:layout_marginHorizontal="56dp"
         android:contentDescription="@string/header_app_logo" />
 
     <TextView
-        android:id="@+id/text_view_title"
+        android:id="@+id/text_view_app_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/image_view_logo"
+        app:layout_constraintTop_toBottomOf="@id/image_view_logo"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginVertical="36dp"
-        android:layout_marginEnd="56dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:text="@string/header_app_name"
-        android:fontFamily="@font/quantify"
-        android:textSize="48sp"
-        android:gravity="center"
-        android:textColor="@color/secondaryDark"
+        android:gravity="center_horizontal"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:fontFamily="@font/montserrat"
+        android:textSize="32sp"
         />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

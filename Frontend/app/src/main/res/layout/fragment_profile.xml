@@ -7,6 +7,309 @@
     android:background="@color/primary"
     tools:context=".presentation.home.profile.ProfileFragment">
 
+    <TextView
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:background="@color/primaryDark"
+        android:fontFamily="@font/montserrat"
+        android:gravity="center"
+        android:text="Perfil"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_view_subtitle_general_data"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat"
+        android:padding="16dp"
+        android:text="Datos Generales"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/text_input_layout_username"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_layout_username"
+        style="@style/Widget.App.TextInputLayout.FilledBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:clickable="false"
+        android:hint="@string/username"
+        app:endIconDrawable="@drawable/ic_animated_loading"
+        app:endIconTint="@null"
+        app:endIconMode="custom"
+        app:layout_constraintEnd_toStartOf="@id/button_edit_username"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_view_subtitle_general_data"
+        app:startIconDrawable="@drawable/ic_profile"
+        app:startIconTint="@color/secondaryDark">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/edit_text_username"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="text" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_edit_username"
+        style="@style/Widget.App.IconButton"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@color/primaryDark"
+        app:icon="@drawable/ic_edit"
+        app:iconTint="@color/secondaryDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/text_input_layout_username"
+        app:layout_constraintTop_toTopOf="@id/text_input_layout_username" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_layout_email"
+        style="@style/Widget.App.TextInputLayout.FilledBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:clickable="false"
+        android:hint="@string/email"
+        app:endIconDrawable="@drawable/ic_check"
+        app:endIconMode="custom"
+        app:endIconTint="@color/secondaryDark"
+        app:layout_constraintEnd_toStartOf="@id/button_edit_email"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_input_layout_username"
+        app:startIconDrawable="@drawable/ic_email"
+        app:startIconTint="@color/secondaryDark">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/edit_text_email"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="text" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_edit_email"
+        style="@style/Widget.App.IconButton"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@color/primaryDark"
+        app:icon="@drawable/ic_edit"
+        app:iconTint="@color/secondaryDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/text_input_layout_email"
+        app:layout_constraintTop_toTopOf="@id/text_input_layout_email" />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginHorizontal="8dp"
+        app:dividerColor="@color/secondaryDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_input_layout_email" />
+
+    <TextView
+        android:id="@+id/text_view_subtitle_personal_data"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat"
+        android:padding="16dp"
+        android:text="Datos Personales"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_layout_gender"
+        style="@style/Widget.App.DropdownMenu.Filled"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/gender"
+        app:layout_constraintEnd_toStartOf="@id/button_edit_gender"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_view_subtitle_personal_data"
+        app:startIconDrawable="@drawable/ic_sex"
+        app:startIconTint="@color/secondaryDark">
+
+        <AutoCompleteTextView
+            android:id="@+id/autocomplete_text_view_gender"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="none"
+            app:simpleItems="@array/gender" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_edit_gender"
+        style="@style/Widget.App.IconButton"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@color/primaryDark"
+        app:icon="@drawable/ic_edit"
+        app:iconTint="@color/secondaryDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/text_input_layout_gender"
+        app:layout_constraintTop_toTopOf="@id/text_input_layout_gender" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_layout_physical_activity_level"
+        style="@style/Widget.App.DropdownMenu.Filled"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@id/button_edit_physical_activity_level"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_input_layout_gender"
+        app:startIconDrawable="@drawable/ic_physical_activity"
+        app:startIconTint="@color/secondaryDark">
+
+        <AutoCompleteTextView
+            android:id="@+id/autocomplete_text_view_physical_activity_level"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:hint="@string/physical_activity_level"
+            android:inputType="none"
+            app:simpleItems="@array/physical_activity_level" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_edit_physical_activity_level"
+        style="@style/Widget.App.IconButton"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@color/primaryDark"
+        app:icon="@drawable/ic_edit"
+        app:iconTint="@color/secondaryDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/text_input_layout_physical_activity_level"
+        app:layout_constraintTop_toTopOf="@id/text_input_layout_physical_activity_level" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_layout_height"
+        style="@style/Widget.App.TextInputLayout.FilledBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:clickable="false"
+        android:hint="Altura"
+        app:endIconDrawable="@drawable/ic_check"
+        app:endIconMode="custom"
+        app:endIconTint="@color/secondaryDark"
+        app:layout_constraintEnd_toStartOf="@id/button_edit_height"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_input_layout_physical_activity_level"
+        app:prefixText="cm"
+        app:prefixTextAppearance="@color/secondaryDark"
+        app:prefixTextColor="@color/secondaryDark"
+        app:startIconDrawable="@drawable/ic_height"
+        app:startIconTint="@color/secondaryDark">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/edit_text_height"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="number" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_edit_height"
+        style="@style/Widget.App.IconButton"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@color/primaryDark"
+        app:icon="@drawable/ic_edit"
+        app:iconTint="@color/secondaryDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/text_input_layout_height"
+        app:layout_constraintTop_toTopOf="@id/text_input_layout_height" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_layout_weight"
+        style="@style/Widget.App.TextInputLayout.FilledBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:clickable="false"
+        android:hint="Peso"
+        app:endIconDrawable="@drawable/ic_check"
+        app:endIconMode="custom"
+        app:endIconTint="@color/secondaryDark"
+        app:layout_constraintEnd_toStartOf="@id/button_edit_weight"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_input_layout_height"
+        app:prefixText="kg"
+        app:prefixTextAppearance="@color/secondaryDark"
+        app:prefixTextColor="@color/secondaryDark"
+        app:startIconDrawable="@drawable/ic_weight"
+        app:startIconTint="@color/secondaryDark">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/edit_text_weight"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="number" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_edit_weight"
+        style="@style/Widget.App.IconButton"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@color/primaryDark"
+        app:icon="@drawable/ic_edit"
+        app:iconTint="@color/secondaryDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/text_input_layout_weight"
+        app:layout_constraintTop_toTopOf="@id/text_input_layout_weight" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_layout_age"
+        style="@style/Widget.App.TextInputLayout.FilledBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:hint="Edad"
+        app:endIconDrawable="@drawable/ic_check"
+        app:endIconMode="custom"
+        app:endIconTint="@color/secondaryDark"
+        app:layout_constraintEnd_toStartOf="@id/button_edit_age"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_input_layout_weight"
+        app:prefixTextAppearance="@color/secondaryDark"
+        app:prefixTextColor="@color/secondaryDark"
+        app:startIconDrawable="@drawable/ic_age"
+        app:startIconTint="@color/secondaryDark">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/edit_text_age"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="number" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_edit_age"
+        style="@style/Widget.App.IconButton"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@color/primaryDark"
+        app:icon="@drawable/ic_edit"
+        app:iconTint="@color/secondaryDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/text_input_layout_age"
+        app:layout_constraintTop_toTopOf="@id/text_input_layout_age" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

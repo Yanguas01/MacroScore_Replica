@@ -1,7 +1,6 @@
 package es.upm.macroscore.presentation.auth
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -9,7 +8,6 @@ import es.upm.macroscore.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import java.lang.NumberFormatException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,8 +24,8 @@ class AuthViewModel @Inject constructor(
         password: String = "",
         confirmedPassword: String = ""
     ): Boolean {
-        validateUsername(username)
-        validateEmail(email)
+        validateUsername(username.trimEnd())
+        validateEmail(email.trimEnd())
         validatePassword(password)
         validateConfirmedPassword(password, confirmedPassword)
 
@@ -51,11 +49,12 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun validateUsername(username: String) {
+        val trimmedUsername = username.trimEnd()
         _authViewState.update {
             val usernameError: String? = when {
-                username.isEmpty() -> "El nombre de usuario no puede estar vacío"
-                username.length > 14 -> "El nombre de usuario supera el máximo permitido"
-                !username.matches(Regex(("[a-z0-9]+"))) -> "El nombre de usuario solo debe contener letras en minúsculas y dígitos"
+                trimmedUsername.isEmpty() -> "El nombre de usuario no puede estar vacío"
+                trimmedUsername.length > 14 -> "El nombre de usuario supera el máximo permitido"
+                !trimmedUsername.matches(Regex(("[a-z0-9]+"))) -> "El nombre de usuario solo debe contener letras en minúsculas y dígitos"
                 else -> null
             }
             it.copy(usernameError = usernameError)
@@ -65,7 +64,7 @@ class AuthViewModel @Inject constructor(
     private fun validateEmail(email: String) {
         _authViewState.update {
             it.copy(
-                emailError = if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email.trim())
+                emailError = if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email.trimEnd())
                         .matches()
                 ) "Dirección de correo electrónico inválido" else null
             )
@@ -86,10 +85,11 @@ class AuthViewModel @Inject constructor(
 
     private fun validateGender(gender: String) {
         _authViewState.update {
-            it.copy(genderError = if (
-                gender.isEmpty() &&
-                gender != context.getString(R.string.male) &&
-                gender != context.getString(R.string.female)
+            it.copy(
+                genderError = if (
+                    gender.isEmpty() &&
+                    gender != context.getString(R.string.male) &&
+                    gender != context.getString(R.string.female)
                 ) "Escoja un género válido" else null
             )
         }
@@ -97,13 +97,14 @@ class AuthViewModel @Inject constructor(
 
     private fun validatePhysicalActivityLevel(physicalActivityLevel: String) {
         _authViewState.update {
-            it.copy(physicalActivityLevelError = if (
-                physicalActivityLevel.isEmpty() &&
-                physicalActivityLevel != context.getString(R.string.sedentary) &&
-                physicalActivityLevel != context.getString(R.string.light_exercise) &&
-                physicalActivityLevel != context.getString(R.string.moderate_exercise) &&
-                physicalActivityLevel != context.getString(R.string.hard_exercise) &&
-                physicalActivityLevel != context.getString(R.string.physical_job)
+            it.copy(
+                physicalActivityLevelError = if (
+                    physicalActivityLevel.isEmpty() &&
+                    physicalActivityLevel != context.getString(R.string.sedentary) &&
+                    physicalActivityLevel != context.getString(R.string.light_exercise) &&
+                    physicalActivityLevel != context.getString(R.string.moderate_exercise) &&
+                    physicalActivityLevel != context.getString(R.string.hard_exercise) &&
+                    physicalActivityLevel != context.getString(R.string.physical_job)
                 ) "Escoja un nivel de actividad válido" else null
             )
         }

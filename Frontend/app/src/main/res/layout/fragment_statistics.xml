@@ -28,8 +28,10 @@
             app:iconTint="@color/text" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/layout_toolbar_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/background_toolbar_button"
             android:layout_gravity="center"
             android:layout_weight="1"
             android:orientation="vertical">
@@ -70,98 +72,167 @@
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
-    <TextView
-        android:id="@+id/text_view_kcal_title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="8dp"
-        android:gravity="center"
-        android:text="Ingesta Calórica Semanal"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@id/bar_chart_kcal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-    <com.github.mikephil.charting.charts.BarChart
-        android:id="@+id/bar_chart_kcal"
+    <!--
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_layout"
         android:layout_width="0dp"
+        app:shimmer_base_alpha="0"
         android:layout_height="0dp"
-        android:layout_margin="8dp"
-        app:layout_constraintBottom_toTopOf="@id/divider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_view_kcal_title" />
-
-    <com.google.android.material.divider.MaterialDivider
-        android:id="@+id/divider"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_margin="8dp"
-        app:dividerColor="@color/secondary"
-        app:layout_constraintBottom_toTopOf="@id/text_view_macros_title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bar_chart_kcal" />
-
-    <TextView
-        android:id="@+id/text_view_macros_title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="8dp"
-        android:gravity="center"
-        android:text="Ingesta Macronutricional Diaria"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@id/linear_layout_macros"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider" />
-
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/linear_layout_macros"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="8dp"
-        android:background="@drawable/background_macros"
-        android:orientation="horizontal"
-        android:padding="8dp"
+        app:shimmer_auto_start="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_view_macros_title">
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_previous_day"
-            style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="wrap_content"
+        <include
+            layout="@layout/shimmer_layout_statistics"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="0dp"
-            app:backgroundTint="@color/background_color_button_pie_chart_view_pager"
-            app:icon="@drawable/ic_back"
-            app:iconTint="@color/icon_color_button_pie_chart_view_pager" />
+            android:visibility="visible" />
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/view_pager_macros"
+    </com.facebook.shimmer.ShimmerFrameLayout>-->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_main"
+        tools:visibility="visible"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <TextView
+            android:id="@+id/text_view_kcal_title"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginHorizontal="8dp"
-            android:layout_weight="1"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
+            android:gravity="center"
+            android:text="Ingesta Calórica Semanal"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@id/bar_chart_kcal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/bar_chart_kcal"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="8dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@id/divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_view_kcal_title" />
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmer_layout_energy_chart"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:shimmer_auto_start="true"
+            android:layout_margin="8dp"
+            app:layout_constraintBottom_toTopOf="@id/divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_view_kcal_title">
+
+        <include
+            layout="@layout/layout_loading_bar_chart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_margin="8dp"
+            app:dividerColor="@color/secondary"
+            app:layout_constraintBottom_toTopOf="@id/text_view_macros_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/bar_chart_kcal" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_next_day"
-            style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:padding="0dp"
-            app:backgroundTint="@color/background_color_button_pie_chart_view_pager"
-            app:icon="@drawable/ic_next"
-            app:iconTint="@color/icon_color_button_pie_chart_view_pager" />
+        <TextView
+            android:id="@+id/text_view_macros_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
+            android:gravity="center"
+            android:text="Ingesta Macronutricional Diaria"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@id/linear_layout_macros"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider" />
 
-    </androidx.appcompat.widget.LinearLayoutCompat>
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linear_layout_macros"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/background_macros"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_view_macros_title">
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_previous_day"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:enabled="false"
+                android:padding="0dp"
+                app:backgroundTint="@color/background_color_button_pie_chart_view_pager"
+                app:icon="@drawable/ic_back"
+                app:iconTint="@color/icon_color_button_pie_chart_view_pager" />
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmer_layout_macros_charts"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:shimmer_auto_start="true"
+                android:layout_marginHorizontal="8dp">
+
+                <include
+                    layout="@layout/layout_loading_macros_charts"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/view_pager_macros"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="8dp"
+                android:layout_weight="1"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/bar_chart_kcal" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_next_day"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:enabled="false"
+                android:padding="0dp"
+                app:backgroundTint="@color/background_color_button_pie_chart_view_pager"
+                app:icon="@drawable/ic_next"
+                app:iconTint="@color/icon_color_button_pie_chart_view_pager" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
