@@ -28,9 +28,19 @@
             tools:text="Comida" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_minimize"
             style="@style/Widget.Material3.Button.IconButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:iconTint="@color/text"
+            app:icon="@drawable/ic_minimize" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_more_settings"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:iconTint="@color/text"
             app:icon="@drawable/ic_more" />
 
         <ImageView
@@ -45,6 +55,7 @@
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_view_meal_item"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
@@ -154,13 +165,13 @@
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 app:dividerColor="@color/primaryDark"
-                app:layout_constraintBottom_toTopOf="@id/addFood"
+                app:layout_constraintBottom_toTopOf="@id/button_add_food"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/recycler_view_meal" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/addFood"
+                android:id="@+id/button_add_food"
                 style="@style/Widget.Material3.Button.TextButton.Icon"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

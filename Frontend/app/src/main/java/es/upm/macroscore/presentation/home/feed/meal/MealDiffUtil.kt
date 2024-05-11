@@ -1,11 +1,11 @@
 package es.upm.macroscore.presentation.home.feed.meal
 
 import androidx.recyclerview.widget.DiffUtil
-import es.upm.macroscore.domain.model.MealModel
+import es.upm.macroscore.presentation.model.MealUIModel
 
 class MealDiffUtil(
-    private val oldList: List<MealModel>,
-    private val newList: List<MealModel>
+    private val oldList: List<MealUIModel>,
+    private val newList: List<MealUIModel>
 ) : DiffUtil.Callback() {
 
     override fun getOldListSize(): Int = oldList.size

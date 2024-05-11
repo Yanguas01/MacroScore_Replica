@@ -8,15 +8,18 @@ import androidx.recyclerview.widget.RecyclerView
 import es.upm.macroscore.R
 import es.upm.macroscore.domain.model.MealModel
 import es.upm.macroscore.presentation.home.feed.meal.MealDiffUtil
+import es.upm.macroscore.presentation.model.MealUIModel
 import java.util.Collections
 
 class FeedAdapter(
-    private var mealList: List<MealModel> = emptyList(),
+    private var mealList: List<MealUIModel> = emptyList(),
     private val touchHelper: ItemTouchHelper,
-    private val addFood: (String) -> Unit,
+    private val onEditMeal: (position: Int) -> Unit,
+    private val onDeleteMeal: (position: Int) -> Unit,
+    private val addFood: (String) -> Unit
 ) : RecyclerView.Adapter<FeedViewHolder>() {
 
-    fun updateList (newMealList: List<MealModel>) {
+    fun updateList (newMealList: List<MealUIModel>) {
         val mealDiffUtil = MealDiffUtil(mealList, newMealList)
         val result = DiffUtil.calculateDiff(mealDiffUtil)
         mealList = newMealList
@@ -38,13 +41,18 @@ class FeedAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedViewHolder {
         return FeedViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.item_recycler_view_feed, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.item_recycler_view_feed, parent, false),
+            onUpdate = { position ->
+                notifyItemChanged(position)
+            },
+            onEditMeal = onEditMeal,
+            onDeleteMeal = onDeleteMeal
         )
     }
 
     override fun getItemCount() = mealList.size
 
     override fun onBindViewHolder(holder: FeedViewHolder, position: Int) {
-        holder.bind(mealList[position], touchHelper, addFood)
+        holder.bind(mealList[position], position, touchHelper, addFood)
     }
 }

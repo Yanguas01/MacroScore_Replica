@@ -29,9 +29,6 @@
         <item name="boxBackgroundColor">@color/primaryDark</item>
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">16dp</item>
-        <item name="android:clickable">false</item>
-        <item name="android:focusable">false</item>
-        <item name="android:enabled">false</item>
         <item name="android:textColorHint">@color/secondaryDark</item>
         <item name="boxStrokeColor">@color/secondary</item>
         <item name="boxStrokeWidth">1dp</item>
@@ -44,9 +41,6 @@
         <item name="android:paddingLeft">16dp</item>
         <item name="singleLine">true</item>
         <item name="maxLines">1</item>
-        <item name="android:clickable">false</item>
-        <item name="android:focusable">false</item>
-        <item name="android:enabled">false</item>
         <item name="android:paddingRight">16dp</item>
         <item name="android:fontFamily">@font/montserrat</item>
     </style>
@@ -84,6 +78,12 @@
         <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
+    <style name="TextAppearance.App.BodySmall.Selected" parent="TextAppearance.Material3.BodySmall">
+        <item name="fontFamily">@font/montserrat</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+
     <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">8dp</item>
@@ -107,9 +107,6 @@
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:textColorHint">@color/secondaryDark</item>
         <item name="boxStrokeColor">@color/secondary</item>
-        <item name="android:clickable">false</item>
-        <item name="android:focusable">false</item>
-        <item name="android:enabled">false</item>
         <item name="boxBackgroundColor">@color/primaryDark</item>
         <item name="boxStrokeWidth">1dp</item>
         <item name="errorTextColor">@color/error</item>
@@ -138,6 +135,13 @@
         <item name="android:gravity">bottom</item>
         <item name="android:dropDownVerticalOffset">1dp</item>
         <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+
+    <!-- Popup Menu -->
+    <style name="Widget.App.PopupMenu" parent= "Widget.Material3.PopupMenu">
+        <item name="textAppearanceLargePopupMenu">@style/TextAppearance.App.BodyLarge</item>
+        <item name="textAppearanceSmallPopupMenu">@style/TextAppearance.App.BodyLarge</item>
+        <item name="android:popupBackground">@drawable/background_popup_menu</item>
     </style>
 
     <!-- Date Picker -->

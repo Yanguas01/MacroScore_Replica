@@ -14,8 +14,21 @@
     <string name="search">Buscar</string>
     <string name="favourites">Favoritos</string>
 
-    <!-- FeedFragment -->
+    <!-- Feed Fragment -->
+    <string name="add_meal">Añadir comida</string>
     <string name="add_food">Añadir alimento</string>
+    <string name="foods_hint">¡Aquí aparecerán tus comidas!</string>
+
+    <!-- Meal Dialog Fragment -->
+    <string name="save">Guardar</string>
+    <string name="meal_hint">Comidas comunes:</string>
+    <string name="meal_name">Nombre de la comida</string>
+    <string name="save_meal_for_the_rest_of_days">Guardar para el resto de días</string>
+    <string name="breakfast">Desayuno</string>
+    <string name="brunch">Almuerzo</string>
+    <string name="lunch">Comida</string>
+    <string name="afternoon_snack">Merienda</string>
+    <string name="dinner">Cena</string>
 
     <!-- Item Recycler View Feed -->
     <string name="total_kcal">%.2f kcal</string>
@@ -40,7 +53,7 @@
     <string name="hard_exercise">Actividad física intensa</string>
     <string name="physical_job">Actividad física muy intensa</string>
 
-    <!-- SignupFragment -->
+    <!-- Signup Fragment -->
     <string name="username">Nombre de usuario</string>
     <string name="email">Correo electrónico</string>
     <string name="password">Contraseña</string>
@@ -68,6 +81,17 @@
     <string name="prots_summarize">%.2fg/%2.fg\nProteínas</string>
     <string name="fats_summarize">%.2fg/%2.fg\nGrasas</string>
     <string name="login">iniciar sesión</string>
+
+    <!-- Profile Fragment -->
+
+    <!-- Edit Profile Bottom Sheet -->
+    <string name="title_edit_profile">Editar %s</string>
+    <string name="accept">Aceptar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="title_set_food_weight">Establecer cantidad</string>
+    <string name="grams">gramos</string>
+    <string name="edit">Editar</string>
+    <string name="delete">Borrar</string>
 
 
 </resources>

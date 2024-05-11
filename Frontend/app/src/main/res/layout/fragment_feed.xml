@@ -56,6 +56,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
+    <TextView
+        android:id="@+id/text_view_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toTopOf="@id/divider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/foods_hint"
+        android:fontFamily="@font/montserrat"
+        android:textSize="16sp"
+        android:paddingHorizontal="24dp"
+        />
+
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/divider"
         android:layout_width="0dp"
@@ -72,7 +86,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/background_text_button"
-        android:text="Añadir comida"
+        android:text="@string/add_meal"
         android:textColor="@color/accentDark"
         app:icon="@drawable/ic_add"
         app:iconGravity="textStart"

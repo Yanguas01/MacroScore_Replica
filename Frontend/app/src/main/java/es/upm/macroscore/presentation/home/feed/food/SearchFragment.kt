@@ -36,22 +36,11 @@ class SearchFragment : Fragment() {
 
     private fun initUI() {
         foodAdapter = FoodAdapter(viewModel.getFood()) { foodModel ->
-
-            val dialogBinding: LayoutWeightDialogBinding = LayoutWeightDialogBinding.inflate(layoutInflater)
-
-            val builder = MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Seleccionar cantidad")
-                .setView(dialogBinding.root)
-                .setNegativeButton("Cancelar") { dialog, which ->
-                    Log.d("Dialog", "Cancelar")
-                }
-                .setPositiveButton("Guardar") { dialog, which ->
-                    viewModel.addFood(foodModel)
-                    viewModel.closeDialog()
-                }
-
-            dialogBinding.exposedDropdown.setAdapter(ArrayAdapter(requireContext(), com.google.android.material.R.layout.support_simple_spinner_dropdown_item, arrayOf("gramos", "cucharadita")))
-            builder.create().show()
+            val bottomSheet = SetWeightBottomSheet {
+                viewModel.addFood(foodModel)
+                viewModel.closeDialog()
+            }
+            bottomSheet.show(requireActivity().supportFragmentManager, "bottom_sheet")
         }
         binding.layoutSearchFood.recyclerViewFood.apply {
             layoutManager = LinearLayoutManager(context)

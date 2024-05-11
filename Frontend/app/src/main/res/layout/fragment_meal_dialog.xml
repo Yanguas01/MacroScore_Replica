@@ -20,6 +20,7 @@
             style="@style/Widget.Material3.Button.IconButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
             app:icon="@drawable/ic_close"
             app:iconTint="@color/text" />
 
@@ -29,7 +30,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/montserrat"
             android:gravity="center_vertical"
-            android:text="Añadir comida"
+            android:text="@string/add_meal"
             android:textColor="@color/text"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -39,8 +40,9 @@
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
             android:fontFamily="@font/montserrat"
-            android:text="Guardar"
+            android:text="@string/save"
             android:textColor="@color/secondaryDark"
             android:textStyle="bold" />
 
@@ -48,12 +50,13 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_layout"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+        style="@style/Widget.App.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="32dp"
         android:gravity="center_vertical"
+        app:errorEnabled="false"
         android:textColorHint="@color/text"
         app:boxStrokeColor="@color/primaryDark">
 
@@ -62,7 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat"
-            android:hint="Nombre de la comida"
+            android:hint="@string/meal_name"
             android:inputType="text"
             android:maxLines="1"
             android:paddingHorizontal="16dp"
@@ -77,9 +80,111 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:fontFamily="@font/montserrat"
-        android:text="Guardar para el resto de días"
+        android:text="@string/save_meal_for_the_rest_of_days"
         android:textColor="@color/text"
         app:buttonIconTint="@color/white"
         app:buttonTint="@color/secondary" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/montserrat"
+        android:text="@string/meal_hint"
+        android:textColor="@color/text" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:backgroundTint="@color/white"
+        app:cardCornerRadius="24dp"
+        app:strokeColor="@color/secondary"
+        app:strokeWidth="1dp">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingHorizontal="4dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_breakfast"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/breakfast"
+                android:textColor="@color/text"
+                app:rippleColor="@color/colorControlHighlight" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="8dp"
+                app:dividerColor="@color/primaryDark" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_brunch"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/brunch"
+                android:textColor="@color/text"
+                app:rippleColor="@color/colorControlHighlight" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="8dp"
+                app:dividerColor="@color/primaryDark" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_lunch"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/lunch"
+                android:textColor="@color/text"
+                app:rippleColor="@color/colorControlHighlight" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="8dp"
+                app:dividerColor="@color/primaryDark" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_afternoon_snack"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/afternoon_snack"
+                android:textColor="@color/text"
+                app:rippleColor="@color/colorControlHighlight" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="8dp"
+                app:dividerColor="@color/primaryDark" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_dinner"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/dinner"
+                android:textColor="@color/text"
+                app:rippleColor="@color/colorControlHighlight" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

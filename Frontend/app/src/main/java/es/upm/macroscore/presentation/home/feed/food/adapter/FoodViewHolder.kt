@@ -13,15 +13,12 @@ class FoodViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     fun bind(foodModel: FoodModel, onItemSelected: (FoodModel) -> Unit) {
         binding.buttonMore.visibility = GONE
+        binding.cardViewFoodMacros.visibility = GONE
         binding.root.setOnClickListener { onItemSelected(foodModel) }
 
         val context = binding.root.context
 
         binding.foodName.isSelected = true
         binding.foodName.text = foodModel.name
-        binding.foodKcal.text = context.getString(R.string.kcal_per_100, foodModel.kcalPer100)
-        binding.foodCarbs.text = context.getString(R.string.carbs_per_100, foodModel.carbsPer100)
-        binding.foodProts.text = context.getString(R.string.prots_per_100, foodModel.protsPer100)
-        binding.foodFats.text = context.getString(R.string.fats_per_100, foodModel.fatsPer100)
     }
 }

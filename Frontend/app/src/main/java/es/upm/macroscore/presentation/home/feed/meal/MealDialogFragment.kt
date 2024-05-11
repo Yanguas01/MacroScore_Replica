@@ -34,10 +34,33 @@ class MealDialogFragment : DialogFragment() {
     }
 
     private fun initUI() {
+        initToolbar()
+        initCommonMeals()
+    }
+
+    private fun initToolbar() {
         binding.buttonClose.setOnClickListener { super.dismiss() }
         binding.buttonSave.setOnClickListener {
             viewModel.saveMeal(binding.textInputEditText.text.toString(), binding.checkboxSaveMeal.isChecked)
             super.dismiss()
+        }
+    }
+
+    private fun initCommonMeals() {
+        binding.buttonBreakfast.setOnClickListener {
+            binding.textInputEditText.setText(binding.buttonBreakfast.text)
+        }
+        binding.buttonBrunch.setOnClickListener {
+            binding.textInputEditText.setText(binding.buttonBrunch.text)
+        }
+        binding.buttonLunch.setOnClickListener {
+            binding.textInputEditText.setText(binding.buttonLunch.text)
+        }
+        binding.buttonAfternoonSnack.setOnClickListener {
+            binding.textInputEditText.setText(binding.buttonAfternoonSnack.text)
+        }
+        binding.buttonDinner.setOnClickListener {
+            binding.textInputEditText.setText(binding.buttonDinner.text)
         }
     }
 

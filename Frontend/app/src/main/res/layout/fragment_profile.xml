@@ -42,10 +42,11 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:clickable="false"
+        android:enabled="false"
+        android:focusable="false"
         android:hint="@string/username"
-        app:endIconDrawable="@drawable/ic_animated_loading"
-        app:endIconTint="@null"
         app:endIconMode="custom"
+        app:endIconTint="@null"
         app:layout_constraintEnd_toStartOf="@id/button_edit_username"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_view_subtitle_general_data"
@@ -69,7 +70,8 @@
         app:iconTint="@color/secondaryDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/text_input_layout_username"
-        app:layout_constraintTop_toTopOf="@id/text_input_layout_username" />
+        app:layout_constraintTop_toTopOf="@id/text_input_layout_username"
+        app:rippleColor="?attr/colorControlHighlight" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_layout_email"
@@ -78,8 +80,9 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:clickable="false"
+        android:enabled="false"
+        android:focusable="false"
         android:hint="@string/email"
-        app:endIconDrawable="@drawable/ic_check"
         app:endIconMode="custom"
         app:endIconTint="@color/secondaryDark"
         app:layout_constraintEnd_toStartOf="@id/button_edit_email"
@@ -105,7 +108,8 @@
         app:iconTint="@color/secondaryDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/text_input_layout_email"
-        app:layout_constraintTop_toTopOf="@id/text_input_layout_email" />
+        app:layout_constraintTop_toTopOf="@id/text_input_layout_email"
+        app:rippleColor="?attr/colorControlHighlight" />
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/divider"
@@ -135,6 +139,9 @@
         style="@style/Widget.App.DropdownMenu.Filled"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:clickable="false"
+        android:enabled="false"
+        android:focusable="false"
         android:hint="@string/gender"
         app:layout_constraintEnd_toStartOf="@id/button_edit_gender"
         app:layout_constraintStart_toStartOf="parent"
@@ -161,13 +168,17 @@
         app:iconTint="@color/secondaryDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/text_input_layout_gender"
-        app:layout_constraintTop_toTopOf="@id/text_input_layout_gender" />
+        app:layout_constraintTop_toTopOf="@id/text_input_layout_gender"
+        app:rippleColor="?attr/colorControlHighlight" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_layout_physical_activity_level"
         style="@style/Widget.App.DropdownMenu.Filled"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:clickable="false"
+        android:enabled="false"
+        android:focusable="false"
         app:layout_constraintEnd_toStartOf="@id/button_edit_physical_activity_level"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_input_layout_gender"
@@ -194,7 +205,8 @@
         app:iconTint="@color/secondaryDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/text_input_layout_physical_activity_level"
-        app:layout_constraintTop_toTopOf="@id/text_input_layout_physical_activity_level" />
+        app:layout_constraintTop_toTopOf="@id/text_input_layout_physical_activity_level"
+        app:rippleColor="?attr/colorControlHighlight" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_layout_height"
@@ -203,8 +215,9 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:clickable="false"
+        android:enabled="false"
+        android:focusable="false"
         android:hint="Altura"
-        app:endIconDrawable="@drawable/ic_check"
         app:endIconMode="custom"
         app:endIconTint="@color/secondaryDark"
         app:layout_constraintEnd_toStartOf="@id/button_edit_height"
@@ -233,7 +246,8 @@
         app:iconTint="@color/secondaryDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/text_input_layout_height"
-        app:layout_constraintTop_toTopOf="@id/text_input_layout_height" />
+        app:layout_constraintTop_toTopOf="@id/text_input_layout_height"
+        app:rippleColor="?attr/colorControlHighlight" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_layout_weight"
@@ -242,8 +256,9 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:clickable="false"
+        android:enabled="false"
+        android:focusable="false"
         android:hint="Peso"
-        app:endIconDrawable="@drawable/ic_check"
         app:endIconMode="custom"
         app:endIconTint="@color/secondaryDark"
         app:layout_constraintEnd_toStartOf="@id/button_edit_weight"
@@ -272,7 +287,8 @@
         app:iconTint="@color/secondaryDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/text_input_layout_weight"
-        app:layout_constraintTop_toTopOf="@id/text_input_layout_weight" />
+        app:layout_constraintTop_toTopOf="@id/text_input_layout_weight"
+        app:rippleColor="?attr/colorControlHighlight" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_layout_age"
@@ -280,8 +296,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
+        android:clickable="false"
+        android:enabled="false"
+        android:focusable="false"
         android:hint="Edad"
-        app:endIconDrawable="@drawable/ic_check"
         app:endIconMode="custom"
         app:endIconTint="@color/secondaryDark"
         app:layout_constraintEnd_toStartOf="@id/button_edit_age"
@@ -309,7 +327,8 @@
         app:iconTint="@color/secondaryDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/text_input_layout_age"
-        app:layout_constraintTop_toTopOf="@id/text_input_layout_age" />
+        app:layout_constraintTop_toTopOf="@id/text_input_layout_age"
+        app:rippleColor="?attr/colorControlHighlight" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,8 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import es.upm.macroscore.R
 import es.upm.macroscore.domain.model.FoodModel
+import es.upm.macroscore.presentation.model.FoodUIModel
 
-class ItemMealAdapter(private val list: List<FoodModel>): RecyclerView.Adapter<ItemMealViewHolder>() {
+class ItemMealAdapter(private val list: List<FoodUIModel>): RecyclerView.Adapter<ItemMealViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemMealViewHolder {
         return ItemMealViewHolder(

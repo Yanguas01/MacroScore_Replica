@@ -1,9 +1,44 @@
-<?xml version="1.0" encoding="utf-8"?>
-<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:drawable="@drawable/ic_loading">
-
-    <target
-        android:animation="@animator/rotate_loading_animation"
-        android:name="rotation" />
-
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:name="vector"
+            android:width="18dp"
+            android:height="18dp"
+            android:viewportWidth="18"
+            android:viewportHeight="18">
+            <path
+                android:name="path"
+                android:pathData="M 9 1 C 6.879 1 4.843 1.843 3.343 3.343 C 1.843 4.843 1 6.879 1 9 C 1 11.121 1.843 13.157 3.343 14.657 C 4.843 16.157 6.879 17 9 17 C 11.121 17 13.157 16.157 14.657 14.657 C 16.157 13.157 17 11.121 17 9 C 17 6.879 16.157 4.843 14.657 3.343 C 13.157 1.843 11.121 1 9 1 Z"
+                android:strokeColor="#acc2ef"
+                android:strokeWidth="2"
+                android:strokeMiterLimit="10"/>
+            <group
+                android:name="rotation"
+                android:pivotX="9"
+                android:pivotY="9">
+                <path
+                    android:name="path_1"
+                    android:pathData="M 2.07 5 C 3.5 2.53 6.14 1 9 1 C 11.86 1 14.5 2.53 15.93 5"
+                    android:strokeColor="#4d648d"
+                    android:strokeWidth="2"
+                    android:strokeLineCap="round"
+                    android:strokeMiterLimit="10"/>
+            </group>
+        </vector>
+    </aapt:attr>
+    <target android:name="rotation">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="rotation"
+                android:duration="1000"
+                android:valueFrom="0"
+                android:repeatCount="infinite"
+                android:repeatMode="restart"
+                android:valueTo="720"
+                android:valueType="floatType"
+                android:interpolator="@android:interpolator/fast_out_slow_in"/>
+        </aapt:attr>
+    </target>
 </animated-vector>

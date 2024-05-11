@@ -1,10 +1,16 @@
 package es.upm.macroscore.presentation.home.feed
 
 import android.graphics.Canvas
+import android.opengl.Visibility
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.isNotEmpty
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -17,15 +23,20 @@ import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import es.upm.macroscore.R
 import es.upm.macroscore.databinding.FragmentFeedBinding
+import es.upm.macroscore.presentation.EditBottomSheet
 import es.upm.macroscore.presentation.home.feed.adapter.FeedAdapter
+import es.upm.macroscore.presentation.model.MealUIModel
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class FeedFragment : Fragment() {
 
     private val viewModel by activityViewModels<FeedViewModel>()
+
     private lateinit var feedAdapter: FeedAdapter
     private lateinit var itemTouchHelper: ItemTouchHelper
+
+    private var mealList: List<MealUIModel> = emptyList()
 
     private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!
@@ -121,6 +132,12 @@ class FeedFragment : Fragment() {
     private fun initRecyclerView() {
         feedAdapter = FeedAdapter(
             touchHelper = itemTouchHelper,
+            onEditMeal = {
+                onEditMeal(it)
+            },
+            onDeleteMeal = {
+                onDeleteMeal(it)
+            },
             addFood = {
                 findNavController().navigate(
                     FeedFragmentDirections.actionFeedFragmentToFoodDialogFragment(it)
@@ -132,14 +149,61 @@ class FeedFragment : Fragment() {
         }
     }
 
+    private fun onEditMeal(position: Int) {
+        val meal = mealList[position]
+
+        val bottomSheet = EditBottomSheet.Builder()
+            .setTitle("Cambiar Nombre")
+            .setHint(R.string.meal_name)
+            .setInputType(InputType.TYPE_CLASS_TEXT)
+            .setEndIcon(R.drawable.ic_animated_loading)
+            .setText(meal.name)
+            .setOnAcceptAction {
+                simularLlamadaBackend {
+                    Toast.makeText(requireContext(), "Aceptar", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setOnCancelAction {
+                Toast.makeText(requireContext(), "Cancelar", Toast.LENGTH_SHORT).show()
+            }.build()
+
+        bottomSheet.onAcceptWithResponse = { onResponseComplete ->
+            bottomSheet.startEndIconAnimation()
+
+            simularLlamadaBackend {
+                bottomSheet.stopEndIconAnimation()
+                onResponseComplete()
+            }
+        }
+
+        bottomSheet.show(requireActivity().supportFragmentManager, "bottom_sheet")
+    }
+
+    private fun simularLlamadaBackend(onComplete: () -> Unit) {
+        Handler(Looper.getMainLooper()).postDelayed({
+            onComplete()
+        }, 2000)
+    }
+
+    private fun onDeleteMeal(position: Int) {
+
+    }
+
     private fun initUIState() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.mealList.collect {
+                    mealList = it
                     feedAdapter.updateList(it)
+                    updateHint()
                 }
             }
         }
+    }
+
+    private fun updateHint() {
+        binding.textViewHint.visibility =
+            if (binding.recyclerViewFeed.adapter?.itemCount != 0) View.GONE else View.VISIBLE
     }
 
     override fun onCreateView(
