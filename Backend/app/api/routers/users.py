@@ -11,31 +11,27 @@ from app.services.user_service import set_new_password
 router: APIRouter = APIRouter(prefix='/users')
 
 
-router.get('/check-email')
-
-
+@router.get('/check-email')
 async def check_user_by_email(
     email: str = Query(...),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
-    user: User = get_user_by_email(email=email, db=db)
+    user: User = await get_user_by_email(email=email, db=db)
     return {
-        'message': 'The email is already used'if user else 'Email is not used',
+        'message': 'The email is already used' if user else 'Email is not used',
         'status': '0' if user else '1',
         'email': email
     }
 
 
-router.get('/check-username')
-
-
+@router.get('/check-username')
 async def check_user_by_username(
     username: str = Query(...),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
-    user: User = get_user_by_username(username=username, db=db)
+    user: User = await get_user_by_username(username=username, db=db)
     return {
-        'message': 'The username is already used'if user else 'Email is not used',
+        'message': 'The username is already used' if user else 'Username is not used',
         'status': '0' if user else '1',
         'username': username
     }

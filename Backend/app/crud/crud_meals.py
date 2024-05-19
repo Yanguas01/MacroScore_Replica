@@ -19,12 +19,32 @@ async def save_meal(
     meal_data: dict
 ) -> str:
     try:
+        if await meal_exists(db, meal_data['user_id'], meal_data['date'], meal_data['name']):
+            logging.info(f'Meal already exists: user_id={meal_data["user_id"]}, date={meal_data["date"]}, name={meal_data["name"]}')
+            return None
+
         result: InsertOneResult = await db.get_collection('meals').insert_one(meal_data)
         return str(result.inserted_id)
     except Exception as e:
         logging.error(f'An error occurred during the database operation: {e}')
         raise
 
+async def meal_exists(
+    db: AsyncIOMotorDatabase, 
+    user_id: str, 
+    date: datetime, 
+    name: str
+) -> bool:
+    try:
+        count: int = await db.get_collection('meals').count_documents({
+            'user_id': user_id,
+            'date': date,
+            'name': name
+        })
+        return count > 0
+    except Exception as e:
+        logging.error(f'An error occurred during the database operation: {e}')
+        raise
 
 def generate_pipeline(
     user_id: str,

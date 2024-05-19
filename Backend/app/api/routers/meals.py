@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Body, Depends, Query, status
+from fastapi import APIRouter, Body, Depends, Query, status, HTTPException
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.api.dependencies import get_current_user, get_db
@@ -34,6 +34,10 @@ async def create_meal(
         index=meal_index
     )
     meal_id = await save_meal(db, meal.model_dump(exclude='id'))
+
+    if not meal_id:
+        raise HTTPException(status_code=400, detail="Meal already exists")
+
     if meal_in.save_meal:
         await add_meal(db, meal.name, user.id)
     return MealOut(id=meal_id, name=meal.name, datetime=meal_datetime)
@@ -129,6 +133,7 @@ async def add_food(
     user: User = Depends(get_current_user),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ) -> FoodItem:
+    print(food_in)
     food_out: FoodItem = await add_new_food(db, user.id, meal_id, FoodWeight(**food_in.model_dump()))
     return food_out
 
