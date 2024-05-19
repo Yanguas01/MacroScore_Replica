@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_marginVertical="24dp"
             android:fontFamily="@font/montserrat"
-            android:text="Bienvenido de nuevo"
+            android:text="@string/title_login"
             android:textColor="@color/secondaryDark"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -70,7 +70,7 @@
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="16dp"
             android:fontFamily="@font/montserrat"
-            android:text="Mantener la sesión inciada"
+            android:text="@string/keep_logged_in"
             android:textColor="@color/secondaryDark"
             app:buttonTint="@color/secondaryDark" />
 
@@ -105,7 +105,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:text="o bien"
+                android:text="@string/or"
                 android:textColor="@color/secondaryDark"
                 android:textSize="16sp" />
 
@@ -126,7 +126,7 @@
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="16dp"
             android:fontFamily="@font/montserrat"
-            android:text="¿No tienes cuenta? Regístrate aquí"
+            android:text="@string/doesnt_alredy_signed_on"
             android:textAllCaps="true"
             android:textColor="@color/secondaryDark"
             android:textStyle="bold"

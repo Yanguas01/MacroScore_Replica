@@ -1,5 +1,6 @@
 package es.upm.macroscore.presentation.home.feed
 
+import android.icu.util.Calendar
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,6 +42,14 @@ class FeedViewModel @Inject constructor(
 
     private val _closeDialogEvent = MutableSharedFlow<Unit>(replay = 0)
     val isReadyToDismiss: SharedFlow<Unit> = _closeDialogEvent
+
+    private val _currentDay = MutableStateFlow<Long?>(null)
+    val currentDay: StateFlow<Long?> = _currentDay
+
+    init {
+        _currentDay.value = Calendar.getInstance().time.time
+
+    }
 
     fun setCurrentMealName(name: String) {
         _currentMealName.value = name

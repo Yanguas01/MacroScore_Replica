@@ -33,7 +33,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun initEditButtons() {
-        binding.buttonEditUsername.setOnClickListener {initBottomSheet(TextInputLayoutInfo.Username) }
+        binding.buttonEditUsername.setOnClickListener { initBottomSheet(TextInputLayoutInfo.Username) }
         binding.buttonEditEmail.setOnClickListener { initBottomSheet(TextInputLayoutInfo.Email) }
         binding.buttonEditGender.setOnClickListener { }
         binding.buttonEditPhysicalActivityLevel.setOnClickListener { }
@@ -43,14 +43,17 @@ class ProfileFragment : Fragment() {
     }
 
     private fun initBottomSheet(textInputLayoutInfo: TextInputLayoutInfo) {
-        val bottomSheet = EditBottomSheet.Builder()
+        val bottomSheet = EditBottomSheet.Builder(requireActivity().supportFragmentManager)
             .setTitle(requireContext().getString(R.string.title_edit_profile, requireContext().getString(textInputLayoutInfo.hint)))
             .setInputType(textInputLayoutInfo.inputType)
             .setHint(textInputLayoutInfo.hint)
-            .setOnAcceptAction {  } // TODO Cambiar
-            .setOnCancelAction {  } // TODO Cambiar
-            .build()
+            .setOnAcceptAction { bottomSheet ->
+                bottomSheet.dismiss() // TODO Cambiar
+            }
+            .setOnCancelAction { bottomSheet ->
+                bottomSheet.dismiss() // TODO Cambiar
+            }
+            .show()
 
-        bottomSheet.show(requireActivity().supportFragmentManager, "bottom_sheet")
     }
 }

@@ -2,11 +2,11 @@ package es.upm.macroscore.presentation
 
 import android.graphics.drawable.Animatable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import es.upm.macroscore.databinding.FragmentBottomSheetEditProfileBinding
 
@@ -17,50 +17,33 @@ class EditBottomSheet : BottomSheetDialogFragment() {
 
     var onAcceptWithResponse: ((() -> Unit) -> Unit)? = null
 
-    private var onAcceptAction: (() -> Unit)? = null
-    private var onCancelAction: (() -> Unit)? = null
+    private var onAcceptAction: ((bottomSheet: EditBottomSheet) -> Unit)? = null
+    private var onCancelAction: ((bottomSheet: EditBottomSheet) -> Unit)? = null
 
-    class Builder {
-        private var title: String? = null
-        private var text: String? = null
-        private var inputType: Int? = null
-        private var hint: Int? = null
-        private var startIcon: Int? = null
-        private var endIcon: Int? = null
-        private var prefix: String? = null
-        private var suffix: String? = null
-        private var onAcceptAction: (() -> Unit)? = null
-        private var onCancelAction: (() -> Unit)? = null
+    class Builder(private val fragmentManager: FragmentManager) {
+        private val bottomSheet = EditBottomSheet()
+        private val args = Bundle()
 
-        fun setTitle(title: String) = apply { this.title = title }
-        fun setText(text: String?) = apply { this.text = text }
-        fun setInputType(inputType: Int) = apply { this.inputType = inputType }
-        fun setHint(hint: Int) = apply { this.hint = hint }
-        fun setStartIcon(startIcon: Int) = apply { this.startIcon = startIcon }
-        fun setEndIcon(endIcon: Int) = apply { this.endIcon = endIcon }
-        fun setPrefix(prefix: String) = apply { this.prefix = prefix }
-        fun setSuffix(suffix: String) = apply { this.suffix = suffix }
-        fun setOnAcceptAction(action: () -> Unit) = apply { this.onAcceptAction = action }
-        fun setOnCancelAction(action: () -> Unit) = apply { this.onCancelAction = action }
+        fun setTitle(title: String) = apply { args.putString("title", title) }
+        fun setText(text: String?) = apply { args.putString("text", text) }
+        fun setInputType(inputType: Int) = apply { args.putInt("inputType", inputType) }
+        fun setHint(hint: Int) = apply { args.putInt("hint", hint) }
+        fun setStartIcon(startIcon: Int) = apply { args.putInt("startIcon", startIcon) }
+        fun setEndIcon(endIcon: Int) = apply { args.putInt("endIcon", endIcon) }
+        fun setPrefix(prefix: String) = apply { args.putString("prefix", prefix) }
+        fun setSuffix(suffix: String) = apply { args.putString("suffix", suffix) }
+        fun setOnAcceptAction(action: (bottomSheet: EditBottomSheet) -> Unit) = apply { bottomSheet.onAcceptAction = action }
+        fun setOnCancelAction(action: (bottomSheet: EditBottomSheet) -> Unit) = apply { bottomSheet.onCancelAction = action }
 
-        fun build(): EditBottomSheet {
-            val fragment = EditBottomSheet()
-            fragment.arguments = Bundle().apply {
-                putString("title", title)
-                putString("text", text)
-                inputType?.let { putInt("inputType", it) }
-                hint?.let { putInt("hint", it) }
-                startIcon?.let {
-                    Log.d("hola mamawebaso", "hola mamawebaso")
-                    putInt("startIcon", it)
-                }
-                endIcon?.let { putInt("endIcon", it) }
-                putString("pefix", prefix)
-                putString("suffix", suffix)
-            }
-            fragment.onAcceptAction = this.onAcceptAction
-            fragment.onCancelAction = this.onCancelAction
-            return fragment
+        private fun build(): EditBottomSheet {
+            bottomSheet.arguments = args
+            return bottomSheet
+        }
+
+        fun show(): EditBottomSheet {
+            val sheet = build()
+            sheet.show(fragmentManager, EditBottomSheet::class.java.simpleName)
+            return sheet
         }
     }
 
@@ -124,12 +107,10 @@ class EditBottomSheet : BottomSheetDialogFragment() {
 
     private fun initButtons() {
         binding.buttonAccept.setOnClickListener {
-            onAcceptWithResponse?.invoke {
-                onAcceptAction?.invoke()
-            }
+            onAcceptAction?.invoke(this)
         }
         binding.buttonCancel.setOnClickListener {
-            onCancelAction?.invoke()
+            onCancelAction?.invoke(this)
         }
     }
 

@@ -1,5 +1,6 @@
 package es.upm.macroscore.presentation.auth.signup
 
+import android.graphics.drawable.Animatable
 import android.os.Bundle
 import android.transition.TransitionInflater
 import android.view.LayoutInflater
@@ -12,8 +13,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.textfield.TextInputLayout
+import com.google.android.material.textfield.TextInputLayout.EndIconMode
 import dagger.hilt.android.AndroidEntryPoint
 import es.upm.macroscore.R
+import es.upm.macroscore.core.extensions.onTextChanged
 import es.upm.macroscore.databinding.FragmentSignupBinding
 import es.upm.macroscore.presentation.auth.AuthViewModel
 import es.upm.macroscore.presentation.auth.AuthViewState
@@ -48,6 +52,7 @@ class SignupFragment : Fragment() {
 
     private fun initUI() {
         initUIState()
+        initTextFields()
         initButtons()
     }
 
@@ -58,6 +63,12 @@ class SignupFragment : Fragment() {
                     setFieldsErrors(authViewState)
                 }
             }
+        }
+    }
+
+    private fun initTextFields() {
+        binding.editTextEmail.onTextChanged { text ->
+            viewModel.validateEmail(text)
         }
     }
 

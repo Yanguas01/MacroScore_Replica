@@ -17,7 +17,7 @@ class StatisticsViewModel @Inject constructor(): ViewModel() {
     private var calendar = Calendar.getInstance()
 
     private val _weekNumber = MutableStateFlow<Pair<Int, Int>?>(null)
-    val weekNumber: MutableStateFlow<Pair<Int, Int>?> = _weekNumber
+    val weekNumber: StateFlow<Pair<Int, Int>?> = _weekNumber
 
     private val _weekRange = MutableStateFlow<Pair<String, String>?>(null)
     val weekRange: StateFlow<Pair<String, String>?> = _weekRange

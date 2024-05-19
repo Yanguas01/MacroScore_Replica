@@ -1,16 +1,12 @@
 package es.upm.macroscore.presentation.home.feed
 
 import android.graphics.Canvas
-import android.opengl.Visibility
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.view.isNotEmpty
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -20,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import es.upm.macroscore.R
 import es.upm.macroscore.databinding.FragmentFeedBinding
@@ -76,36 +73,33 @@ class FeedFragment : Fragment() {
                 override fun isLongPressDragEnabled(): Boolean = false
 
                 override fun onSelectedChanged(
-                    viewHolder: RecyclerView.ViewHolder?,
-                    actionState: Int
+                    viewHolder: RecyclerView.ViewHolder?, actionState: Int
                 ) {
                     super.onSelectedChanged(viewHolder, actionState)
                     if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
                         viewHolder?.itemView?.let { itemView ->
-                            itemView.animate()
-                                .scaleX(1.05f)
-                                .scaleY(1.05f)
-                                .translationZ(10f)
-                                .duration = 150
+                            itemView.animate().scaleX(1.05f).scaleY(1.05f)
+                                .translationZ(10f).duration = 150
                         }
                     }
                 }
 
                 override fun clearView(
-                    recyclerView: RecyclerView,
-                    viewHolder: RecyclerView.ViewHolder
+                    recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder
                 ) {
                     super.clearView(recyclerView, viewHolder)
-                    viewHolder.itemView.animate()
-                        .scaleX(1.0f)
-                        .scaleY(1.0f)
-                        .translationZ(0f)
-                        .duration = 150
+                    viewHolder.itemView.animate().scaleX(1.0f).scaleY(1.0f)
+                        .translationZ(0f).duration = 150
                 }
 
                 override fun onChildDraw(
-                    c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
-                    dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean
+                    c: Canvas,
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    dX: Float,
+                    dY: Float,
+                    actionState: Int,
+                    isCurrentlyActive: Boolean
                 ) {
                     if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
                         val itemView = viewHolder.itemView
@@ -113,13 +107,7 @@ class FeedFragment : Fragment() {
                         itemView.translationY = dY
                     } else {
                         super.onChildDraw(
-                            c,
-                            recyclerView,
-                            viewHolder,
-                            dX,
-                            dY,
-                            actionState,
-                            isCurrentlyActive
+                            c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive
                         )
                     }
                 }
@@ -130,19 +118,15 @@ class FeedFragment : Fragment() {
     }
 
     private fun initRecyclerView() {
-        feedAdapter = FeedAdapter(
-            touchHelper = itemTouchHelper,
-            onEditMeal = {
-                onEditMeal(it)
-            },
-            onDeleteMeal = {
-                onDeleteMeal(it)
-            },
-            addFood = {
-                findNavController().navigate(
-                    FeedFragmentDirections.actionFeedFragmentToFoodDialogFragment(it)
-                )
-            })
+        feedAdapter = FeedAdapter(touchHelper = itemTouchHelper, onEditMeal = {
+            onEditMeal(it)
+        }, onDeleteMeal = {
+            onDeleteMeal(it)
+        }, addFood = {
+            findNavController().navigate(
+                FeedFragmentDirections.actionFeedFragmentToFoodDialogFragment(it)
+            )
+        })
         binding.recyclerViewFeed.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = feedAdapter
@@ -152,50 +136,41 @@ class FeedFragment : Fragment() {
     private fun onEditMeal(position: Int) {
         val meal = mealList[position]
 
-        val bottomSheet = EditBottomSheet.Builder()
-            .setTitle("Cambiar Nombre")
-            .setHint(R.string.meal_name)
-            .setInputType(InputType.TYPE_CLASS_TEXT)
-            .setEndIcon(R.drawable.ic_animated_loading)
-            .setText(meal.name)
-            .setOnAcceptAction {
-                simularLlamadaBackend {
-                    Toast.makeText(requireContext(), "Aceptar", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .setOnCancelAction {
-                Toast.makeText(requireContext(), "Cancelar", Toast.LENGTH_SHORT).show()
-            }.build()
-
-        bottomSheet.onAcceptWithResponse = { onResponseComplete ->
-            bottomSheet.startEndIconAnimation()
-
-            simularLlamadaBackend {
-                bottomSheet.stopEndIconAnimation()
-                onResponseComplete()
-            }
-        }
-
-        bottomSheet.show(requireActivity().supportFragmentManager, "bottom_sheet")
-    }
-
-    private fun simularLlamadaBackend(onComplete: () -> Unit) {
-        Handler(Looper.getMainLooper()).postDelayed({
-            onComplete()
-        }, 2000)
+        val bottomSheet = EditBottomSheet.Builder(requireActivity().supportFragmentManager)
+            .setTitle("Cambiar Nombre").setHint(R.string.meal_name)
+            .setInputType(InputType.TYPE_CLASS_TEXT).setEndIcon(R.drawable.ic_animated_loading)
+            .setText(meal.name).setOnAcceptAction { bottomSheet ->
+                bottomSheet.dismiss()
+            }.setOnCancelAction { bottomSheet ->
+                bottomSheet.dismiss()
+            }.show()
     }
 
     private fun onDeleteMeal(position: Int) {
-
+        MaterialAlertDialogBuilder(requireContext()).setTitle("¿Estás seguro de que quieres eliminar la comida?")
+            .setIcon(ResourcesCompat.getDrawable(resources, R.drawable.ic_alert, null))
+            .setMessage("Si lo eliminas, tendrás que volver a crearlo.")
+            .setNegativeButton("Cancelar") { dialog, which ->
+                dialog.dismiss()
+            }.setPositiveButton("Aceptar") { dialog, which ->
+                dialog.dismiss()
+            }.show()
     }
 
     private fun initUIState() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.mealList.collect {
-                    mealList = it
-                    feedAdapter.updateList(it)
-                    updateHint()
+                launch {
+                    viewModel.mealList.collect {
+                        mealList = it
+                        feedAdapter.updateList(it)
+                        updateHint()
+                    }
+                }
+                launch {
+                    viewModel.currentDay.collect {
+
+                    }
                 }
             }
         }
@@ -207,8 +182,7 @@ class FeedFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFeedBinding.inflate(layoutInflater, container, false)
         return binding.root

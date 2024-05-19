@@ -2,12 +2,16 @@ package es.upm.macroscore.presentation.auth
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import es.upm.macroscore.R
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,6 +21,8 @@ class AuthViewModel @Inject constructor(
 
     private var _authViewState = MutableStateFlow(AuthViewState())
     val authViewState: StateFlow<AuthViewState> = _authViewState
+
+    private var emailJob: Job? = null
 
     fun isAbleToNav(
         username: String = "",
@@ -61,14 +67,27 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    private fun validateEmail(email: String) {
-        _authViewState.update {
-            it.copy(
-                emailError = if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email.trimEnd())
-                        .matches()
-                ) "Dirección de correo electrónico inválido" else null
-            )
+    fun validateEmail(email: String) {
+        emailJob?.cancelChildren()
+
+        if (isValidEmail(email.trimEnd())) {
+            emailJob = viewModelScope.launch {
+
+            }
         }
+    }
+
+    private fun isValidEmail(trimmedEmail: String): Boolean {
+        var emailError: String? = null
+        _authViewState.update {
+            emailError = when {
+                trimmedEmail.isEmpty() -> "La dirección de correo electrónico no puede estar vacía"
+                !android.util.Patterns.EMAIL_ADDRESS.matcher(trimmedEmail).matches() -> "Dirección de correo electrónico inválido"
+                else -> null
+            }
+            it.copy(emailError = emailError)
+        }
+        return emailError == null
     }
 
     private fun validatePassword(password: String) {

@@ -1,5 +1,7 @@
 package es.upm.macroscore.presentation.auth
 
+import es.upm.macroscore.data.network.response.signup.CheckEmailResponse
+
 data class AuthViewState(
     var usernameError: String? = null,
     var emailError: String? = null,
@@ -30,8 +32,13 @@ data class AuthViewState(
                 ageError == null &&
                 physicalActivityLevelError == null
     }
-
 }
 
+sealed class EmailState {
+    object Idle: EmailState()
+    object Loading: EmailState()
+    object Invalid: EmailState()
+    data class Succes(val response: CheckEmailResponse)
+}
 
 

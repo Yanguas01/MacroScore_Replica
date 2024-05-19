@@ -54,23 +54,30 @@
     <string name="physical_job">Actividad física muy intensa</string>
 
     <!-- Signup Fragment -->
+    <string name="signup_title">Regístrate para continuar</string>
     <string name="username">Nombre de usuario</string>
     <string name="email">Correo electrónico</string>
     <string name="password">Contraseña</string>
     <string name="repeat_password">Repita contraseña</string>
     <string name="next">Continuar</string>
+    <string name="or">o bien</string>
+    <string name="already_sign_on">¿Ya tienes una cuenta? Inicia sesión</string>
+
+    <!-- Login Fragment -->
+    <string name="title_login">Bienvenido de nuevo</string>
+    <string name="keep_logged_in">Mantener la sesión inciada</string>
+    <string name="login">iniciar sesión</string>
+    <string name="doesnt_alredy_signed_on">¿No tienes cuenta? Regístrate aquí</string>
+
+    <!-- Profile Form Fragment -->
+    <string name="profile_form_title">Completa tu perfil para continuar</string>
     <string name="gender">Género</string>
     <string name="physical_activity_level">Nivel de actividad física</string>
     <string name="height">Altura (cm)</string>
     <string name="weight">Peso (kg)</string>
     <string name="age">Edad</string>
-    <string name="finish">Finalizar</string>
-
-    <!-- Login Fragment -->
-
-
-    <!-- Profile Form Fragment -->
-
+    <string name="sign_on">Registrarme</string>
+    <string name="go_back">Atrás</string>
 
     <!-- Statistics Fragment -->
     <string name="week_number">Semana %1$d de %2$d</string>
@@ -80,7 +87,6 @@
     <string name="carbs_summarize">%.2fg/%2.fg\nCarbohidratos</string>
     <string name="prots_summarize">%.2fg/%2.fg\nProteínas</string>
     <string name="fats_summarize">%.2fg/%2.fg\nGrasas</string>
-    <string name="login">iniciar sesión</string>
 
     <!-- Profile Fragment -->
 
@@ -92,6 +98,5 @@
     <string name="grams">gramos</string>
     <string name="edit">Editar</string>
     <string name="delete">Borrar</string>
-
 
 </resources>
