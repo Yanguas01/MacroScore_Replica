@@ -3,6 +3,7 @@ package es.upm.macroscore.data.network
 import es.upm.macroscore.data.network.request.signup.SignUpRequest
 import es.upm.macroscore.data.network.response.signup.CheckEmailResponse
 import es.upm.macroscore.data.network.response.mealByDate.MealByDateResponse
+import es.upm.macroscore.data.network.response.signup.CheckUsernameResponse
 import es.upm.macroscore.data.network.response.signup.SignUpResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -16,6 +17,9 @@ interface MacroScoreApiService {
 
     @GET("/check-email")
     suspend fun checkEmail(@Query("email") email: String): Response<CheckEmailResponse>
+
+    @GET("/check-username")
+    suspend fun checkUsername(@Query("email") username: String): Response<CheckUsernameResponse>
 
     @POST("/signup")
     suspend fun createNewUser(@Body signUpRequest: SignUpRequest): Response<SignUpResponse>

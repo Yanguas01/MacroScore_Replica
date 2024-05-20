@@ -1,13 +1,15 @@
 package es.upm.macroscore.presentation.auth
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import es.upm.macroscore.R
+import es.upm.macroscore.domain.usecase.CheckEmailUseCase
+import es.upm.macroscore.domain.usecase.CheckUsernameUseCase
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -16,12 +18,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
+    val checkUsernameUseCase: CheckUsernameUseCase,
+    val checkEmailUseCase: CheckEmailUseCase,
     @ApplicationContext val context: Context
 ) : ViewModel() {
 
     private var _authViewState = MutableStateFlow(AuthViewState())
     val authViewState: StateFlow<AuthViewState> = _authViewState
 
+    private var usernameJob: Job? = null
     private var emailJob: Job? = null
 
     fun isAbleToNav(
@@ -55,39 +60,76 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun validateUsername(username: String) {
+        usernameJob?.cancel()
         val trimmedUsername = username.trimEnd()
-        _authViewState.update {
-            val usernameError: String? = when {
-                trimmedUsername.isEmpty() -> "El nombre de usuario no puede estar vacío"
-                trimmedUsername.length > 14 -> "El nombre de usuario supera el máximo permitido"
-                !trimmedUsername.matches(Regex(("[a-z0-9]+"))) -> "El nombre de usuario solo debe contener letras en minúsculas y dígitos"
-                else -> null
+
+        val newState = when {
+            trimmedUsername.isEmpty() -> UsernameState.Invalid("El nombre de usuario no puede estar vacío")
+            trimmedUsername.length > 14 -> UsernameState.Invalid("El nombre de usuario supera el máximo de carácteres permitido")
+            !trimmedUsername.matches(Regex(("[a-z0-9]+"))) -> UsernameState.Invalid("El nombre de usuario solo puede contener letras en minúsculas y dígitos")
+            else -> {
+                usernameJob = viewModelScope.launch {
+                    _authViewState.update { it.copy(usernameState = UsernameState.Loading) }
+                    checkUsernameUseCase(trimmedUsername)
+                        .onSuccess { status ->
+                            _authViewState.update { it.copy(usernameState = UsernameState.Success(status.isAvailable)) }
+                        }
+                        .onFailure { exception ->
+                            _authViewState.update {
+                                it.copy(
+                                    usernameState = UsernameState.Error(
+                                        exception.message ?: "Unknown Error"
+                                    )
+                                )
+                            }
+                        }
+                }
+                UsernameState.Loading
             }
-            it.copy(usernameError = usernameError)
         }
+        _authViewState.update { it.copy(usernameState = newState) }
     }
 
     fun validateEmail(email: String) {
-        emailJob?.cancelChildren()
+        emailJob?.cancel()
+        val trimmedEmail = email.trimEnd()
 
-        if (isValidEmail(email.trimEnd())) {
-            emailJob = viewModelScope.launch {
+        val newState = when {
+            trimmedEmail.isEmpty() -> {
+                EmailState.Invalid("La dirección de correo electrónico no puede estar vacía")
+            }
 
+            isValidEmail(trimmedEmail) -> {
+                Log.d("Soy gay", "Muy gay")
+                emailJob = viewModelScope.launch {
+                    _authViewState.update { it.copy(emailState = EmailState.Loading) }
+                    checkEmailUseCase(trimmedEmail)
+                        .onSuccess { status ->
+                            _authViewState.update { it.copy(emailState = EmailState.Success(status.isAvailable)) }
+                        }
+                        .onFailure { exception ->
+                            _authViewState.update {
+                                it.copy(
+                                    emailState = EmailState.Error(
+                                        exception.message ?: "Unknown Error"
+                                    )
+                                )
+                            }
+                        }
+                }
+                EmailState.Loading
+            }
+
+            else -> {
+                EmailState.Invalid("La dirección de correo electrónico no es válida")
             }
         }
+
+        _authViewState.update { it.copy(emailState = newState) }
     }
 
-    private fun isValidEmail(trimmedEmail: String): Boolean {
-        var emailError: String? = null
-        _authViewState.update {
-            emailError = when {
-                trimmedEmail.isEmpty() -> "La dirección de correo electrónico no puede estar vacía"
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(trimmedEmail).matches() -> "Dirección de correo electrónico inválido"
-                else -> null
-            }
-            it.copy(emailError = emailError)
-        }
-        return emailError == null
+    private fun isValidEmail(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     private fun validatePassword(password: String) {

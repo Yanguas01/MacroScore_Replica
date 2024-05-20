@@ -3,6 +3,7 @@ package es.upm.macroscore.presentation.auth.signup
 import android.graphics.drawable.Animatable
 import android.os.Bundle
 import android.transition.TransitionInflater
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +22,7 @@ import es.upm.macroscore.core.extensions.onTextChanged
 import es.upm.macroscore.databinding.FragmentSignupBinding
 import es.upm.macroscore.presentation.auth.AuthViewModel
 import es.upm.macroscore.presentation.auth.AuthViewState
+import es.upm.macroscore.presentation.auth.EmailState
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -60,7 +62,7 @@ class SignupFragment : Fragment() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.authViewState.collect { authViewState ->
-                    setFieldsErrors(authViewState)
+                    setFieldsStates(authViewState)
                 }
             }
         }
@@ -72,15 +74,37 @@ class SignupFragment : Fragment() {
         }
     }
 
-    private fun setFieldsErrors(authViewState: AuthViewState) {
-        binding.textInputLayoutUsername.error =
-            if (authViewState.usernameError != null) authViewState.usernameError else null
-        binding.textInputLayoutEmail.error =
-            if (authViewState.emailError != null) authViewState.emailError else null
+    private fun setFieldsStates(authViewState: AuthViewState) {
+        setEmailState(authViewState.emailState)
+
         binding.textInputLayoutPassword.error =
             if (authViewState.passwordError != null) authViewState.passwordError else null
         binding.textInputLayoutRepeatedPassword.error =
             if (authViewState.passwordConfirmedError != null) authViewState.passwordConfirmedError else null
+    }
+
+    private fun setEmailState(state: EmailState) {
+        when (state) {
+            is EmailState.Idle -> {
+                Log.d("HOLA", "HOLA00")
+                binding.textInputLayoutEmail.endIconMode = TextInputLayout.END_ICON_NONE
+                (binding.textInputLayoutEmail.endIconDrawable as? Animatable)?.stop()
+            }
+            is EmailState.Loading -> {
+                Log.d("HOLA", "HOLA0")
+                binding.textInputLayoutEmail.endIconMode = TextInputLayout.END_ICON_CUSTOM
+                (binding.textInputLayoutEmail.endIconDrawable as? Animatable)?.start()
+            }
+            is EmailState.Invalid -> {
+                Log.d("HOLA", "HOLA1")
+                binding.textInputLayoutEmail.error = state.message
+            }
+            is EmailState.Success -> Log.d("HOLA", "HOLA2")
+            is EmailState.Error -> {
+                Log.d("HOLA", state.message)
+                binding.textInputLayoutEmail.error = state.message
+            }
+        }
     }
 
     private fun initButtons() {

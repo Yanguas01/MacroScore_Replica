@@ -1,10 +1,10 @@
 package es.upm.macroscore.presentation.auth
 
-import es.upm.macroscore.data.network.response.signup.CheckEmailResponse
+import es.upm.macroscore.domain.model.UsernameStatus
 
 data class AuthViewState(
-    var usernameError: String? = null,
-    var emailError: String? = null,
+    var usernameState: UsernameState = UsernameState.Idle,
+    var emailState: EmailState = EmailState.Idle,
     var passwordError: String? = null,
     var passwordConfirmedError: String? = null,
     var genderError: String? = null,
@@ -15,15 +15,15 @@ data class AuthViewState(
 ) {
 
     fun isFirstFragmentValid(): Boolean {
-        return usernameError == null &&
-                emailError == null &&
+        return usernameState == UsernameState.Success(true) &&
+                emailState == EmailState.Success(true) &&
                 passwordError == null &&
                 passwordConfirmedError == null
     }
 
     fun isValidState(): Boolean {
-        return usernameError == null &&
-                emailError == null &&
+        return usernameState == UsernameState.Success(true) &&
+                emailState == EmailState.Success(true) &&
                 passwordError == null &&
                 passwordConfirmedError == null &&
                 genderError == null &&
@@ -35,10 +35,19 @@ data class AuthViewState(
 }
 
 sealed class EmailState {
-    object Idle: EmailState()
-    object Loading: EmailState()
-    object Invalid: EmailState()
-    data class Succes(val response: CheckEmailResponse)
+    data object Idle: EmailState()
+    data object Loading: EmailState()
+    data class Invalid(val message: String): EmailState()
+    data class Success(val status: Boolean) : EmailState()
+    data class Error(val message: String) : EmailState()
+}
+
+sealed class UsernameState {
+    data object Idle: UsernameState()
+    data object Loading: UsernameState()
+    data class Invalid(val message: String): UsernameState()
+    data class Success(val status: Boolean) : UsernameState()
+    data class Error(val message: String) : UsernameState()
 }
 
 
