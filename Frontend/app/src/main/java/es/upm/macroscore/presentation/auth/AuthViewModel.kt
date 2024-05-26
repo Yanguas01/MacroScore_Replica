@@ -9,17 +9,24 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import es.upm.macroscore.R
 import es.upm.macroscore.domain.usecase.CheckEmailUseCase
 import es.upm.macroscore.domain.usecase.CheckUsernameUseCase
+import es.upm.macroscore.domain.usecase.RegisterUserUseCase
+import es.upm.macroscore.presentation.states.NoValidationState
+import es.upm.macroscore.presentation.states.OnlineValidationState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     val checkUsernameUseCase: CheckUsernameUseCase,
     val checkEmailUseCase: CheckEmailUseCase,
+    val registerUserUseCase: RegisterUserUseCase,
     @ApplicationContext val context: Context
 ) : ViewModel() {
 
@@ -29,62 +36,75 @@ class AuthViewModel @Inject constructor(
     private var usernameJob: Job? = null
     private var emailJob: Job? = null
 
-    fun isAbleToNav(
-        username: String = "",
-        email: String = "",
-        password: String = "",
-        confirmedPassword: String = ""
-    ): Boolean {
-        validateUsername(username.trimEnd())
-        validateEmail(email.trimEnd())
-        validatePassword(password)
-        validateConfirmedPassword(password, confirmedPassword)
-
+    fun isAbleToNav(): Boolean {
         return _authViewState.value.isFirstFragmentValid()
     }
 
-    fun isAbleToSignUp(
-        gender: String = "",
-        physicalActivityLevel: String = "",
-        height: String = "",
-        weight: String = "",
-        age: String = ""
-    ): Boolean {
-        validateGender(gender)
-        validatePhysicalActivityLevel(physicalActivityLevel)
-        validateHeight(height)
-        validateWeight(weight)
-        validateAge(age)
-
+    fun isAbleToSignUp(): Boolean {
         return _authViewState.value.isValidState()
     }
 
-    private fun validateUsername(username: String) {
+    fun validateUsername(username: String) {
         usernameJob?.cancel()
         val trimmedUsername = username.trimEnd()
 
         val newState = when {
-            trimmedUsername.isEmpty() -> UsernameState.Invalid("El nombre de usuario no puede estar vacío")
-            trimmedUsername.length > 14 -> UsernameState.Invalid("El nombre de usuario supera el máximo de carácteres permitido")
-            !trimmedUsername.matches(Regex(("[a-z0-9]+"))) -> UsernameState.Invalid("El nombre de usuario solo puede contener letras en minúsculas y dígitos")
+            trimmedUsername.isEmpty() -> OnlineValidationState.Invalid("El nombre de usuario no puede estar vacío")
+            trimmedUsername.length > 14 -> OnlineValidationState.Invalid("El nombre de usuario supera el máximo de carácteres permitido")
+            !trimmedUsername.matches(Regex(("[a-z0-9]+"))) -> OnlineValidationState.Invalid("El nombre de usuario solo puede contener letras en minúsculas y dígitos")
             else -> {
                 usernameJob = viewModelScope.launch {
-                    _authViewState.update { it.copy(usernameState = UsernameState.Loading) }
+                    _authViewState.update { it.copy(usernameState = OnlineValidationState.Loading) }
                     checkUsernameUseCase(trimmedUsername)
                         .onSuccess { status ->
-                            _authViewState.update { it.copy(usernameState = UsernameState.Success(status.isAvailable)) }
-                        }
-                        .onFailure { exception ->
+                            Log.d("AuthViewModel", status.isAvailable.toString())
                             _authViewState.update {
                                 it.copy(
-                                    usernameState = UsernameState.Error(
-                                        exception.message ?: "Unknown Error"
+                                    usernameState = OnlineValidationState.Success(
+                                        status.isAvailable
                                     )
                                 )
                             }
                         }
+                        .onFailure { exception ->
+                            when (exception) {
+                                is IOException -> {
+                                    _authViewState.update {
+                                        it.copy(
+                                            usernameState = OnlineValidationState.Error(
+                                                "Error de red: ${exception.message}"
+                                            )
+                                        )
+                                    }
+                                }
+
+                                is HttpException -> {
+                                    _authViewState.update {
+                                        it.copy(
+                                            usernameState = OnlineValidationState.Error(
+                                                "Error HTTP: ${exception.message}"
+                                            )
+                                        )
+                                    }
+                                }
+
+                                is CancellationException -> {
+                                    Log.e("AuthViewModel", "Username job cancelado")
+                                }
+
+                                else -> {
+                                    _authViewState.update {
+                                        it.copy(
+                                            usernameState = OnlineValidationState.Error(
+                                                exception.message ?: "Unknown Error"
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
                 }
-                UsernameState.Loading
+                OnlineValidationState.Loading
             }
         }
         _authViewState.update { it.copy(usernameState = newState) }
@@ -96,120 +116,130 @@ class AuthViewModel @Inject constructor(
 
         val newState = when {
             trimmedEmail.isEmpty() -> {
-                EmailState.Invalid("La dirección de correo electrónico no puede estar vacía")
+                OnlineValidationState.Invalid("La dirección de correo electrónico no puede estar vacía")
             }
 
-            isValidEmail(trimmedEmail) -> {
-                Log.d("Soy gay", "Muy gay")
+            android.util.Patterns.EMAIL_ADDRESS.matcher(trimmedEmail).matches() -> {
                 emailJob = viewModelScope.launch {
-                    _authViewState.update { it.copy(emailState = EmailState.Loading) }
+                    _authViewState.update { it.copy(emailState = OnlineValidationState.Loading) }
                     checkEmailUseCase(trimmedEmail)
                         .onSuccess { status ->
-                            _authViewState.update { it.copy(emailState = EmailState.Success(status.isAvailable)) }
-                        }
-                        .onFailure { exception ->
                             _authViewState.update {
                                 it.copy(
-                                    emailState = EmailState.Error(
-                                        exception.message ?: "Unknown Error"
+                                    emailState = OnlineValidationState.Success(
+                                        status.isAvailable
                                     )
                                 )
                             }
                         }
+                        .onFailure { exception ->
+                            when (exception) {
+                                is IOException -> {
+                                    _authViewState.update {
+                                        it.copy(
+                                            emailState = OnlineValidationState.Error(
+                                                "Error de red: ${exception.message}"
+                                            )
+                                        )
+                                    }
+                                }
+
+                                is HttpException -> {
+                                    _authViewState.update {
+                                        it.copy(
+                                            emailState = OnlineValidationState.Error(
+                                                "Error HTTP: ${exception.message}"
+                                            )
+                                        )
+                                    }
+                                }
+
+                                is CancellationException -> {
+                                    Log.e("AuthViewModel", "Username job cancelado")
+                                }
+
+                                else -> {
+                                    _authViewState.update {
+                                        it.copy(
+                                            emailState = OnlineValidationState.Error(
+                                                exception.message ?: "Unknown Error"
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
                 }
-                EmailState.Loading
+                OnlineValidationState.Loading
             }
 
             else -> {
-                EmailState.Invalid("La dirección de correo electrónico no es válida")
+                OnlineValidationState.Invalid("La dirección de correo electrónico no es válida")
             }
         }
 
         _authViewState.update { it.copy(emailState = newState) }
     }
 
-    private fun isValidEmail(email: String): Boolean {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    fun validatePassword(password: String) {
+        val newState = if (password.length < 8)
+            NoValidationState.Invalid("La contraseña es demasiado corta") else NoValidationState.Valid
+        _authViewState.update { it.copy(passwordState = newState) }
     }
 
-    private fun validatePassword(password: String) {
-        _authViewState.update {
-            it.copy(passwordError = if (password.length < 8) "La contraseña debe tener por lo menos 8 caracteres" else null)
-        }
+    fun validateRepeatedPassword(password: String, repeatedPassword: String) {
+        val newState = if (password != repeatedPassword)
+            NoValidationState.Invalid("Las contraseñas no coinciden") else NoValidationState.Valid
+        _authViewState.update { it.copy(repeatedPasswordState = newState) }
     }
 
-    private fun validateConfirmedPassword(password: String, confirmedPassword: String) {
-        _authViewState.update {
-            it.copy(passwordConfirmedError = if (password != confirmedPassword) "Las contraseñas no coinciden" else null)
-        }
+    fun validateGender(gender: String) {
+        val newState =
+            if (gender !in context.resources.getStringArray(R.array.gender)) NoValidationState.Invalid(
+                "El género no es válido"
+            ) else NoValidationState.Valid
+        _authViewState.update { it.copy(genderState = newState) }
     }
 
-    private fun validateGender(gender: String) {
-        _authViewState.update {
-            it.copy(
-                genderError = if (
-                    gender.isEmpty() &&
-                    gender != context.getString(R.string.male) &&
-                    gender != context.getString(R.string.female)
-                ) "Escoja un género válido" else null
-            )
-        }
+    fun validatePhysicalActivityLevel(physicalActivityLevel: String) {
+        val newState =
+            if (physicalActivityLevel !in context.resources.getStringArray(R.array.physical_activity_level)) NoValidationState.Invalid(
+                "La actividad física no es válida"
+            ) else NoValidationState.Valid
+        _authViewState.update { it.copy(genderState = newState) }
     }
 
-    private fun validatePhysicalActivityLevel(physicalActivityLevel: String) {
-        _authViewState.update {
-            it.copy(
-                physicalActivityLevelError = if (
-                    physicalActivityLevel.isEmpty() &&
-                    physicalActivityLevel != context.getString(R.string.sedentary) &&
-                    physicalActivityLevel != context.getString(R.string.light_exercise) &&
-                    physicalActivityLevel != context.getString(R.string.moderate_exercise) &&
-                    physicalActivityLevel != context.getString(R.string.hard_exercise) &&
-                    physicalActivityLevel != context.getString(R.string.physical_job)
-                ) "Escoja un nivel de actividad válido" else null
-            )
-        }
-    }
-
-    private fun validateHeight(height: String) {
-        val heightError: String? = try {
-            when (height.toInt()) {
-                in 100..300 -> null
-                else -> "Introduzca un altura válida"
-            }
+    fun validateHeight(height: String) {
+        val newState = try {
+            if (height.toInt() in 50..300) NoValidationState.Valid else
+                NoValidationState.Invalid("Introduzca una altura válida")
         } catch (e: NumberFormatException) {
-            "Rellene el campo de altura"
+            NoValidationState.Invalid("Introduzca una altura válida")
         }
-        _authViewState.update {
-            it.copy(heightError = heightError)
-        }
+        _authViewState.update { it.copy(heightState = newState) }
     }
 
-    private fun validateWeight(weight: String) {
-        val weightError: String? = try {
-            when (weight.toInt()) {
-                in 20..400 -> null
-                else -> "Introduzca un peso válido"
-            }
+    fun validateWeight(weight: String) {
+        val newState = try {
+            if (weight.toInt() in 20..400) NoValidationState.Valid else
+                NoValidationState.Invalid("Introduzca un peso válido")
         } catch (e: NumberFormatException) {
-            "Rellene el campo de peso"
+            NoValidationState.Invalid("Introduzca un peso válido")
         }
-        _authViewState.update {
-            it.copy(weightError = weightError)
-        }
+        _authViewState.update { it.copy(heightState = newState) }
     }
 
-    private fun validateAge(age: String) {
-        val ageError: String? = try {
-            when (age.toInt()) {
-                in 0..150 -> null
-                else -> "Introduzca una edad válida"
-            }
+    fun validateAge(age: String) {
+        val newState = try {
+            if (age.toInt() in 0..150) NoValidationState.Valid else
+                NoValidationState.Invalid("Introduzca una edad válida")
         } catch (e: NumberFormatException) {
-            "Rellene el campo de edad"
+            NoValidationState.Invalid("Introduzca una edad válida")
         }
-        _authViewState.update {
-            it.copy(ageError = ageError)
-        }
+        _authViewState.update { it.copy(ageState = newState) }
+    }
+
+    fun signup() {
+
     }
 }

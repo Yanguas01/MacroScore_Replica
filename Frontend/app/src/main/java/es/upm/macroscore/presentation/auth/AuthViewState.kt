@@ -1,53 +1,36 @@
 package es.upm.macroscore.presentation.auth
 
-import es.upm.macroscore.domain.model.UsernameStatus
+import es.upm.macroscore.presentation.states.NoValidationState
+import es.upm.macroscore.presentation.states.OnlineValidationState
 
 data class AuthViewState(
-    var usernameState: UsernameState = UsernameState.Idle,
-    var emailState: EmailState = EmailState.Idle,
-    var passwordError: String? = null,
-    var passwordConfirmedError: String? = null,
-    var genderError: String? = null,
-    var heightError: String? = null,
-    var weightError: String? = null,
-    var ageError: String? = null,
-    var physicalActivityLevelError: String? = null
+    var usernameState: OnlineValidationState = OnlineValidationState.Idle,
+    var emailState: OnlineValidationState = OnlineValidationState.Idle,
+    var passwordState: NoValidationState = NoValidationState.Idle,
+    var repeatedPasswordState: NoValidationState = NoValidationState.Idle,
+    var genderState: NoValidationState = NoValidationState.Idle,
+    var heightState: NoValidationState = NoValidationState.Idle,
+    var weightState: NoValidationState = NoValidationState.Idle,
+    var ageState: NoValidationState = NoValidationState.Idle,
+    var physicalActivityLevelState: NoValidationState = NoValidationState.Idle
 ) {
 
     fun isFirstFragmentValid(): Boolean {
-        return usernameState == UsernameState.Success(true) &&
-                emailState == EmailState.Success(true) &&
-                passwordError == null &&
-                passwordConfirmedError == null
+        return usernameState == OnlineValidationState.Success(true) &&
+                emailState == OnlineValidationState.Success(true) &&
+                passwordState == NoValidationState.Valid &&
+                repeatedPasswordState == NoValidationState.Valid
     }
 
     fun isValidState(): Boolean {
-        return usernameState == UsernameState.Success(true) &&
-                emailState == EmailState.Success(true) &&
-                passwordError == null &&
-                passwordConfirmedError == null &&
-                genderError == null &&
-                heightError == null &&
-                weightError == null &&
-                ageError == null &&
-                physicalActivityLevelError == null
+        return usernameState == OnlineValidationState.Success(true) &&
+                emailState == OnlineValidationState.Success(true) &&
+                passwordState == NoValidationState.Valid &&
+                repeatedPasswordState == NoValidationState.Valid &&
+                genderState == NoValidationState.Valid &&
+                heightState == NoValidationState.Valid &&
+                weightState == NoValidationState.Valid &&
+                ageState == NoValidationState.Valid &&
+                physicalActivityLevelState == NoValidationState.Valid
     }
 }
-
-sealed class EmailState {
-    data object Idle: EmailState()
-    data object Loading: EmailState()
-    data class Invalid(val message: String): EmailState()
-    data class Success(val status: Boolean) : EmailState()
-    data class Error(val message: String) : EmailState()
-}
-
-sealed class UsernameState {
-    data object Idle: UsernameState()
-    data object Loading: UsernameState()
-    data class Invalid(val message: String): UsernameState()
-    data class Success(val status: Boolean) : UsernameState()
-    data class Error(val message: String) : UsernameState()
-}
-
-

@@ -95,8 +95,9 @@ async def update_user_by_id(
     user_data: dict
 ) -> User | None:
     try:
+        id: str = user_data.pop('id')
         user: dict = await db.get_collection('users').find_one_and_replace(
-            filter={'_id': ObjectId(user_data['id'])},
+            filter={'_id': ObjectId(id)},
             replacement=user_data,
             return_document=ReturnDocument.AFTER
         )

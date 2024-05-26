@@ -3,7 +3,6 @@ package es.upm.macroscore.presentation.auth.signup
 import android.graphics.drawable.Animatable
 import android.os.Bundle
 import android.transition.TransitionInflater
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,14 +14,13 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
-import com.google.android.material.textfield.TextInputLayout.EndIconMode
 import dagger.hilt.android.AndroidEntryPoint
-import es.upm.macroscore.R
 import es.upm.macroscore.core.extensions.onTextChanged
 import es.upm.macroscore.databinding.FragmentSignupBinding
 import es.upm.macroscore.presentation.auth.AuthViewModel
 import es.upm.macroscore.presentation.auth.AuthViewState
-import es.upm.macroscore.presentation.auth.EmailState
+import es.upm.macroscore.presentation.states.NoValidationState
+import es.upm.macroscore.presentation.states.OnlineValidationState
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -69,52 +67,110 @@ class SignupFragment : Fragment() {
     }
 
     private fun initTextFields() {
+        binding.editTextUsername.onTextChanged { text ->
+            viewModel.validateUsername(text)
+        }
         binding.editTextEmail.onTextChanged { text ->
             viewModel.validateEmail(text)
+        }
+        binding.editTextPassword.onTextChanged { text ->
+            viewModel.validatePassword(text)
+        }
+        binding.editTextRepeatedPassword.onTextChanged { text ->
+            viewModel.validateRepeatedPassword(binding.editTextPassword.text.toString(), text)
         }
     }
 
     private fun setFieldsStates(authViewState: AuthViewState) {
+        setUsernameState(authViewState.usernameState)
         setEmailState(authViewState.emailState)
-
-        binding.textInputLayoutPassword.error =
-            if (authViewState.passwordError != null) authViewState.passwordError else null
-        binding.textInputLayoutRepeatedPassword.error =
-            if (authViewState.passwordConfirmedError != null) authViewState.passwordConfirmedError else null
+        setPasswordState(authViewState.passwordState)
+        setRepeatedPasswordState(authViewState.repeatedPasswordState)
     }
 
-    private fun setEmailState(state: EmailState) {
+    private fun setUsernameState(state: OnlineValidationState) {
         when (state) {
-            is EmailState.Idle -> {
-                Log.d("HOLA", "HOLA00")
-                binding.textInputLayoutEmail.endIconMode = TextInputLayout.END_ICON_NONE
-                (binding.textInputLayoutEmail.endIconDrawable as? Animatable)?.stop()
+            is OnlineValidationState.Idle -> {
+                binding.textInputLayoutUsername.error = null
+                (binding.textInputLayoutUsername.endIconDrawable as? Animatable)?.stop()
+                binding.textInputLayoutUsername.endIconMode = TextInputLayout.END_ICON_NONE
             }
-            is EmailState.Loading -> {
-                Log.d("HOLA", "HOLA0")
+            is OnlineValidationState.Loading -> {
+                binding.textInputLayoutUsername.error = null
+                binding.textInputLayoutUsername.endIconMode = TextInputLayout.END_ICON_CUSTOM
+                (binding.textInputLayoutUsername.endIconDrawable as? Animatable)?.start()
+            }
+            is OnlineValidationState.Invalid -> {
+                binding.textInputLayoutUsername.error = state.message
+            }
+            is OnlineValidationState.Success -> {
+                (binding.textInputLayoutUsername.endIconDrawable as? Animatable)?.stop()
+                binding.textInputLayoutUsername.endIconMode = TextInputLayout.END_ICON_NONE
+                if (!state.status) binding.textInputLayoutUsername.error = "El nombre de usuario ya esta asociado a una cuenta"
+            }
+            is OnlineValidationState.Error -> {
+                binding.textInputLayoutUsername.error = state.message
+            }
+        }
+    }
+
+    private fun setEmailState(state: OnlineValidationState) {
+        when (state) {
+            is OnlineValidationState.Idle -> {
+                binding.textInputLayoutEmail.error = null
+                (binding.textInputLayoutEmail.endIconDrawable as? Animatable)?.stop()
+                binding.textInputLayoutEmail.endIconMode = TextInputLayout.END_ICON_NONE
+            }
+            is OnlineValidationState.Loading -> {
+                binding.textInputLayoutEmail.error = null
                 binding.textInputLayoutEmail.endIconMode = TextInputLayout.END_ICON_CUSTOM
                 (binding.textInputLayoutEmail.endIconDrawable as? Animatable)?.start()
             }
-            is EmailState.Invalid -> {
-                Log.d("HOLA", "HOLA1")
+            is OnlineValidationState.Invalid -> {
                 binding.textInputLayoutEmail.error = state.message
             }
-            is EmailState.Success -> Log.d("HOLA", "HOLA2")
-            is EmailState.Error -> {
-                Log.d("HOLA", state.message)
+            is OnlineValidationState.Success -> {
+                (binding.textInputLayoutEmail.endIconDrawable as? Animatable)?.stop()
+                binding.textInputLayoutEmail.endIconMode = TextInputLayout.END_ICON_NONE
+                if (!state.status) binding.textInputLayoutEmail.error = "La dirección de correo electrónico ya esta asociado a una cuenta"
+            }
+            is OnlineValidationState.Error -> {
                 binding.textInputLayoutEmail.error = state.message
+            }
+        }
+    }
+
+    private fun setPasswordState(state: NoValidationState) {
+        when (state) {
+            is NoValidationState.Idle -> {
+                binding.textInputLayoutPassword.error = null
+            }
+            is NoValidationState.Invalid -> {
+                binding.textInputLayoutPassword.error = state.message
+            }
+            is NoValidationState.Valid -> {
+                binding.textInputLayoutPassword.error = null
+            }
+        }
+    }
+
+    private fun setRepeatedPasswordState(state: NoValidationState) {
+        when (state) {
+            is NoValidationState.Idle -> {
+                binding.textInputLayoutRepeatedPassword.error = null
+            }
+            is NoValidationState.Invalid -> {
+                binding.textInputLayoutRepeatedPassword.error = state.message
+            }
+            is NoValidationState.Valid -> {
+                binding.textInputLayoutRepeatedPassword.error = null
             }
         }
     }
 
     private fun initButtons() {
         binding.buttonNext.setOnClickListener {
-            if (viewModel.isAbleToNav(
-                    binding.editTextUsername.text.toString(),
-                    binding.editTextEmail.text.toString(),
-                    binding.editTextPassword.text.toString(),
-                    binding.editTextRepeatedPassword.text.toString()
-                )
+            if (viewModel.isAbleToNav()
             ) {
                 val direction = SignupFragmentDirections.actionSignupFragmentToProfileFormFragment()
                 val extras = FragmentNavigatorExtras(
@@ -131,24 +187,4 @@ class SignupFragment : Fragment() {
             findNavController().navigate(direction, extras)
         }
     }
-
-    /* SIN TRANSICIÓN
-    private fun initButtons() {
-        binding.buttonNext.setOnClickListener {
-            if (viewModel.isAbleToNav(
-                    binding.editTextUsername.text.toString(),
-                    binding.editTextEmail.text.toString(),
-                    binding.editTextPassword.text.toString(),
-                    binding.editTextRepeatedPassword.text.toString()
-                )
-            ) findNavController().navigate(SignupFragmentDirections.actionSignupFragmentToProfileFormFragment())
-        }
-        binding.buttonLogin.setOnClickListener {
-            val direction = SignupFragmentDirections.actionSignupFragmentToLoginFragment()
-            val extras = FragmentNavigatorExtras(
-                binding.containerLayout to "container_transition"
-            )
-            findNavController().navigate(direction, extras)
-        }
-    }*/
 }

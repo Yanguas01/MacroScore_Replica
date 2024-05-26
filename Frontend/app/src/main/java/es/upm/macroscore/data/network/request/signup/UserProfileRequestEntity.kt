@@ -2,7 +2,7 @@ package es.upm.macroscore.data.network.request.signup
 
 import com.google.gson.annotations.SerializedName
 
-data class UserProfileRequest(
+data class UserProfileRequestEntity(
     @SerializedName("gender") val gender: String,
     @SerializedName("height") val height: Int,
     @SerializedName("weight") val weight: Int,

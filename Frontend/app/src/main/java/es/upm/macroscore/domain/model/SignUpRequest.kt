@@ -1,8 +1,10 @@
 package es.upm.macroscore.domain.model
 
-data class UserFieldsModel(
+data class SignUpRequest(
     val username: String,
     val email: String,
     val password: String,
-    val profile: ProfileFieldModel
+    val profile: UserProfileRequest
 )
+
+
