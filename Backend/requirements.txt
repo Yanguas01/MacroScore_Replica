@@ -8,3 +8,4 @@ pydantic_settings==2.2.1
 pymongo==4.7.2
 python-dotenv==1.0.1
 python_jose==3.3.0
+redis==5.0.4
