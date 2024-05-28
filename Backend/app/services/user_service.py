@@ -31,7 +31,7 @@ async def register_new_user(
     db: AsyncIOMotorDatabase,
     user_in: UserIn
 ) -> str:
-    if await get_user_by_email(db, user_in.email) is not None:
+    """if await get_user_by_email(db, user_in.email) is not None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='Email asociado a una cuenta'
@@ -40,7 +40,7 @@ async def register_new_user(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='Nombre de usuario ya registrado'
-        )
+        )"""
     user_dict = {
         'username': user_in.username,
         'email': user_in.email,

@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Generator, AsyncGenerator
 
 from aioredis import Redis
 from fastapi import Depends, HTTPException, status
@@ -11,19 +11,19 @@ from app.crud.crud_user import get_user_by_username
 from app.db.client import get_db_client
 from app.models.domain import User
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/login/token')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/login')
 
 
-async def get_db() -> Generator:
+async def get_db() -> AsyncGenerator[AsyncIOMotorDatabase, None]:
     client: AsyncIOMotorClient = await get_db_client()
     try:
-        db: AsyncIOMotorDatabase = client.local
+        db: AsyncIOMotorDatabase = client.appDB
         yield db
     finally:
         pass
 
 
-async def get_cache() -> Generator:
+async def get_cache() -> AsyncGenerator[Redis, None]:
     client: Redis = await get_redis_client()
     try:
         yield client
