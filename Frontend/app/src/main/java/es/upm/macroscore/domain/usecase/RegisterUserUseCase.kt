@@ -1,5 +1,6 @@
 package es.upm.macroscore.domain.usecase
 
+import es.upm.macroscore.data.network.response.signup.SignUpResponse
 import es.upm.macroscore.domain.UserRepository
 import es.upm.macroscore.domain.model.SignUpRequest
 import es.upm.macroscore.domain.model.UserProfileRequest
@@ -11,15 +12,15 @@ class RegisterUserUseCase @Inject constructor(
     suspend operator fun invoke(
         username: String,
         email: String,
-        gender: String,
+        gender: Int,
         physicalActivityLevel: Int,
         height: Int,
         weight: Int,
         age: Int,
         password: String
-    ) {
+    ): Result<SignUpResponse> {
         val profile = UserProfileRequest(gender, height, weight, age, physicalActivityLevel)
-        userRepository.registerUser(SignUpRequest(username, email, password, profile))
+        return userRepository.registerUser(SignUpRequest(username, email, password, profile))
     }
 }
 

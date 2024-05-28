@@ -18,9 +18,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import es.upm.macroscore.core.extensions.onTextChanged
 import es.upm.macroscore.databinding.FragmentSignupBinding
 import es.upm.macroscore.presentation.auth.AuthViewModel
-import es.upm.macroscore.presentation.auth.AuthViewState
-import es.upm.macroscore.presentation.states.NoValidationState
-import es.upm.macroscore.presentation.states.OnlineValidationState
+import es.upm.macroscore.presentation.auth.AuthViewParamsState
+import es.upm.macroscore.presentation.states.NoValidationFieldState
+import es.upm.macroscore.presentation.states.OnlineValidationFieldState
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -59,7 +59,7 @@ class SignupFragment : Fragment() {
     private fun initUIState() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.authViewState.collect { authViewState ->
+                viewModel.authViewParamsState.collect { authViewState ->
                     setFieldsStates(authViewState)
                 }
             }
@@ -81,88 +81,102 @@ class SignupFragment : Fragment() {
         }
     }
 
-    private fun setFieldsStates(authViewState: AuthViewState) {
-        setUsernameState(authViewState.usernameState)
-        setEmailState(authViewState.emailState)
-        setPasswordState(authViewState.passwordState)
-        setRepeatedPasswordState(authViewState.repeatedPasswordState)
+    private fun setFieldsStates(authViewParamsState: AuthViewParamsState) {
+        setUsernameState(authViewParamsState.usernameState)
+        setEmailState(authViewParamsState.emailState)
+        setPasswordState(authViewParamsState.passwordState)
+        setRepeatedPasswordState(authViewParamsState.repeatedPasswordState)
     }
 
-    private fun setUsernameState(state: OnlineValidationState) {
+    private fun setUsernameState(state: OnlineValidationFieldState) {
         when (state) {
-            is OnlineValidationState.Idle -> {
+            is OnlineValidationFieldState.Idle -> {
                 binding.textInputLayoutUsername.error = null
                 (binding.textInputLayoutUsername.endIconDrawable as? Animatable)?.stop()
                 binding.textInputLayoutUsername.endIconMode = TextInputLayout.END_ICON_NONE
             }
-            is OnlineValidationState.Loading -> {
+
+            is OnlineValidationFieldState.Loading -> {
                 binding.textInputLayoutUsername.error = null
                 binding.textInputLayoutUsername.endIconMode = TextInputLayout.END_ICON_CUSTOM
                 (binding.textInputLayoutUsername.endIconDrawable as? Animatable)?.start()
             }
-            is OnlineValidationState.Invalid -> {
+
+            is OnlineValidationFieldState.Invalid -> {
                 binding.textInputLayoutUsername.error = state.message
             }
-            is OnlineValidationState.Success -> {
+
+            is OnlineValidationFieldState.Success -> {
                 (binding.textInputLayoutUsername.endIconDrawable as? Animatable)?.stop()
                 binding.textInputLayoutUsername.endIconMode = TextInputLayout.END_ICON_NONE
-                if (!state.status) binding.textInputLayoutUsername.error = "El nombre de usuario ya esta asociado a una cuenta"
+                if (!state.status) binding.textInputLayoutUsername.error =
+                    "El nombre de usuario ya esta asociado a una cuenta"
             }
-            is OnlineValidationState.Error -> {
+
+            is OnlineValidationFieldState.Error -> {
                 binding.textInputLayoutUsername.error = state.message
             }
         }
     }
 
-    private fun setEmailState(state: OnlineValidationState) {
+    private fun setEmailState(state: OnlineValidationFieldState) {
         when (state) {
-            is OnlineValidationState.Idle -> {
+            is OnlineValidationFieldState.Idle -> {
                 binding.textInputLayoutEmail.error = null
                 (binding.textInputLayoutEmail.endIconDrawable as? Animatable)?.stop()
                 binding.textInputLayoutEmail.endIconMode = TextInputLayout.END_ICON_NONE
             }
-            is OnlineValidationState.Loading -> {
+
+            is OnlineValidationFieldState.Loading -> {
                 binding.textInputLayoutEmail.error = null
                 binding.textInputLayoutEmail.endIconMode = TextInputLayout.END_ICON_CUSTOM
                 (binding.textInputLayoutEmail.endIconDrawable as? Animatable)?.start()
             }
-            is OnlineValidationState.Invalid -> {
+
+            is OnlineValidationFieldState.Invalid -> {
                 binding.textInputLayoutEmail.error = state.message
             }
-            is OnlineValidationState.Success -> {
+
+            is OnlineValidationFieldState.Success -> {
                 (binding.textInputLayoutEmail.endIconDrawable as? Animatable)?.stop()
                 binding.textInputLayoutEmail.endIconMode = TextInputLayout.END_ICON_NONE
-                if (!state.status) binding.textInputLayoutEmail.error = "La dirección de correo electrónico ya esta asociado a una cuenta"
+                if (!state.status) binding.textInputLayoutEmail.error =
+                    "La dirección de correo electrónico ya esta asociado a una cuenta"
             }
-            is OnlineValidationState.Error -> {
+
+            is OnlineValidationFieldState.Error -> {
                 binding.textInputLayoutEmail.error = state.message
             }
         }
     }
 
-    private fun setPasswordState(state: NoValidationState) {
+    private fun setPasswordState(state: NoValidationFieldState) {
         when (state) {
-            is NoValidationState.Idle -> {
+            is NoValidationFieldState.Idle -> {
                 binding.textInputLayoutPassword.error = null
             }
-            is NoValidationState.Invalid -> {
+
+            is NoValidationFieldState.Invalid -> {
                 binding.textInputLayoutPassword.error = state.message
             }
-            is NoValidationState.Valid -> {
+
+            is NoValidationFieldState.Valid -> {
                 binding.textInputLayoutPassword.error = null
             }
         }
     }
 
-    private fun setRepeatedPasswordState(state: NoValidationState) {
+    private fun setRepeatedPasswordState(state: NoValidationFieldState) {
         when (state) {
-            is NoValidationState.Idle -> {
+            is NoValidationFieldState.Idle -> {
                 binding.textInputLayoutRepeatedPassword.error = null
             }
-            is NoValidationState.Invalid -> {
+
+            is NoValidationFieldState.Invalid -> {
                 binding.textInputLayoutRepeatedPassword.error = state.message
             }
-            is NoValidationState.Valid -> {
+
+            is NoValidationFieldState.Valid -> {
                 binding.textInputLayoutRepeatedPassword.error = null
             }
         }
@@ -170,7 +184,11 @@ class SignupFragment : Fragment() {
 
     private fun initButtons() {
         binding.buttonNext.setOnClickListener {
-            if (viewModel.isAbleToNav()
+            if (viewModel.isAbleToNav(
+                    binding.editTextUsername.text.toString(),
+                    binding.editTextEmail.text.toString(),
+                    binding.editTextPassword.text.toString()
+                )
             ) {
                 val direction = SignupFragmentDirections.actionSignupFragmentToProfileFormFragment()
                 val extras = FragmentNavigatorExtras(

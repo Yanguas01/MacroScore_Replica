@@ -95,9 +95,9 @@ async def get_weekly_meals(
     }
 
 
-@router.get('/{target_date}', response_model=List[Meal])
+@router.get('', response_model=List[Meal])
 async def get_meals(
-    target_date: str,
+    target_date: str = Query(None),
     user: User = Depends(get_current_user),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ) -> List[Meal]:

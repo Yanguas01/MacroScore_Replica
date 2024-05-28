@@ -1,4 +1,4 @@
-package es.upm.macroscore.data
+package es.upm.macroscore.data.repository
 
 import es.upm.macroscore.domain.model.FoodModel
 

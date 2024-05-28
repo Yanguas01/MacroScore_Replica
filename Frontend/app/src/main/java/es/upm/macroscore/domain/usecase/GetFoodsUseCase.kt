@@ -1,6 +1,6 @@
 package es.upm.macroscore.domain.usecase
 
-import es.upm.macroscore.data.FoodRepository
+import es.upm.macroscore.data.repository.FoodRepository
 import es.upm.macroscore.domain.model.FoodModel
 import javax.inject.Inject
 

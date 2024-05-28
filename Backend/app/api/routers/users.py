@@ -11,7 +11,7 @@ from app.services.user_service import set_new_password
 router: APIRouter = APIRouter(prefix='/users')
 
 
-@router.get('/check-email')
+@router.get('/check_email')
 async def check_user_by_email(
     email: str = Query(...),
     db: AsyncIOMotorDatabase = Depends(get_db)
@@ -24,7 +24,7 @@ async def check_user_by_email(
     }
 
 
-@router.get('/check-username')
+@router.get('/check_username')
 async def check_user_by_username(
     username: str = Query(...),
     db: AsyncIOMotorDatabase = Depends(get_db)

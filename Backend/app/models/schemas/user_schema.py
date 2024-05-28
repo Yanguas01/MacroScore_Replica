@@ -18,7 +18,7 @@ class UserIn(BaseModel):
 
 class UserUpdateRequest(BaseModel):
     email: str | None = None
-    gender: str | None = None
+    gender: int | None = None
     height: int | None = None
     weight: int | None = None
     age: int | None = None

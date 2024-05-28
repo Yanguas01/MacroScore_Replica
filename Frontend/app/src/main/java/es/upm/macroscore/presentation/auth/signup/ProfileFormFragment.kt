@@ -2,14 +2,11 @@ package es.upm.macroscore.presentation.auth.signup
 
 import android.content.Intent
 import android.graphics.drawable.Animatable
-import android.graphics.drawable.AnimatedImageDrawable
 import android.os.Bundle
 import android.transition.TransitionInflater
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -21,9 +18,9 @@ import es.upm.macroscore.R
 import es.upm.macroscore.core.extensions.onTextChanged
 import es.upm.macroscore.databinding.FragmentProfileFormBinding
 import es.upm.macroscore.presentation.auth.AuthViewModel
-import es.upm.macroscore.presentation.auth.AuthViewState
+import es.upm.macroscore.presentation.auth.AuthViewParamsState
 import es.upm.macroscore.presentation.home.HomeActivity
-import es.upm.macroscore.presentation.states.NoValidationState
+import es.upm.macroscore.presentation.states.NoValidationFieldState
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -85,9 +82,16 @@ class ProfileFormFragment : Fragment() {
         }
         binding.buttonSignup.setOnClickListener {
             if (viewModel.isAbleToSignUp()) {
+
                 binding.imageViewLoading.visibility = View.VISIBLE
                 (binding.imageViewLoading as? Animatable)?.start()
-                viewModel.signup()
+                viewModel.signup(
+                    gender = binding.autocompleteTextViewGender.text.toString(),
+                    physicalActivityLevel = binding.autocompleteTextViewPhysicalActivityLevel.text.toString(),
+                    height = binding.editTextHeight.text.toString(),
+                    weight = binding.editTextWeight.text.toString(),
+                    age = binding.editTextAge.text.toString()
+                )
                 navigateToHome()
             }
         }
@@ -103,96 +107,96 @@ class ProfileFormFragment : Fragment() {
     private fun initUIState() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.authViewState.collect { authViewState ->
+                viewModel.authViewParamsState.collect { authViewState ->
                     setFieldsStates(authViewState)
                 }
             }
         }
     }
 
-    private fun setFieldsStates(authViewState: AuthViewState) {
-        setGenderState(authViewState.genderState)
-        setPhysicalActivityLevelState(authViewState.physicalActivityLevelState)
-        setHeightState(authViewState.heightState)
-        setWeightState(authViewState.weightState)
-        setAgeState(authViewState.ageState)
+    private fun setFieldsStates(authViewParamsState: AuthViewParamsState) {
+        setGenderState(authViewParamsState.genderState)
+        setPhysicalActivityLevelState(authViewParamsState.physicalActivityLevelState)
+        setHeightState(authViewParamsState.heightState)
+        setWeightState(authViewParamsState.weightState)
+        setAgeState(authViewParamsState.ageState)
     }
 
-    private fun setGenderState(state: NoValidationState) {
+    private fun setGenderState(state: NoValidationFieldState) {
         when (state) {
-            is NoValidationState.Idle -> {
+            is NoValidationFieldState.Idle -> {
                 binding.textInputLayoutGender.error = null
             }
 
-            is NoValidationState.Invalid -> {
+            is NoValidationFieldState.Invalid -> {
                 binding.textInputLayoutGender.error = state.message
             }
 
-            is NoValidationState.Valid -> {
+            is NoValidationFieldState.Valid -> {
                 binding.textInputLayoutGender.error = null
             }
         }
     }
 
-    private fun setPhysicalActivityLevelState(state: NoValidationState) {
+    private fun setPhysicalActivityLevelState(state: NoValidationFieldState) {
         when (state) {
-            is NoValidationState.Idle -> {
+            is NoValidationFieldState.Idle -> {
                 binding.textInputLayoutPhysicalActivityLevel.error = null
             }
 
-            is NoValidationState.Invalid -> {
+            is NoValidationFieldState.Invalid -> {
                 binding.textInputLayoutPhysicalActivityLevel.error = state.message
             }
 
-            is NoValidationState.Valid -> {
+            is NoValidationFieldState.Valid -> {
                 binding.textInputLayoutPhysicalActivityLevel.error = null
             }
         }
     }
 
-    private fun setHeightState(state: NoValidationState) {
+    private fun setHeightState(state: NoValidationFieldState) {
         when (state) {
-            is NoValidationState.Idle -> {
+            is NoValidationFieldState.Idle -> {
                 binding.textInputLayoutHeight.error = null
             }
 
-            is NoValidationState.Invalid -> {
+            is NoValidationFieldState.Invalid -> {
                 binding.textInputLayoutHeight.error = state.message
             }
 
-            is NoValidationState.Valid -> {
+            is NoValidationFieldState.Valid -> {
                 binding.textInputLayoutHeight.error = null
             }
         }
     }
 
-    private fun setWeightState(state: NoValidationState) {
+    private fun setWeightState(state: NoValidationFieldState) {
         when (state) {
-            is NoValidationState.Idle -> {
+            is NoValidationFieldState.Idle -> {
                 binding.textInputLayoutWeight.error = null
             }
 
-            is NoValidationState.Invalid -> {
+            is NoValidationFieldState.Invalid -> {
                 binding.textInputLayoutWeight.error = state.message
             }
 
-            is NoValidationState.Valid -> {
+            is NoValidationFieldState.Valid -> {
                 binding.textInputLayoutWeight.error = null
             }
         }
     }
 
-    private fun setAgeState(state: NoValidationState) {
+    private fun setAgeState(state: NoValidationFieldState) {
         when (state) {
-            is NoValidationState.Idle -> {
+            is NoValidationFieldState.Idle -> {
                 binding.textInputLayoutAge.error = null
             }
 
-            is NoValidationState.Invalid -> {
+            is NoValidationFieldState.Invalid -> {
                 binding.textInputLayoutAge.error = state.message
             }
 
-            is NoValidationState.Valid -> {
+            is NoValidationFieldState.Valid -> {
                 binding.textInputLayoutAge.error = null
             }
         }

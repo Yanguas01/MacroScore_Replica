@@ -11,7 +11,7 @@ from app.services.user_service import authenticate_user
 router: APIRouter = APIRouter(prefix='/login')
 
 
-@router.post('/token')
+@router.post('')
 async def login_for_access_token(
     cache: Redis = Depends(get_cache),
     db: AsyncIOMotorDatabase = Depends(get_db),

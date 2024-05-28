@@ -4,7 +4,7 @@ import android.icu.util.Calendar
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import es.upm.macroscore.data.MealRepository
+import es.upm.macroscore.data.repository.MealRepository
 import es.upm.macroscore.domain.model.FoodModel
 import es.upm.macroscore.domain.model.MealModel
 import es.upm.macroscore.domain.usecase.AddFoodUseCase

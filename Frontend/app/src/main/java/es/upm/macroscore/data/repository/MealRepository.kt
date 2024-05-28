@@ -1,13 +1,9 @@
-package es.upm.macroscore.data
+package es.upm.macroscore.data.repository
 
 import es.upm.macroscore.domain.model.FoodModel
 import es.upm.macroscore.domain.model.MealModel
-import es.upm.macroscore.presentation.model.MealUIModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 import javax.inject.Singleton
 
