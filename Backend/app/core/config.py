@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings
 
 load_dotenv()
 
-
+"""
 class Settings(BaseSettings):
     database_url: str = os.getenv('DATABASE_URL')
     secret_key: str = os.getenv('SECRET_KEY')
@@ -14,8 +14,19 @@ class Settings(BaseSettings):
     refresh_token_expire_minutes: int = os.getenv(
         'REFRESH_TOKEN_EXPIRE_MINUTES')
 
+
     class Config:
         env_file = '../.env'
 
+
+settings = Settings()
+"""
+
+class Settings(BaseSettings):
+    database_url: str
+    secret_key: str
+    algorithm: str
+    access_token_expire_minutes: int
+    refresh_token_expire_minutes: int
 
 settings = Settings()

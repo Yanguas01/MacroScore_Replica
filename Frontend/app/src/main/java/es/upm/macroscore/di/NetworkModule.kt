@@ -16,7 +16,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val baseURL = "http://192.168.0.31:8000/"
+    private const val baseURL = "https://macro-score-fed9e78d7909.herokuapp.com/"
 
     @Provides
     @Singleton
