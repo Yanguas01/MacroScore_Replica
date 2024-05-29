@@ -30,16 +30,12 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/macro-score:latest
 
       - name: Install Homebrew
-        id: install_brew
         run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          echo "eval \$($(brew --prefix)/bin/brew shellenv)" >> $GITHUB_ENV
-          echo "::add-path::$(brew --prefix)/bin"
-          eval "$($(brew --prefix)/bin/brew shellenv)"
+          echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+          eval "$(/opt/homebrew/bin/brew shellenv)"
 
-      - name: Verify Homebrew Installation
+      - name: Verify Homebrew installation
         run: brew --version
       
       - name: Install Render CLI
