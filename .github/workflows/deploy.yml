@@ -61,7 +61,8 @@ jobs:
           brew install render
           which deno  # Verificar que deno está en el PATH
           deno --version  # Verificar la versión de deno antes de la compilación
-          
+          make build-completions
+
       - name: Deploy to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
