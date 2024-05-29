@@ -45,6 +45,7 @@ jobs:
       - name: Install Render CLI
         shell: bash -l {0}
         run: |
+          source ~/.profile
           brew tap render-oss/render
           brew install render
 
