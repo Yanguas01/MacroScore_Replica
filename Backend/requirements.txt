@@ -7,5 +7,5 @@ pydantic==2.7.2
 pydantic_settings==2.2.1
 pymongo==4.7.2
 python-dotenv==1.0.1
-python-multipart=0.0.9
+python-multipart==0.0.9
 python_jose==3.3.0

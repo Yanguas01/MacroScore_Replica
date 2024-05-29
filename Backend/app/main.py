@@ -6,6 +6,8 @@ from app.api.routers import foods, login, meals, refresh, signup, users
 from app.cache.client import close_redis_connection, connect_to_redis
 from app.db.client import close_mongo_connection, connect_to_mongo
 
+import uvicorn
+import os
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

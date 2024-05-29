@@ -8,9 +8,25 @@ from app.models.domain import User
 from app.models.schemas.user_schema import UserOut, UserUpdateRequest
 from app.services.user_service import set_new_password
 
+from app.core.config import settings
+
 router: APIRouter = APIRouter(prefix='/users')
 
 
+@router.get('/check_email')
+async def check_user_by_email(
+    email: str = Query(...),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    return {
+        "database_url": settings.database_url,
+        "secret_key": settings.secret_key,
+        "algorithm": settings.algorithm,
+        "access_token_expire_minutes": settings.access_token_expire_minutes,
+        "refresh_token_expire_minutes": settings.refresh_token_expire_minutes
+    }
+
+"""
 @router.get('/check_email')
 async def check_user_by_email(
     email: str = Query(...),
@@ -21,8 +37,7 @@ async def check_user_by_email(
         'message': 'The email is already used' if user else 'Email is not used',
         'status': '0' if user else '1',
         'email': email
-    }
-
+    }"""
 
 @router.get('/check_username')
 async def check_user_by_username(
