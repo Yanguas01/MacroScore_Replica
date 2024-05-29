@@ -46,9 +46,9 @@ jobs:
         shell: bash -l {0}
         run: |
           source ~/.profile
+          export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
           brew tap render-oss/render
           brew install render
-
 
       - name: Deploy to Render
         env:
