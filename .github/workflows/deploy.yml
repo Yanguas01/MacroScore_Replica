@@ -35,7 +35,14 @@ jobs:
           node-version: '16'
 
       - name: Install Render CLI
-        run: npm install -g @render/cli
+        run: |
+          sudo apt-get update && sudo apt-get install -y curl
+          curl -fsSL https://cli.render.com/install.sh -o install.sh
+          bash install.sh
+          echo "${HOME}/.render/bin" >> $GITHUB_PATH
+          export PATH="${HOME}/.render/bin:${PATH}"
+          render --version  # Verifica que el CLI de Render está instalado correctamente
+
 
       - name: Deploy to Render
         env:
