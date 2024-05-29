@@ -33,6 +33,8 @@ jobs:
         run: |
           curl -fsSL https://cli.render.com/install.sh | bash
           echo "${HOME}/.render/bin" >> $GITHUB_PATH
+          export PATH="${HOME}/.render/bin:${PATH}"
+          render --version
 
       - name: Deploy to Render
         env:
