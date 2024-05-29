@@ -36,11 +36,13 @@ jobs:
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
       - name: Verify Homebrew installation
+        shell: bash -l {0}
         run: |
           source ~/.profile
           brew --version
       
       - name: Install Render CLI
+        shell: bash -l {0}
         run: |
           brew tap render-oss/render
           brew install render
