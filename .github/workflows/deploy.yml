@@ -29,14 +29,16 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/macro-score:latest
 
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
-      - name: Install Render CLI
+      - name: Install Homebrew
         run: |
           sudo apt-get update
+          sudo apt-get install -y build-essential
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          echo "eval \$($(brew --prefix)/bin/brew shellenv)" >> ~/.profile
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+      
+      - name: Install Render CLI
+        run: |
           brew tap render-oss/render
           brew install render
 
