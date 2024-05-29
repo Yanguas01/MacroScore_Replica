@@ -37,7 +37,6 @@ jobs:
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
       - name: Install Deno
-        shell: bash -l {0}
         run: |
           source ~/.profile
           brew install deno
@@ -49,13 +48,20 @@ jobs:
           source ~/.profile
           deno --version
 
+      - name: Debug PATH
+        run: |
+          echo $PATH
+
       - name: Install Render CLI
         run: |
           source ~/.profile
           export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+          echo $PATH  # Agregar depuración para verificar el PATH
           brew tap render-oss/render
           brew install render
-
+          which deno  # Verificar que deno está en el PATH
+          deno --version  # Verificar la versión de deno antes de la compilación
+          
       - name: Deploy to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
