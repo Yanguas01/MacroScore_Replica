@@ -11,26 +11,28 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: ./Backend
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/macro-score:latest
 
       - name: Install Render CLI
-        run: curl -fsSL https://cli.render.com/install.sh | bash
+        run: |
+          curl -fsSL https://cli.render.com/install.sh | bash
+          echo "${HOME}/.render/bin" >> $GITHUB_PATH
 
       - name: Deploy to Render
         env:
