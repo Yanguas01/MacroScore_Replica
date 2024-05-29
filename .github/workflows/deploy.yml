@@ -29,12 +29,13 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/macro-score:latest
 
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
       - name: Install Render CLI
-        run: |
-          curl -fsSL https://cli.render.com/install.sh | bash
-          echo "${HOME}/.render/bin" >> $GITHUB_PATH
-          export PATH="${HOME}/.render/bin:${PATH}"
-          render --version
+        run: npm install -g @render/cli
 
       - name: Deploy to Render
         env:
