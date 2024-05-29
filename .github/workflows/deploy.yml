@@ -33,6 +33,7 @@ jobs:
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
           echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >>~/.profile
+          echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >>~/.bashrc
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
       - name: Verify Homebrew installation
