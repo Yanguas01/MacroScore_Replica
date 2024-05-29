@@ -36,12 +36,9 @@ jobs:
 
       - name: Install Render CLI
         run: |
-          sudo apt-get update && sudo apt-get install -y curl
-          curl -fsSL https://cli.render.com/install.sh -o install.sh
-          bash install.sh
-          echo "${HOME}/.render/bin" >> $GITHUB_PATH
-          export PATH="${HOME}/.render/bin:${PATH}"
-          render --version  # Verifica que el CLI de Render está instalado correctamente
+          sudo apt-get update
+          brew tap render-oss/render
+          brew install render
 
 
       - name: Deploy to Render
