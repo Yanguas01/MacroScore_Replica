@@ -41,6 +41,8 @@ jobs:
         run: |
           source ~/.profile
           brew install deno
+          echo 'export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"' >>~/.profile
+          echo 'export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"' >>~/.bashrc
       
       - name: Install Render CLI
         shell: bash -l {0}
