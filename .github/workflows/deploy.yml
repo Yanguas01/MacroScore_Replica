@@ -76,14 +76,24 @@ jobs:
           echo "Render CLI repository tapped."
         shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
   
-      - name: Install Render CLI
+      - name: Install Render CLI using Homebrew
         run: |
-          echo "Installing Render CLI..."
+          echo "Installing Render CLI using Homebrew..."
           brew install render
           echo "Render CLI installation completed."
         shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-        env:
-          PATH: /home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/opt/deno/bin:$PATH
+        continue-on-error: true
+  
+      - name: Manually install Render CLI if Homebrew fails
+        if: failure()
+        run: |
+          echo "Homebrew failed to install Render CLI, proceeding with manual installation..."
+          sudo apt-get install -y git make
+          git clone https://github.com/render-oss/render-cli.git
+          cd render-cli
+          make deps
+          echo "Render CLI manual installation completed."
+        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
   
       - name: Deploy to Render
         env:
