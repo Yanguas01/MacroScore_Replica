@@ -29,21 +29,6 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/macro-score:latest
 
-      - name: Install and configure Homebrew
-        run: |
-          echo "Installing Homebrew..."
-          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          echo "PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/opt/deno/bin:$PATH" >> $GITHUB_ENV
-          echo "Homebrew installation completed."
-        shell: /usr/bin/bash -e {0}
-      
-      - name: Setup Homebrew Environment
-        run: |
-          echo "Setting up Homebrew environment..."
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-          echo "Homebrew environment setup completed."
-        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-      
       - name: Install Core Utilities
         run: |
           echo "Installing core utilities..."
@@ -51,6 +36,15 @@ jobs:
           sudo apt-get install -y coreutils
           echo "Core utilities installation completed."
         shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+  
+      - name: Install and configure Homebrew
+        run: |
+          echo "Installing Homebrew..."
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          echo "PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/opt/deno/bin:$PATH" >> $GITHUB_ENV
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          echo "Homebrew installation completed."
+        shell: /usr/bin/bash -e {0}
   
       - name: Install Deno
         run: |
@@ -74,7 +68,9 @@ jobs:
         shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
         env:
           PATH: /home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/opt/deno/bin:$PATH
-
+          env:
+            PATH: /home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/opt/deno/bin:$PATH
+  
       - name: Tap Render CLI repository
         run: |
           echo "Tapping Render CLI repository..."
@@ -90,7 +86,7 @@ jobs:
         shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
         env:
           PATH: /home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/opt/deno/bin:$PATH
-
+  
       - name: Deploy to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
