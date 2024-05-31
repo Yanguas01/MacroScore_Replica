@@ -68,8 +68,6 @@ jobs:
         shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
         env:
           PATH: /home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/opt/deno/bin:$PATH
-          env:
-            PATH: /home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/opt/deno/bin:$PATH
   
       - name: Tap Render CLI repository
         run: |
