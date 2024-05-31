@@ -32,24 +32,19 @@ jobs:
       - name: Install and configure Homebrew
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          echo "PATH=/home/linuxbrew/.linuxbrew/bin:$PATH" >> $GITHUB_ENV
+          echo "PATH=/usr/local/bin:/usr/bin:/bin:/home/linuxbrew/.linuxbrew/bin:$PATH" >> $GITHUB_ENV
 
-      - name: Install Deno
+      - name: Diagnose and repair Homebrew
+        run: |
+          brew doctor
+          brew config
+
+      - name: Install Deno and Render CLI
         run: |
           brew install deno
-          echo "Deno installed at: $(which deno)"
-          deno --version
-          echo "PATH=$(brew --prefix deno)/bin:$PATH" >> $GITHUB_ENV
-
-      - name: Tap Render CLI repository
-        run: |
+          echo "Deno version: $(deno --version)"
           brew tap render-oss/render
-
-      - name: Install Render CLI
-        run: |
           brew install render
-        env:
-          PATH: /home/linuxbrew/.linuxbrew/bin:$PATH
 
       - name: Debugging PATH and utilities
         run: |
@@ -59,6 +54,8 @@ jobs:
           which brew
           brew --version
           deno --version
+        env:
+          PATH: /usr/local/bin:/usr/bin:/bin:/home/linuxbrew/.linuxbrew/bin:$PATH
 
       - name: Deploy to Render
         env:
