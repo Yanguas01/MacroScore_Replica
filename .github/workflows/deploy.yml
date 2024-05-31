@@ -28,48 +28,9 @@ jobs:
           context: ./Backend
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/macro-score:latest
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-  
-      - name: Install core utilities
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y coreutils
-  
-      - name: Install Deno
-        run: |
-          curl -fsSL https://deno.land/x/install/install.sh | sh
-          echo "DENO_INSTALL=/home/runner/.deno" >> $GITHUB_ENV
-          echo "PATH=/home/runner/.deno/bin:$PATH" >> $GITHUB_ENV
-          echo "export DENO_INSTALL=\"/home/runner/.deno\"" >> $HOME/.bashrc
-          echo "export PATH=\"$DENO_INSTALL/bin:\$PATH\"" >> $HOME/.bashrc
-        shell: /usr/bin/bash -e {0}
-      
-      - name: Installing Homebrew
-        run: |
-          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          echo "eval $($(brew --prefix)/bin/brew shellenv)" >> ~/.profile
-          echo "PATH=$(brew --prefix)/bin:$(brew --prefix)/sbin:$PATH" >> ~/.profile
-          source ~/.profile
-        shell: /usr/bin/bash -e {0}
-  
-      - name: Homebrew failed to install Render CLI, proceeding with manual installation...
-        run: |
-          sudo apt-get install -y git make
-          git clone https://github.com/render-oss/render-cli.git
-          cd render-cli
-          make deps
-        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-  
-      - name: Verify Render CLI installation
-        run: |
-          deno task run --help
-        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
   
       - name: Deploy to Render
+        uses: johnbeynon/render-deploy-action@v0.0.8
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -77,5 +38,6 @@ jobs:
           ALGORITHM: ${{ secrets.ALGORITHM }}
           ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
           REFRESH_TOKEN_EXPIRE_MINUTES: ${{ secrets.REFRESH_TOKEN_EXPIRE_MINUTES }}
-        run: |
-          render deploy --service MacroScore --env docker --repo https://github.com/Yanguas01/MacroScore_Replica --branch main
+        with:
+          service-id: ${{ secrets.SERVICE_ID }} # Can be found as part of the Deploy Hook
+          api-key: ${{ secrets.RENDER_API_KEY }} # Create your API key in Render Dashboard > Account Settings
