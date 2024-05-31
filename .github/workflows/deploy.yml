@@ -32,19 +32,28 @@ jobs:
       - name: Install and configure Homebrew
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          echo "PATH=/usr/local/bin:/usr/bin:/bin:/home/linuxbrew/.linuxbrew/bin:$PATH" >> $GITHUB_ENV
+          echo "PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/opt/deno/bin:$PATH" >> $GITHUB_ENV
 
-      - name: Diagnose and repair Homebrew
+      - name: Setup Homebrew Environment
         run: |
-          brew doctor
-          brew config
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
 
-      - name: Install Deno and Render CLI
+      - name: Install Deno
         run: |
           brew install deno
-          echo "Deno version: $(deno --version)"
+          deno --version
+        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+
+      - name: Tap Render CLI repository
+        run: |
           brew tap render-oss/render
+        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+
+      - name: Install Render CLI
+        run: |
           brew install render
+        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
 
       - name: Debugging PATH and utilities
         run: |
@@ -54,8 +63,7 @@ jobs:
           which brew
           brew --version
           deno --version
-        env:
-          PATH: /usr/local/bin:/usr/bin:/bin:/home/linuxbrew/.linuxbrew/bin:$PATH
+        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
 
       - name: Deploy to Render
         env:
