@@ -36,32 +36,11 @@ jobs:
           echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >>~/.bashrc
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
-      - name: Install Deno
-        run: |
-          source ~/.profile
-          brew install deno
-          echo 'export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"' >>~/.profile
-          echo 'export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"' >>~/.bashrc
-      
-      - name: Verify Deno installation
-        run: |
-          source ~/.profile
-          deno --version
-
-      - name: Debug PATH
-        run: |
-          echo $PATH
+      - name: Install Snap
+        run: sudo apt update && sudo apt install -y snapd && sudo snap install core
 
       - name: Install Render CLI
-        run: |
-          source ~/.profile
-          export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
-          echo $PATH  # Agregar depuración para verificar el PATH
-          brew tap render-oss/render
-          brew install render
-          which deno  # Verificar que deno está en el PATH
-          deno --version  # Verificar la versión de deno antes de la compilación
-          make build-completions
+        run: sudo snap install render
 
       - name: Deploy to Render
         env:
