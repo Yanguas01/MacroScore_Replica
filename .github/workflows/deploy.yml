@@ -37,7 +37,9 @@ jobs:
       - name: Install Deno
         run: |
           brew install deno
+          echo "Deno installed at: $(which deno)"
           deno --version
+          echo "PATH=$(brew --prefix deno)/bin:$PATH" >> $GITHUB_ENV
 
       - name: Tap Render CLI repository
         run: |
@@ -46,6 +48,8 @@ jobs:
       - name: Install Render CLI
         run: |
           brew install render
+        env:
+          PATH: /home/linuxbrew/.linuxbrew/bin:$PATH
 
       - name: Debugging PATH and utilities
         run: |
