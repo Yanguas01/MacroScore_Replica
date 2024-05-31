@@ -31,48 +31,62 @@ jobs:
 
       - name: Install and configure Homebrew
         run: |
+          echo "Installing Homebrew..."
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
           echo "PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/opt/deno/bin:$PATH" >> $GITHUB_ENV
+          echo "Homebrew installation completed."
         shell: /usr/bin/bash -e {0}
       
       - name: Setup Homebrew Environment
         run: |
+          echo "Setting up Homebrew environment..."
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          echo "Homebrew environment setup completed."
         shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
       
       - name: Install Core Utilities
         run: |
+          echo "Installing core utilities..."
           sudo apt-get update
           sudo apt-get install -y coreutils
+          echo "Core utilities installation completed."
         shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
   
       - name: Install Deno
         run: |
+          echo "Installing Deno..."
           brew install deno
           echo "Deno installed at: $(which deno)"
           deno --version
+          echo "Deno installation completed."
         shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-  
+
+      - name: Debugging PATH and utilities
+        run: |
+          echo "Debugging PATH and installed utilities..."
+          echo "Current PATH: $PATH"
+          which curl || echo "curl not found"
+          which deno || echo "deno not found"
+          which brew || echo "brew not found"
+          brew --version || echo "brew --version command failed"
+          deno --version || echo "deno --version command failed"
+          echo "Debugging completed."
+        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+        env:
+          PATH: /home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/opt/deno/bin:$PATH
+
       - name: Tap Render CLI repository
         run: |
+          echo "Tapping Render CLI repository..."
           brew tap render-oss/render
+          echo "Render CLI repository tapped."
         shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
   
       - name: Install Render CLI
         run: |
+          echo "Installing Render CLI..."
           brew install render
-        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-        env:
-          PATH: /home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/opt/deno/bin:$PATH
-  
-      - name: Debugging PATH and utilities
-        run: |
-          echo "Current PATH: $PATH"
-          which curl
-          which deno
-          which brew
-          brew --version
-          deno --version
+          echo "Render CLI installation completed."
         shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
         env:
           PATH: /home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/opt/deno/bin:$PATH
