@@ -29,12 +29,13 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/macro-score:latest
 
-      - name: Install Homebrew
+      - name: Install Homebrew and Render CLI
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> $GITHUB_ENV
+          echo "PATH=$PATH:/home/linuxbrew/.linuxbrew/bin" >> $GITHUB_ENV
           brew tap render-oss/render
           brew install render
+        shell: bash
 
       - name: Deploy to Render
         env:
