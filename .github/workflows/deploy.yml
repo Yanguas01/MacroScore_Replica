@@ -34,15 +34,14 @@ jobs:
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
           echo "PATH=/home/linuxbrew/.linuxbrew/bin:$PATH" | tee -a $GITHUB_ENV
 
-      - name: Install Homebrew, Set PATH, and Install Render CLI
+      - name: Install Homebrew, Set PATH, and Install Dependencies
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
           echo "PATH=/home/linuxbrew/.linuxbrew/bin:$PATH" >> $GITHUB_ENV
-          echo "Current PATH: $PATH"
+          brew install deno
           brew tap render-oss/render
           brew install render
         shell: bash
-
 
       - name: Deploy to Render
         env:
