@@ -29,54 +29,44 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/macro-score:latest
 
-      - name: Install Core Utilities
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+  
+      - name: Install core utilities
         run: |
-          echo "Installing core utilities..."
           sudo apt-get update
           sudo apt-get install -y coreutils
-          echo "Core utilities installation completed."
-        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-  
-      - name: Install and configure Homebrew
-        run: |
-          echo "Installing Homebrew..."
-          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          echo "PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/opt/deno/bin:$PATH" >> $GITHUB_ENV
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-          echo "Homebrew installation completed."
-        shell: /usr/bin/bash -e {0}
   
       - name: Install Deno
         run: |
-          echo "Installing Deno..."
-          brew install deno
-          echo "Deno installed at: $(which deno)"
-          deno --version
-          echo "Deno installation completed."
-        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-
-      - name: Debugging PATH and utilities
+          curl -fsSL https://deno.land/x/install/install.sh | sh
+          echo "DENO_INSTALL=/home/runner/.deno" >> $GITHUB_ENV
+          echo "PATH=/home/runner/.deno/bin:$PATH" >> $GITHUB_ENV
+          echo "export DENO_INSTALL=\"/home/runner/.deno\"" >> $HOME/.bashrc
+          echo "export PATH=\"$DENO_INSTALL/bin:\$PATH\"" >> $HOME/.bashrc
+        shell: /usr/bin/bash -e {0}
+      
+      - name: Installing Homebrew
         run: |
-          echo "Debugging PATH and installed utilities..."
-          echo "Current PATH: $PATH"
-          which curl || echo "curl not found"
-          which deno || echo "deno not found"
-          which brew || echo "brew not found"
-          brew --version || echo "brew --version command failed"
-          deno --version || echo "deno --version command failed"
-          echo "Debugging completed."
-        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-        env:
-          PATH: /home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/opt/deno/bin:$PATH
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          echo "eval $($(brew --prefix)/bin/brew shellenv)" >> ~/.profile
+          echo "PATH=$(brew --prefix)/bin:$(brew --prefix)/sbin:$PATH" >> ~/.profile
+          source ~/.profile
+        shell: /usr/bin/bash -e {0}
   
-      - name: Manually install Render CLI
+      - name: Homebrew failed to install Render CLI, proceeding with manual installation...
         run: |
-          echo "Homebrew failed to install Render CLI, proceeding with manual installation..."
           sudo apt-get install -y git make
           git clone https://github.com/render-oss/render-cli.git
           cd render-cli
           make deps
-          echo "Render CLI manual installation completed."
+        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+  
+      - name: Verify Render CLI installation
+        run: |
+          deno task run --help
         shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
   
       - name: Deploy to Render
