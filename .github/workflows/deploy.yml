@@ -31,16 +31,16 @@ jobs:
 
       - name: Install Homebrew
         run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >>~/.profile
-          echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >>~/.bashrc
+          echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.profile
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
-      - name: Install Snap
-        run: sudo apt update && sudo apt install -y snapd && sudo snap install core
-
       - name: Install Render CLI
-        run: sudo snap install render
+        run: |
+          brew tap render-oss/render
+          brew install render
 
       - name: Deploy to Render
         env:
