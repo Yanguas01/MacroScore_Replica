@@ -32,10 +32,10 @@ jobs:
       - name: Install Homebrew and Render CLI
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          echo "PATH=$PATH:/home/linuxbrew/.linuxbrew/bin" >> $GITHUB_ENV
+          echo "PATH=/home/linuxbrew/.linuxbrew/bin:$PATH" >> $GITHUB_ENV
           brew tap render-oss/render
           brew install render
-        shell: bash
+        shell: bash {0}
 
       - name: Deploy to Render
         env:
