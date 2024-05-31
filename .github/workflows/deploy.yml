@@ -33,15 +33,17 @@ jobs:
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
           echo "PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/opt/deno/bin:$PATH" >> $GITHUB_ENV
-
+        shell: /usr/bin/bash -e {0}
+    
       - name: Setup Homebrew Environment
         run: |
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
         shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-
+    
       - name: Install Deno
         run: |
           brew install deno
+          echo "Deno installed at: $(which deno)"
           deno --version
         shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
 
@@ -54,16 +56,8 @@ jobs:
         run: |
           brew install render
         shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
-
-      - name: Debugging PATH and utilities
-        run: |
-          echo "Current PATH: $PATH"
-          which curl
-          which deno
-          which brew
-          brew --version
-          deno --version
-        shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+        env:
+          PATH: /home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/opt/deno/bin:$PATH
 
       - name: Deploy to Render
         env:
