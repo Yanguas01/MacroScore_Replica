@@ -1,4 +1,4 @@
-package es.upm.macroscore.presentation.auth
+package es.upm.macroscore.presentation.auth.signup
 
 import android.content.Context
 import android.util.Log
@@ -26,7 +26,7 @@ import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(
+class SignUpViewModel @Inject constructor(
     val checkUsernameUseCase: CheckUsernameUseCase,
     val checkEmailUseCase: CheckEmailUseCase,
     val registerUserUseCase: RegisterUserUseCase,
@@ -34,8 +34,8 @@ class AuthViewModel @Inject constructor(
     @ApplicationContext val context: Context
 ) : ViewModel() {
 
-    private val _authViewParamsState = MutableStateFlow(AuthViewParamsState())
-    val authViewParamsState: StateFlow<AuthViewParamsState> = _authViewParamsState
+    private val _signUpParamsState = MutableStateFlow(SignUpParamsState())
+    val signUpParamsState: StateFlow<SignUpParamsState> = _signUpParamsState
 
     private val _signUpActionState: MutableStateFlow<OnlineOperationState> = MutableStateFlow(OnlineOperationState.Idle)
     val signUpActionState: StateFlow<OnlineOperationState> = _signUpActionState
@@ -46,7 +46,7 @@ class AuthViewModel @Inject constructor(
     private var emailJob: Job? = null
 
     fun isAbleToNav(username: String, email: String, password: String): Boolean {
-        val isAbleToNav = _authViewParamsState.value.isFirstFragmentValid()
+        val isAbleToNav = _signUpParamsState.value.isFirstFragmentValid()
         if (isAbleToNav) {
             _signUpFragmentUIModel.value.username = username
             _signUpFragmentUIModel.value.email = email
@@ -56,8 +56,7 @@ class AuthViewModel @Inject constructor(
     }
 
     fun isAbleToSignUp(): Boolean {
-        Log.d("AuthViewModel",  _authViewParamsState.value.toString())
-        return _authViewParamsState.value.isValidState()
+        return _signUpParamsState.value.isValidState()
     }
 
     fun validateUsername(username: String) {
@@ -70,11 +69,10 @@ class AuthViewModel @Inject constructor(
             !trimmedUsername.matches(Regex(("[a-z0-9]+"))) -> OnlineValidationFieldState.Invalid("El nombre de usuario solo puede contener letras en minúsculas y dígitos")
             else -> {
                 usernameJob = viewModelScope.launch {
-                    _authViewParamsState.update { it.copy(usernameState = OnlineValidationFieldState.Loading) }
+                    _signUpParamsState.update { it.copy(usernameState = OnlineValidationFieldState.Loading) }
                     checkUsernameUseCase(trimmedUsername)
                         .onSuccess { status ->
-                            Log.d("AuthViewModel", status.isAvailable.toString())
-                            _authViewParamsState.update {
+                            _signUpParamsState.update {
                                 it.copy(
                                     usernameState = OnlineValidationFieldState.Success(
                                         status.isAvailable
@@ -85,7 +83,7 @@ class AuthViewModel @Inject constructor(
                         .onFailure { exception ->
                             when (exception) {
                                 is IOException -> {
-                                    _authViewParamsState.update {
+                                    _signUpParamsState.update {
                                         it.copy(
                                             usernameState = OnlineValidationFieldState.Error(
                                                 "Error de red: ${exception.message}"
@@ -95,7 +93,7 @@ class AuthViewModel @Inject constructor(
                                 }
 
                                 is HttpException -> {
-                                    _authViewParamsState.update {
+                                    _signUpParamsState.update {
                                         it.copy(
                                             usernameState = OnlineValidationFieldState.Error(
                                                 "Error HTTP: ${exception.message}"
@@ -109,7 +107,7 @@ class AuthViewModel @Inject constructor(
                                 }
 
                                 else -> {
-                                    _authViewParamsState.update {
+                                    _signUpParamsState.update {
                                         it.copy(
                                             usernameState = OnlineValidationFieldState.Error(
                                                 exception.message ?: "Unknown Error"
@@ -123,7 +121,7 @@ class AuthViewModel @Inject constructor(
                 OnlineValidationFieldState.Loading
             }
         }
-        _authViewParamsState.update { it.copy(usernameState = newState) }
+        _signUpParamsState.update { it.copy(usernameState = newState) }
     }
 
     fun validateEmail(email: String) {
@@ -137,10 +135,10 @@ class AuthViewModel @Inject constructor(
 
             android.util.Patterns.EMAIL_ADDRESS.matcher(trimmedEmail).matches() -> {
                 emailJob = viewModelScope.launch {
-                    _authViewParamsState.update { it.copy(emailState = OnlineValidationFieldState.Loading) }
+                    _signUpParamsState.update { it.copy(emailState = OnlineValidationFieldState.Loading) }
                     checkEmailUseCase(trimmedEmail)
                         .onSuccess { status ->
-                            _authViewParamsState.update {
+                            _signUpParamsState.update {
                                 it.copy(
                                     emailState = OnlineValidationFieldState.Success(
                                         status.isAvailable
@@ -151,7 +149,7 @@ class AuthViewModel @Inject constructor(
                         .onFailure { exception ->
                             when (exception) {
                                 is IOException -> {
-                                    _authViewParamsState.update {
+                                    _signUpParamsState.update {
                                         it.copy(
                                             emailState = OnlineValidationFieldState.Error(
                                                 "Error de red: ${exception.message}"
@@ -161,7 +159,7 @@ class AuthViewModel @Inject constructor(
                                 }
 
                                 is HttpException -> {
-                                    _authViewParamsState.update {
+                                    _signUpParamsState.update {
                                         it.copy(
                                             emailState = OnlineValidationFieldState.Error(
                                                 "Error HTTP: ${exception.message}"
@@ -175,7 +173,7 @@ class AuthViewModel @Inject constructor(
                                 }
 
                                 else -> {
-                                    _authViewParamsState.update {
+                                    _signUpParamsState.update {
                                         it.copy(
                                             emailState = OnlineValidationFieldState.Error(
                                                 exception.message ?: "Unknown Error"
@@ -194,19 +192,19 @@ class AuthViewModel @Inject constructor(
             }
         }
 
-        _authViewParamsState.update { it.copy(emailState = newState) }
+        _signUpParamsState.update { it.copy(emailState = newState) }
     }
 
     fun validatePassword(password: String) {
         val newState = if (password.length < 8)
             NoValidationFieldState.Invalid("La contraseña es demasiado corta") else NoValidationFieldState.Valid
-        _authViewParamsState.update { it.copy(passwordState = newState) }
+        _signUpParamsState.update { it.copy(passwordState = newState) }
     }
 
     fun validateRepeatedPassword(password: String, repeatedPassword: String) {
         val newState = if (password != repeatedPassword)
             NoValidationFieldState.Invalid("Las contraseñas no coinciden") else NoValidationFieldState.Valid
-        _authViewParamsState.update { it.copy(repeatedPasswordState = newState) }
+        _signUpParamsState.update { it.copy(repeatedPasswordState = newState) }
     }
 
     fun validateGender(gender: String) {
@@ -214,7 +212,7 @@ class AuthViewModel @Inject constructor(
             if (gender !in context.resources.getStringArray(R.array.gender)) NoValidationFieldState.Invalid(
                 "El género no es válido"
             ) else NoValidationFieldState.Valid
-        _authViewParamsState.update { it.copy(genderState = newState) }
+        _signUpParamsState.update { it.copy(genderState = newState) }
     }
 
     fun validatePhysicalActivityLevel(physicalActivityLevel: String) {
@@ -222,7 +220,7 @@ class AuthViewModel @Inject constructor(
             if (physicalActivityLevel !in context.resources.getStringArray(R.array.physical_activity_level)) NoValidationFieldState.Invalid(
                 "La actividad física no es válida"
             ) else NoValidationFieldState.Valid
-        _authViewParamsState.update { it.copy(physicalActivityLevelState = newState) }
+        _signUpParamsState.update { it.copy(physicalActivityLevelState = newState) }
     }
 
     fun validateHeight(height: String) {
@@ -232,7 +230,7 @@ class AuthViewModel @Inject constructor(
         } catch (e: NumberFormatException) {
             NoValidationFieldState.Invalid("Introduzca una altura válida")
         }
-        _authViewParamsState.update { it.copy(heightState = newState) }
+        _signUpParamsState.update { it.copy(heightState = newState) }
     }
 
     fun validateWeight(weight: String) {
@@ -242,7 +240,7 @@ class AuthViewModel @Inject constructor(
         } catch (e: NumberFormatException) {
             NoValidationFieldState.Invalid("Introduzca un peso válido")
         }
-        _authViewParamsState.update { it.copy(weightState = newState) }
+        _signUpParamsState.update { it.copy(weightState = newState) }
     }
 
     fun validateAge(age: String) {
@@ -252,7 +250,7 @@ class AuthViewModel @Inject constructor(
         } catch (e: NumberFormatException) {
             NoValidationFieldState.Invalid("Introduzca una edad válida")
         }
-        _authViewParamsState.update { it.copy(ageState = newState) }
+        _signUpParamsState.update { it.copy(ageState = newState) }
     }
 
     fun signup(
@@ -262,10 +260,14 @@ class AuthViewModel @Inject constructor(
         weight: String,
         age: String
     ) {
-        val genderIndex = getGenderIndex(gender)
-        val physicalActivityLevelIndex = getPhysicalActivityLevelIndex(physicalActivityLevel)
+        val genderIndex = context.resources.getStringArray(R.array.gender).indexOf(gender)
+        val physicalActivityLevelIndex = context.resources.getStringArray(R.array.physical_activity_level)
+            .indexOf(physicalActivityLevel)
         viewModelScope.launch {
-            _signUpActionState.update { OnlineOperationState.Loading }
+            _signUpActionState.update {
+                Log.d("SignUpViewModel", "Loading")
+                OnlineOperationState.Loading
+            }
             registerUserUseCase(
                 username = _signUpFragmentUIModel.value.username,
                 email = _signUpFragmentUIModel.value.email,
@@ -283,24 +285,16 @@ class AuthViewModel @Inject constructor(
                         keepLoggedIn = false
                     )
                         .onSuccess {
+                            Log.d("SignUpViewModel", "Success")
                             _signUpActionState.update { OnlineOperationState.Success }
                         }
                         .onFailure {
-
+                            _signUpActionState.update { OnlineOperationState.Error(it.toString()) }
                         }
                 }
                 .onFailure {
                     _signUpActionState.update { OnlineOperationState.Error(it.toString()) }
                 }
         }
-    }
-
-    private fun getGenderIndex(gender: String): Int {
-        return context.resources.getStringArray(R.array.gender).indexOf(gender)
-    }
-
-    private fun getPhysicalActivityLevelIndex(physicalActivityLevel: String): Int {
-        return context.resources.getStringArray(R.array.physical_activity_level)
-            .indexOf(physicalActivityLevel)
     }
 }

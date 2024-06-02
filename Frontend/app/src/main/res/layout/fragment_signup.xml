@@ -7,7 +7,7 @@
     android:background="@color/secondaryDark"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".presentation.auth.signup.SignupFragment">
+    tools:context=".presentation.auth.signup.SignUpFragment">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/container_layout"
@@ -159,18 +159,5 @@
             app:strokeColor="@color/secondaryDark" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
-
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/circular_progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:visibility="invisible"
-        app:indicatorColor="@color/secondary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:trackCornerRadius="4dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

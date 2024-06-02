@@ -53,6 +53,7 @@
             android:orientation="vertical"
             android:transitionName="container_transition"
             android:visibility="invisible"
+            android:paddingBottom="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -73,7 +74,7 @@
                 <AutoCompleteTextView
                     style="@style/Widget.App.AutoCompleteTextView.Outlined"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:hint="@string/gender"
                     android:inputType="none" />
 
@@ -87,7 +88,7 @@
                 <AutoCompleteTextView
                     style="@style/Widget.App.AutoCompleteTextView.Outlined"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:hint="@string/physical_activity_level"
                     android:inputType="none" />
 

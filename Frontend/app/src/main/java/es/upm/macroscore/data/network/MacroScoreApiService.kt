@@ -9,6 +9,7 @@ import es.upm.macroscore.data.network.response.signup.SignUpResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -26,8 +27,9 @@ interface MacroScoreApiService {
     @POST("signup")
     suspend fun createNewUser(@Body signUpRequestEntity: SignUpRequestEntity): Response<SignUpResponse>
 
+    @FormUrlEncoded
     @POST("login")
-    suspend fun logUser(@Field("username") username: String, @Field("password") password: String, @Field("scope") scope: List<String>): Response<LogInResponse>
+    suspend fun logUser(@Field("username") username: String, @Field("password") password: String, @Field("scope") scope: String): Response<LogInResponse>
 
     @POST("refresh")
     suspend fun refreshToken(@Body refreshToken: String): Response<LogInResponse>

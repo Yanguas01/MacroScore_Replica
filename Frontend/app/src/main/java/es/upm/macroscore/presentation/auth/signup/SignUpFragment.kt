@@ -17,16 +17,14 @@ import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
 import es.upm.macroscore.core.extensions.onTextChanged
 import es.upm.macroscore.databinding.FragmentSignupBinding
-import es.upm.macroscore.presentation.auth.AuthViewModel
-import es.upm.macroscore.presentation.auth.AuthViewParamsState
 import es.upm.macroscore.presentation.states.NoValidationFieldState
 import es.upm.macroscore.presentation.states.OnlineValidationFieldState
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class SignupFragment : Fragment() {
+class SignUpFragment : Fragment() {
 
-    private val viewModel by activityViewModels<AuthViewModel>()
+    private val viewModel by activityViewModels<SignUpViewModel>()
 
     private var _binding: FragmentSignupBinding? = null
     private val binding get() = _binding!!
@@ -59,7 +57,7 @@ class SignupFragment : Fragment() {
     private fun initUIState() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.authViewParamsState.collect { authViewState ->
+                viewModel.signUpParamsState.collect { authViewState ->
                     setFieldsStates(authViewState)
                 }
             }
@@ -81,11 +79,11 @@ class SignupFragment : Fragment() {
         }
     }
 
-    private fun setFieldsStates(authViewParamsState: AuthViewParamsState) {
-        setUsernameState(authViewParamsState.usernameState)
-        setEmailState(authViewParamsState.emailState)
-        setPasswordState(authViewParamsState.passwordState)
-        setRepeatedPasswordState(authViewParamsState.repeatedPasswordState)
+    private fun setFieldsStates(signUpParamsState: SignUpParamsState) {
+        setUsernameState(signUpParamsState.usernameState)
+        setEmailState(signUpParamsState.emailState)
+        setPasswordState(signUpParamsState.passwordState)
+        setRepeatedPasswordState(signUpParamsState.repeatedPasswordState)
     }
 
     private fun setUsernameState(state: OnlineValidationFieldState) {
@@ -190,7 +188,7 @@ class SignupFragment : Fragment() {
                     binding.editTextPassword.text.toString()
                 )
             ) {
-                val direction = SignupFragmentDirections.actionSignupFragmentToProfileFormFragment()
+                val direction = SignUpFragmentDirections.actionSignUpFragmentToProfileFormFragment()
                 val extras = FragmentNavigatorExtras(
                     binding.containerLayout to "container_transition"
                 )
@@ -198,7 +196,7 @@ class SignupFragment : Fragment() {
             }
         }
         binding.buttonLogin.setOnClickListener {
-            val direction = SignupFragmentDirections.actionSignupFragmentToLoginFragment()
+            val direction = SignUpFragmentDirections.actionSignUpFragmentToLogInFragment()
             val extras = FragmentNavigatorExtras(
                 binding.containerLayout to "container_transition"
             )

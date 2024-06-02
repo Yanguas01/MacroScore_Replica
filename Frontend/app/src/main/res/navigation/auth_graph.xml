@@ -7,14 +7,14 @@
 
     <fragment
         android:id="@+id/signupFragment"
-        android:name="es.upm.macroscore.presentation.auth.signup.SignupFragment"
+        android:name="es.upm.macroscore.presentation.auth.signup.SignUpFragment"
         android:label="fragment_signup"
         tools:layout="@layout/fragment_signup" >
         <action
-            android:id="@+id/action_signupFragment_to_profileFormFragment"
+            android:id="@+id/action_signUpFragment_to_profileFormFragment"
             app:destination="@id/profileFormFragment" />
         <action
-            android:id="@+id/action_signupFragment_to_loginFragment"
+            android:id="@+id/action_signUpFragment_to_logInFragment"
             app:destination="@id/loginFragment" />
     </fragment>
     <fragment
@@ -24,11 +24,11 @@
         tools:layout="@layout/fragment_profile_form" />
     <fragment
         android:id="@+id/loginFragment"
-        android:name="es.upm.macroscore.presentation.auth.login.LoginFragment"
+        android:name="es.upm.macroscore.presentation.auth.login.LogInFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
         <action
-            android:id="@+id/action_loginFragment_to_signupFragment"
+            android:id="@+id/action_logInFragment_to_signUpFragment"
             app:destination="@id/signupFragment" />
     </fragment>
 </navigation>

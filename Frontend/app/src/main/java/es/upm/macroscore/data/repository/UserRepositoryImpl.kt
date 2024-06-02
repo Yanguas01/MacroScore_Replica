@@ -1,5 +1,6 @@
 package es.upm.macroscore.data.repository
 
+import android.util.Log
 import es.upm.macroscore.data.network.MacroScoreApiService
 import es.upm.macroscore.data.network.response.login.LogInResponse
 import es.upm.macroscore.data.network.response.signup.SignUpResponse
@@ -72,6 +73,7 @@ class UserRepositoryImpl @Inject constructor(
         val data = logInRequestMapper.map(logInRequest)
         return runCatching {
             val response = macroScoreApiService.logUser(data.username, data.password, data.scope)
+
             if (response.isSuccessful) {
                 val body = response.body() ?: throw Exception("Empty body")
                 tokenManager.saveTokens(body)
@@ -81,6 +83,7 @@ class UserRepositoryImpl @Inject constructor(
                     tokenType = body.tokenType
                 )
             } else {
+                Log.d("UserRepository", response.message().toString())
                 throw Exception("Server error: ${response.code()} - ${response.message()}")
             }
         }
