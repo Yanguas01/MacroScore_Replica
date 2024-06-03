@@ -1,16 +1,13 @@
-package es.upm.macroscore.presentation.home.feed.adapter.adapter
+package es.upm.macroscore.ui.home.feed.adapter.adapter
 
-import android.util.Log
 import android.view.View
 import android.view.View.VISIBLE
 import android.view.View.GONE
 import androidx.recyclerview.widget.RecyclerView
 import es.upm.macroscore.R
 import es.upm.macroscore.databinding.ItemRecyclerViewMealBinding
-import es.upm.macroscore.domain.model.FoodModel
-import es.upm.macroscore.presentation.home.feed.FoodState
-import es.upm.macroscore.presentation.home.feed.MealState
-import es.upm.macroscore.presentation.model.FoodUIModel
+import es.upm.macroscore.ui.home.feed.FoodState
+import es.upm.macroscore.ui.model.FoodUIModel
 
 class ItemMealViewHolder(view: View): RecyclerView.ViewHolder(view) {
 

@@ -1,6 +1,6 @@
-package es.upm.macroscore.presentation.auth.login
+package es.upm.macroscore.ui.auth.login
 
-import es.upm.macroscore.presentation.states.NoValidationFieldState
+import es.upm.macroscore.ui.states.NoValidationFieldState
 
 
 data class LogInParamsState(

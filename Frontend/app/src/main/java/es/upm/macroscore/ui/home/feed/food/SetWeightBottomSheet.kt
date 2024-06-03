@@ -1,4 +1,4 @@
-package es.upm.macroscore.presentation.home.feed.food
+package es.upm.macroscore.ui.home.feed.food
 
 import android.os.Bundle
 import android.view.LayoutInflater

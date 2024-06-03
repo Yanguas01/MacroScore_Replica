@@ -1,9 +1,8 @@
-package es.upm.macroscore.presentation.home.feed.food.adapter
+package es.upm.macroscore.ui.home.feed.food.adapter
 
 import android.view.View
 import android.view.View.GONE
 import androidx.recyclerview.widget.RecyclerView
-import es.upm.macroscore.R
 import es.upm.macroscore.databinding.ItemRecyclerViewMealBinding
 import es.upm.macroscore.domain.model.FoodModel
 

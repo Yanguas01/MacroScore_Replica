@@ -1,4 +1,4 @@
-package es.upm.macroscore.presentation.auth.login
+package es.upm.macroscore.ui.auth.login
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.upm.macroscore.data.storage.TokenManager
 import es.upm.macroscore.domain.usecase.LogUserUseCase
-import es.upm.macroscore.presentation.states.NoValidationFieldState
-import es.upm.macroscore.presentation.states.OnlineOperationState
+import es.upm.macroscore.ui.states.NoValidationFieldState
+import es.upm.macroscore.ui.states.OnlineOperationState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update

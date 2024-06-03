@@ -1,9 +1,10 @@
 package es.upm.macroscore.data.network
 
-import es.upm.macroscore.data.network.request.signup.SignUpRequestEntity
+import es.upm.macroscore.data.network.dto.meals.MealDTO
+import es.upm.macroscore.data.network.dto.signup.SignUpDTO
 import es.upm.macroscore.data.network.response.login.LogInResponse
 import es.upm.macroscore.data.network.response.signup.CheckEmailResponse
-import es.upm.macroscore.data.network.response.mealByDate.MealByDateResponse
+import es.upm.macroscore.data.network.response.meals.MealByDateResponse
 import es.upm.macroscore.data.network.response.signup.CheckUsernameResponse
 import es.upm.macroscore.data.network.response.signup.SignUpResponse
 import retrofit2.Response
@@ -11,7 +12,6 @@ import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -25,7 +25,7 @@ interface MacroScoreApiService {
     suspend fun checkUsername(@Query("username") username: String): Response<CheckUsernameResponse>
 
     @POST("signup")
-    suspend fun createNewUser(@Body signUpRequestEntity: SignUpRequestEntity): Response<SignUpResponse>
+    suspend fun createNewUser(@Body signUpDTO: SignUpDTO): Response<SignUpResponse>
 
     @FormUrlEncoded
     @POST("login")
@@ -34,8 +34,9 @@ interface MacroScoreApiService {
     @POST("refresh")
     suspend fun refreshToken(@Body refreshToken: String): Response<LogInResponse>
 
-    @GET("meals/{target_date}")
-    suspend fun getMealsByDate(@Path("target_date") targetDate: String, @Header("Authorization") token: String): List<MealByDateResponse>
+    @GET("meals")
+    suspend fun getMealsByDate(@Query("target_date") targetDate: String): Response<List<MealByDateResponse>>
 
-
+    @POST("meals")
+    suspend fun addFood(@Body mealDTO: MealDTO): Response<MealByDateResponse>
 }

@@ -1,10 +1,9 @@
-package es.upm.macroscore.presentation.auth.signup
+package es.upm.macroscore.ui.auth.signup
 
 import android.content.Intent
 import android.graphics.drawable.Animatable
 import android.os.Bundle
 import android.transition.TransitionInflater
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,9 +18,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import es.upm.macroscore.R
 import es.upm.macroscore.core.extensions.onTextChanged
 import es.upm.macroscore.databinding.FragmentProfileFormBinding
-import es.upm.macroscore.presentation.home.HomeActivity
-import es.upm.macroscore.presentation.states.NoValidationFieldState
-import es.upm.macroscore.presentation.states.OnlineOperationState
+import es.upm.macroscore.ui.home.HomeActivity
+import es.upm.macroscore.ui.states.NoValidationFieldState
+import es.upm.macroscore.ui.states.OnlineOperationState
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint

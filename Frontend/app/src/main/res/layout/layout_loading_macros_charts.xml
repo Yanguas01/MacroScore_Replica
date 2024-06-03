@@ -7,7 +7,7 @@
     android:layout_margin="8dp"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".presentation.home.statistics.MacrosChartsFragment">
+    tools:context=".ui.home.statistics.MacrosChartsFragment">
 
     <View
         android:layout_width="128dp"
@@ -27,7 +27,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <es.upm.macroscore.presentation.views.PieChart
+            <es.upm.macroscore.ui.views.PieChart
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:progress="100"
@@ -49,7 +49,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <es.upm.macroscore.presentation.views.PieChart
+            <es.upm.macroscore.ui.views.PieChart
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:progress="100"
@@ -70,7 +70,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <es.upm.macroscore.presentation.views.PieChart
+            <es.upm.macroscore.ui.views.PieChart
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:progress="100"

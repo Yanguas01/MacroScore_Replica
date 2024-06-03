@@ -1,7 +1,7 @@
-package es.upm.macroscore.presentation.auth.signup
+package es.upm.macroscore.ui.auth.signup
 
-import es.upm.macroscore.presentation.states.NoValidationFieldState
-import es.upm.macroscore.presentation.states.OnlineValidationFieldState
+import es.upm.macroscore.ui.states.NoValidationFieldState
+import es.upm.macroscore.ui.states.OnlineValidationFieldState
 
 data class SignUpParamsState(
     var usernameState: OnlineValidationFieldState = OnlineValidationFieldState.Idle,

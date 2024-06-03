@@ -1,6 +1,6 @@
-package es.upm.macroscore.presentation.model
+package es.upm.macroscore.ui.model
 
-import es.upm.macroscore.presentation.home.feed.FoodState
+import es.upm.macroscore.ui.home.feed.FoodState
 
 data class FoodUIModel (
     val name: String,

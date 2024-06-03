@@ -1,4 +1,4 @@
-package es.upm.macroscore.presentation.home.profile
+package es.upm.macroscore.ui.home.profile
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import es.upm.macroscore.R
 import es.upm.macroscore.databinding.FragmentProfileBinding
-import es.upm.macroscore.presentation.EditBottomSheet
-import es.upm.macroscore.presentation.home.profile.enums.TextInputLayoutInfo
+import es.upm.macroscore.ui.EditBottomSheet
+import es.upm.macroscore.ui.home.profile.enums.TextInputLayoutInfo
 
 class ProfileFragment : Fragment() {
 

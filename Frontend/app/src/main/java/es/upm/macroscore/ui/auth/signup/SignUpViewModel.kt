@@ -1,4 +1,4 @@
-package es.upm.macroscore.presentation.auth.signup
+package es.upm.macroscore.ui.auth.signup
 
 import android.content.Context
 import android.util.Log
@@ -11,10 +11,10 @@ import es.upm.macroscore.domain.usecase.CheckEmailUseCase
 import es.upm.macroscore.domain.usecase.CheckUsernameUseCase
 import es.upm.macroscore.domain.usecase.LogUserUseCase
 import es.upm.macroscore.domain.usecase.RegisterUserUseCase
-import es.upm.macroscore.presentation.model.SignUpFragmentUIModel
-import es.upm.macroscore.presentation.states.NoValidationFieldState
-import es.upm.macroscore.presentation.states.OnlineOperationState
-import es.upm.macroscore.presentation.states.OnlineValidationFieldState
+import es.upm.macroscore.ui.model.SignUpFragmentUIModel
+import es.upm.macroscore.ui.states.NoValidationFieldState
+import es.upm.macroscore.ui.states.OnlineOperationState
+import es.upm.macroscore.ui.states.OnlineValidationFieldState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

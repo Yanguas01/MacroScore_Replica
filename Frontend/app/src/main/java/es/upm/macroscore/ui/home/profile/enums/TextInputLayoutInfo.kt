@@ -1,4 +1,4 @@
-package es.upm.macroscore.presentation.home.profile.enums
+package es.upm.macroscore.ui.home.profile.enums
 
 import android.text.InputType
 import es.upm.macroscore.R

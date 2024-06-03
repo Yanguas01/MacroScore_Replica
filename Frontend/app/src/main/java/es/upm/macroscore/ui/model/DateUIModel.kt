@@ -1,4 +1,4 @@
-package es.upm.macroscore.presentation.model
+package es.upm.macroscore.ui.model
 
 data class DateUIModel(
     var dayOfWeek: String,

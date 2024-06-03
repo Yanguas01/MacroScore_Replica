@@ -1,4 +1,4 @@
-package es.upm.macroscore.presentation.home.feed
+package es.upm.macroscore.ui.home.feed
 
 enum class FoodState {
     COLLAPSED, EXPANDED

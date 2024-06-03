@@ -1,4 +1,4 @@
-package es.upm.macroscore.presentation.states
+package es.upm.macroscore.ui.states
 
 sealed class OnlineOperationState {
     data object Idle : OnlineOperationState()

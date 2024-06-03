@@ -1,11 +1,10 @@
-package es.upm.macroscore.presentation.home.feed.adapter.adapter
+package es.upm.macroscore.ui.home.feed.adapter.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import es.upm.macroscore.R
-import es.upm.macroscore.domain.model.FoodModel
-import es.upm.macroscore.presentation.model.FoodUIModel
+import es.upm.macroscore.ui.model.FoodUIModel
 
 class ItemMealAdapter(private val list: List<FoodUIModel>): RecyclerView.Adapter<ItemMealViewHolder>() {
 

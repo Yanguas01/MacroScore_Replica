@@ -1,4 +1,4 @@
-package es.upm.macroscore.presentation.home.feed.food
+package es.upm.macroscore.ui.home.feed.food
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,14 +10,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import es.upm.macroscore.R
 import es.upm.macroscore.databinding.FragmentFoodDialogBinding
-import es.upm.macroscore.presentation.home.feed.FeedViewModel
-import es.upm.macroscore.presentation.home.feed.food.viewpageradapter.ViewPagerAdapter
+import es.upm.macroscore.ui.home.feed.FeedViewModel
+import es.upm.macroscore.ui.home.feed.food.viewpageradapter.ViewPagerAdapter
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint

@@ -7,7 +7,7 @@
     android:background="@color/secondaryDark"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".presentation.auth.signup.SignUpFragment">
+    tools:context=".ui.auth.signup.SignUpFragment">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/container_layout"

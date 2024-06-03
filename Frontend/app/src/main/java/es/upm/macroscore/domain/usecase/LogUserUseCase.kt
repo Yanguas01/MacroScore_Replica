@@ -1,9 +1,9 @@
 package es.upm.macroscore.domain.usecase
 
-import android.util.Log
 import es.upm.macroscore.data.network.response.login.LogInResponse
-import es.upm.macroscore.domain.UserRepository
-import es.upm.macroscore.domain.model.LogInRequest
+import es.upm.macroscore.domain.model.LoginModel
+import es.upm.macroscore.domain.repositories.UserRepository
+import es.upm.macroscore.domain.request.LogInRequest
 import javax.inject.Inject
 
 class LogUserUseCase @Inject constructor(
@@ -12,7 +12,7 @@ class LogUserUseCase @Inject constructor(
 
     suspend operator fun invoke(
         username: String, password: String, keepLoggedIn: Boolean
-    ): Result<LogInResponse> {
+    ): Result<LoginModel> {
         val scope: String = if (keepLoggedIn) "keep_logged_in" else ""
         return userRepository.logUser(LogInRequest(username, password, scope))
     }

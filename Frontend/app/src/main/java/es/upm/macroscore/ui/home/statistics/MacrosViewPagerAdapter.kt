@@ -1,7 +1,6 @@
-package es.upm.macroscore.presentation.home.statistics
+package es.upm.macroscore.ui.home.statistics
 
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
 class MacrosViewPagerAdapter(statisticsFragment: StatisticsFragment) : FragmentStateAdapter(statisticsFragment) {

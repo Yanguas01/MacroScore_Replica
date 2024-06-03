@@ -1,4 +1,4 @@
-package es.upm.macroscore.presentation.auth
+package es.upm.macroscore.ui.auth
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

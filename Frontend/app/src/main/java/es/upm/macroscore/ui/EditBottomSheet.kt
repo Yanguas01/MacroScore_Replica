@@ -1,4 +1,4 @@
-package es.upm.macroscore.presentation
+package es.upm.macroscore.ui
 
 import android.graphics.drawable.Animatable
 import android.os.Bundle

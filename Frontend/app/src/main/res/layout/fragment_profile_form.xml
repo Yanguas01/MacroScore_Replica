@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/primary"
     android:backgroundTint="@color/secondaryDark"
-    tools:context=".presentation.auth.signup.ProfileFormFragment">
+    tools:context=".ui.auth.signup.ProfileFormFragment">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/container_layout"

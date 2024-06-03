@@ -1,4 +1,4 @@
-package es.upm.macroscore.di
+package es.upm.macroscore.core.di
 
 import android.content.Context
 import dagger.Module

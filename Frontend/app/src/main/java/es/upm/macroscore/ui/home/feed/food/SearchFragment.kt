@@ -1,24 +1,16 @@
-package es.upm.macroscore.presentation.home.feed.food
+package es.upm.macroscore.ui.home.feed.food
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import es.upm.macroscore.R
 import es.upm.macroscore.databinding.FragmentSearchBinding
-import es.upm.macroscore.databinding.LayoutWeightDialogBinding
-import es.upm.macroscore.presentation.home.feed.FeedViewModel
-import es.upm.macroscore.presentation.home.feed.adapter.FeedAdapter
-import es.upm.macroscore.presentation.home.feed.food.adapter.FoodAdapter
-import es.upm.macroscore.presentation.home.feed.food.adapter.SearchViewModel
+import es.upm.macroscore.ui.home.feed.FeedViewModel
+import es.upm.macroscore.ui.home.feed.food.adapter.FoodAdapter
 
 @AndroidEntryPoint
 class SearchFragment : Fragment() {
@@ -35,7 +27,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun initUI() {
-        foodAdapter = FoodAdapter(viewModel.getFood()) { foodModel ->
+        /*foodAdapter = FoodAdapter(viewModel.getFood()) { foodModel ->
             val bottomSheet = SetWeightBottomSheet {
                 viewModel.addFood(foodModel)
                 viewModel.closeDialog()
@@ -45,7 +37,7 @@ class SearchFragment : Fragment() {
         binding.layoutSearchFood.recyclerViewFood.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = foodAdapter
-        }
+        }*/
     }
 
     override fun onCreateView(

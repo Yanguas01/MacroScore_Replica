@@ -1,4 +1,4 @@
-package es.upm.macroscore.presentation.home.feed.adapter
+package es.upm.macroscore.ui.home.feed.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,9 +6,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import es.upm.macroscore.R
-import es.upm.macroscore.domain.model.MealModel
-import es.upm.macroscore.presentation.home.feed.meal.MealDiffUtil
-import es.upm.macroscore.presentation.model.MealUIModel
+import es.upm.macroscore.ui.home.feed.meal.MealDiffUtil
+import es.upm.macroscore.ui.model.MealUIModel
 import java.util.Collections
 
 class FeedAdapter(

@@ -1,4 +1,4 @@
-package es.upm.macroscore.domain.model
+package es.upm.macroscore.domain.request
 
 data class LogInRequest (
     val username: String,

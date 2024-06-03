@@ -1,9 +1,9 @@
-package es.upm.macroscore.presentation.home.feed.food.viewpageradapter
+package es.upm.macroscore.ui.home.feed.food.viewpageradapter
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import es.upm.macroscore.presentation.home.feed.food.FavouritesFragment
-import es.upm.macroscore.presentation.home.feed.food.SearchFragment
+import es.upm.macroscore.ui.home.feed.food.FavouritesFragment
+import es.upm.macroscore.ui.home.feed.food.SearchFragment
 
 class ViewPagerAdapter(fragment: Fragment): FragmentStateAdapter(fragment) {
 

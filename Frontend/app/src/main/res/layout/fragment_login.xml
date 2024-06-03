@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:background="@color/secondaryDark"
-    tools:context=".presentation.auth.login.LogInFragment">
+    tools:context=".ui.auth.login.LogInFragment">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/container_layout"

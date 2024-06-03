@@ -19,12 +19,12 @@ from app.utils.helpers import convert_date
 router = APIRouter(prefix='/meals')
 
 
-@router.post('', response_model=MealOut)
+@router.post('', response_model=Meal)
 async def create_meal(
     meal_in: MealIn,
     user: User = Depends(get_current_user),
     db: AsyncIOMotorDatabase = Depends(get_db)
-) -> MealOut:
+) -> Meal:
     meal_datetime = convert_date(meal_in.datetime)
     meal_index = await count_meals_by_date(db, user.id, meal_datetime)
     meal: Meal = Meal(
@@ -33,14 +33,14 @@ async def create_meal(
         name=meal_in.name,
         index=meal_index
     )
-    meal_id = await save_meal(db, meal.model_dump(exclude='id'))
+    meal.id = await save_meal(db, meal.model_dump(exclude='id'))
 
-    if not meal_id:
+    if not meal.id:
         raise HTTPException(status_code=400, detail="Meal already exists")
 
     if meal_in.save_meal:
         await add_meal(db, meal.name, user.id)
-    return MealOut(id=meal_id, name=meal.name, datetime=meal_datetime)
+    return meal
 
 
 @router.patch('/{meal_id}/rename', status_code=status.HTTP_200_OK)

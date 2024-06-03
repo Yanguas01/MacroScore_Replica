@@ -1,23 +1,22 @@
-package es.upm.macroscore.data.repository
+package es.upm.macroscore.data.implementation
 
 import android.util.Log
+import es.upm.macroscore.data.mappers.toDTO
 import es.upm.macroscore.data.network.MacroScoreApiService
 import es.upm.macroscore.data.network.response.login.LogInResponse
 import es.upm.macroscore.data.network.response.signup.SignUpResponse
 import es.upm.macroscore.data.storage.TokenManager
-import es.upm.macroscore.domain.UserRepository
-import es.upm.macroscore.domain.mapper.LogInRequestMapper
-import es.upm.macroscore.domain.mapper.SignUpRequestMapper
+import es.upm.macroscore.domain.repositories.UserRepository
 import es.upm.macroscore.domain.model.EmailStatus
-import es.upm.macroscore.domain.model.LogInRequest
-import es.upm.macroscore.domain.model.SignUpRequest
+import es.upm.macroscore.domain.model.LoginModel
+import es.upm.macroscore.domain.model.SignUpModel
+import es.upm.macroscore.domain.request.LogInRequest
+import es.upm.macroscore.domain.request.SignUpRequest
 import es.upm.macroscore.domain.model.UsernameStatus
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
     private val macroScoreApiService: MacroScoreApiService,
-    private val signUpRequestMapper: SignUpRequestMapper,
-    private val logInRequestMapper: LogInRequestMapper,
     private val tokenManager: TokenManager
 ) : UserRepository {
 
@@ -51,37 +50,27 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun registerUser(
         signUpRequest: SignUpRequest
-    ): Result<SignUpResponse> {
+    ): Result<SignUpModel> {
         return runCatching {
-            val response = macroScoreApiService.createNewUser(signUpRequestMapper.map(signUpRequest))
+            val response = macroScoreApiService.createNewUser(signUpRequest.toDTO())
             if (response.isSuccessful) {
                 val body = response.body() ?: throw Exception("Empty body")
-                SignUpResponse(
-                    id = body.id,
-                    username = body.username,
-                    email = body.email,
-                    orderMeal = body.orderMeal,
-                    profile = body.profile
-                )
+                body.toDomain()
             } else {
                 throw Exception("Server error: ${response.code()} - ${response.message()}")
             }
         }
     }
 
-    override suspend fun logUser(logInRequest: LogInRequest): Result<LogInResponse> {
-        val data = logInRequestMapper.map(logInRequest)
+    override suspend fun logUser(logInRequest: LogInRequest): Result<LoginModel> {
+        val data = logInRequest.toDTO()
         return runCatching {
             val response = macroScoreApiService.logUser(data.username, data.password, data.scope)
 
             if (response.isSuccessful) {
                 val body = response.body() ?: throw Exception("Empty body")
                 tokenManager.saveTokens(body)
-                LogInResponse(
-                    accessToken = body.accessToken,
-                    refreshToken = body.refreshToken,
-                    tokenType = body.tokenType
-                )
+                body.toDomain()
             } else {
                 Log.d("UserRepository", response.message().toString())
                 throw Exception("Server error: ${response.code()} - ${response.message()}")

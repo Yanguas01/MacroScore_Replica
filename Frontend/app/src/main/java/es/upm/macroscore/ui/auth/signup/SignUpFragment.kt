@@ -1,4 +1,4 @@
-package es.upm.macroscore.presentation.auth.signup
+package es.upm.macroscore.ui.auth.signup
 
 import android.graphics.drawable.Animatable
 import android.os.Bundle
@@ -17,8 +17,8 @@ import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
 import es.upm.macroscore.core.extensions.onTextChanged
 import es.upm.macroscore.databinding.FragmentSignupBinding
-import es.upm.macroscore.presentation.states.NoValidationFieldState
-import es.upm.macroscore.presentation.states.OnlineValidationFieldState
+import es.upm.macroscore.ui.states.NoValidationFieldState
+import es.upm.macroscore.ui.states.OnlineValidationFieldState
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint

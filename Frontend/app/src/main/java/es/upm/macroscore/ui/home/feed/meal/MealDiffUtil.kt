@@ -1,7 +1,7 @@
-package es.upm.macroscore.presentation.home.feed.meal
+package es.upm.macroscore.ui.home.feed.meal
 
 import androidx.recyclerview.widget.DiffUtil
-import es.upm.macroscore.presentation.model.MealUIModel
+import es.upm.macroscore.ui.model.MealUIModel
 
 class MealDiffUtil(
     private val oldList: List<MealUIModel>,

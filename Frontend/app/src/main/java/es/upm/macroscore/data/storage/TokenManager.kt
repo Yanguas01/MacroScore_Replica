@@ -15,7 +15,7 @@ class TokenManager @Inject constructor(
         return sharedPreferences.getString("access_token", null)
     }
 
-    fun getRefreshToken(): String? {
+    private fun getRefreshToken(): String? {
         return sharedPreferences.getString("refresh_token", null)
     }
 

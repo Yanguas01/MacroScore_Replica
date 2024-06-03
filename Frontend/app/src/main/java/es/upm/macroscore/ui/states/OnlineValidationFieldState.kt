@@ -1,4 +1,4 @@
-package es.upm.macroscore.presentation.states
+package es.upm.macroscore.ui.states
 
 sealed class OnlineValidationFieldState {
     data object Idle: OnlineValidationFieldState()

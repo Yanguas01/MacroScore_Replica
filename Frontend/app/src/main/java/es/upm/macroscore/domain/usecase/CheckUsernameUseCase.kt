@@ -1,6 +1,6 @@
 package es.upm.macroscore.domain.usecase
 
-import es.upm.macroscore.domain.UserRepository
+import es.upm.macroscore.domain.repositories.UserRepository
 import javax.inject.Inject
 
 class CheckUsernameUseCase @Inject constructor(private val repository: UserRepository) {

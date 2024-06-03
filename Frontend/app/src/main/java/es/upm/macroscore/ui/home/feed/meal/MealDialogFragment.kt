@@ -1,4 +1,4 @@
-package es.upm.macroscore.presentation.home.feed.meal
+package es.upm.macroscore.ui.home.feed.meal
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,14 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import es.upm.macroscore.R
 import es.upm.macroscore.databinding.FragmentMealDialogBinding
+import es.upm.macroscore.ui.home.feed.FeedViewModel
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MealDialogFragment : DialogFragment() {
 
-    private val viewModel by viewModels<MealDialogViewModel>()
+    private val viewModel by viewModels<FeedViewModel>()
 
     private var _binding: FragmentMealDialogBinding? = null
     private val binding get() = _binding!!
@@ -34,15 +39,27 @@ class MealDialogFragment : DialogFragment() {
     }
 
     private fun initUI() {
+        initUIState()
         initToolbar()
         initCommonMeals()
+    }
+
+    private fun initUIState() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.isReadyToDismiss.collect {
+                        super.dismiss()
+                    }
+                }
+            }
+        }
     }
 
     private fun initToolbar() {
         binding.buttonClose.setOnClickListener { super.dismiss() }
         binding.buttonSave.setOnClickListener {
-            viewModel.saveMeal(binding.textInputEditText.text.toString(), binding.checkboxSaveMeal.isChecked)
-            super.dismiss()
+            viewModel.addMeal(binding.textInputEditText.text.toString(), binding.checkboxSaveMeal.isChecked)
         }
     }
 

@@ -1,4 +1,4 @@
-package es.upm.macroscore.presentation.home.feed
+package es.upm.macroscore.ui.home.feed
 
 import android.graphics.Canvas
 import android.os.Bundle
@@ -21,9 +21,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import es.upm.macroscore.R
 import es.upm.macroscore.data.network.response.meals.MealByDateResponse
 import es.upm.macroscore.databinding.FragmentFeedBinding
-import es.upm.macroscore.presentation.EditBottomSheet
-import es.upm.macroscore.presentation.home.feed.adapter.FeedAdapter
-import es.upm.macroscore.presentation.model.MealUIModel
+import es.upm.macroscore.ui.EditBottomSheet
+import es.upm.macroscore.ui.home.feed.adapter.FeedAdapter
+import es.upm.macroscore.ui.model.MealUIModel
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -34,7 +34,7 @@ class FeedFragment : Fragment() {
     private lateinit var feedAdapter: FeedAdapter
     private lateinit var itemTouchHelper: ItemTouchHelper
 
-    private var mealList: List<MealByDateResponse> = emptyList()
+    private var mealList: List<MealUIModel> = emptyList()
 
     private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!

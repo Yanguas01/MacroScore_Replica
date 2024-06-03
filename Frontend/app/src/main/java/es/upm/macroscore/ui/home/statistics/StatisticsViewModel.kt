@@ -1,4 +1,4 @@
-package es.upm.macroscore.presentation.home.statistics
+package es.upm.macroscore.ui.home.statistics
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

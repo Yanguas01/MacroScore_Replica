@@ -1,4 +1,4 @@
-package es.upm.macroscore.presentation.home.statistics
+package es.upm.macroscore.ui.home.statistics
 
 import android.animation.ObjectAnimator
 import android.os.Bundle

@@ -1,11 +1,9 @@
-package es.upm.macroscore.presentation.home.feed.adapter
+package es.upm.macroscore.ui.home.feed.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.InsetDrawable
-import android.util.DisplayMetrics
 import android.util.Log
-import android.util.TypedValue
 import android.view.MenuItem
 import android.view.View
 import android.view.View.GONE
@@ -18,9 +16,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import es.upm.macroscore.R
 import es.upm.macroscore.databinding.ItemRecyclerViewFeedBinding
-import es.upm.macroscore.presentation.home.feed.MealState
-import es.upm.macroscore.presentation.home.feed.adapter.adapter.ItemMealAdapter
-import es.upm.macroscore.presentation.model.MealUIModel
+import es.upm.macroscore.ui.home.feed.MealState
+import es.upm.macroscore.ui.home.feed.adapter.adapter.ItemMealAdapter
+import es.upm.macroscore.ui.model.MealUIModel
 
 class FeedViewHolder(
     view: View,
@@ -37,13 +35,13 @@ class FeedViewHolder(
 
         binding.mealTitle.text = mealUIModel.name
         binding.totalKcal.text =
-            context.getString(R.string.total_kcal, mealUIModel.foods.sumOf { it.kcalPer100 })
+            context.getString(R.string.total_kcal, mealUIModel.items.sumOf { it.kcalPer100 })
         binding.totalCarbs.text =
-            context.getString(R.string.total_carbs, mealUIModel.foods.sumOf { it.carbsPer100 })
+            context.getString(R.string.total_carbs, mealUIModel.items.sumOf { it.carbsPer100 })
         binding.totalProts.text =
-            context.getString(R.string.total_prots, mealUIModel.foods.sumOf { it.protsPer100 })
+            context.getString(R.string.total_prots, mealUIModel.items.sumOf { it.protsPer100 })
         binding.totalFats.text =
-            context.getString(R.string.total_fats, mealUIModel.foods.sumOf { it.fatsPer100 })
+            context.getString(R.string.total_fats, mealUIModel.items.sumOf { it.fatsPer100 })
 
         binding.ivReorder.setOnLongClickListener {
             touchHelper.startDrag(this)
@@ -52,12 +50,12 @@ class FeedViewHolder(
 
         if (mealUIModel.state == null) {
             mealUIModel.state =
-                if (mealUIModel.foods.isEmpty()) MealState.EMPTY else MealState.EXPANDED
+                if (mealUIModel.items.isEmpty()) MealState.EMPTY else MealState.EXPANDED
         }
 
         updateUIBasedOnState(mealUIModel.state)
 
-        val itemAdapter = ItemMealAdapter(mealUIModel.foods)
+        val itemAdapter = ItemMealAdapter(mealUIModel.items)
         binding.recyclerViewMeal.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = itemAdapter
@@ -112,7 +110,7 @@ class FeedViewHolder(
         }
         binding.buttonMinimize.setOnClickListener {
             mealModel.state = if (mealModel.state == MealState.MINIMIZED) {
-                if (mealModel.foods.isEmpty()) MealState.EMPTY else MealState.COLLAPSED
+                if (mealModel.items.isEmpty()) MealState.EMPTY else MealState.COLLAPSED
             } else {
                 MealState.MINIMIZED
             }
