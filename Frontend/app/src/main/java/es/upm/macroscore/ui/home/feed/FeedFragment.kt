@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import es.upm.macroscore.R
+import es.upm.macroscore.data.network.response.meals.MealByDateResponse
 import es.upm.macroscore.databinding.FragmentFeedBinding
 import es.upm.macroscore.presentation.EditBottomSheet
 import es.upm.macroscore.presentation.home.feed.adapter.FeedAdapter
@@ -33,7 +34,7 @@ class FeedFragment : Fragment() {
     private lateinit var feedAdapter: FeedAdapter
     private lateinit var itemTouchHelper: ItemTouchHelper
 
-    private var mealList: List<MealUIModel> = emptyList()
+    private var mealList: List<MealByDateResponse> = emptyList()
 
     private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!
@@ -41,14 +42,24 @@ class FeedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initUI()
+        initUIState()
     }
 
     private fun initUI() {
-        initUIState()
+        initToolbar()
         initItemTouchHelper()
         initRecyclerView()
         binding.addMeal.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_mealDialogFragment)
+        }
+    }
+
+    private fun initToolbar() {
+        binding.buttonPreviousDay.setOnClickListener {
+            viewModel.previousDay()
+        }
+        binding.buttonNextDay.setOnClickListener {
+            viewModel.nextDay()
         }
     }
 
@@ -168,8 +179,10 @@ class FeedFragment : Fragment() {
                     }
                 }
                 launch {
-                    viewModel.currentDay.collect {
-
+                    viewModel.currentDate.collect { currentDate ->
+                        if (currentDate != null) {
+                            binding.textViewDate.text = this@FeedFragment.requireContext().getString(R.string.current_date, currentDate.dayOfWeek, currentDate.dayOfMonth, currentDate.month)
+                        }
                     }
                 }
             }
