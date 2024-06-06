@@ -25,7 +25,6 @@ async def create_meal(
     user: User = Depends(get_current_user),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ) -> Meal:
-    print(f"Received meal_in: {meal_in}")
     meal_datetime = convert_date(meal_in.datetime)
     meal_index = await count_meals_by_date(db, user.id, meal_datetime)
     meal: Meal = Meal(

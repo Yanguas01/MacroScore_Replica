@@ -1,4 +1,8 @@
 package es.upm.macroscore.domain.usecase
 
-class GetFoodsByPatternUseCase {
+import javax.inject.Inject
+
+class GetFoodsByPatternUseCase @Inject constructor(
+
+) {
 }

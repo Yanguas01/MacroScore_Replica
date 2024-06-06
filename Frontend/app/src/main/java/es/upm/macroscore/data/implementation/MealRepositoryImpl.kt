@@ -1,10 +1,11 @@
 package es.upm.macroscore.data.implementation
 
-import android.util.Log
 import es.upm.macroscore.data.mappers.toDTO
 import es.upm.macroscore.data.network.MacroScoreApiService
 import es.upm.macroscore.domain.model.MealModel
+import es.upm.macroscore.domain.model.RenameMealModel
 import es.upm.macroscore.domain.repositories.MealRepository
+import es.upm.macroscore.ui.request.OrderedMealRequest
 import es.upm.macroscore.ui.request.MealRequest
 import javax.inject.Inject
 
@@ -27,16 +28,42 @@ class MealRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addMeal(mealRequest: MealRequest): Result<MealModel> {
-        Log.d("MealRepository", "addMeal")
         return runCatching {
-            Log.d("MealRepository", mealRequest.toDTO().toString())
-            val response = macroScoreApiService.addFood(mealRequest.toDTO())
-            Log.d("MealRepository", response.body().toString())
+            val response = macroScoreApiService.addMeal(mealRequest.toDTO())
             if (response.isSuccessful) {
-                Log.d("MealRepository", "response is successful")
                 val body = response.body() ?: throw Exception("Empty body")
                 body.toDomain()
             } else {
+                throw Exception("Server error: ${response.code()} - ${response.message()}")
+            }
+        }
+    }
+
+    override suspend fun renameMeal(mealId: String, newName: String): Result<RenameMealModel> {
+        return runCatching {
+            val response = macroScoreApiService.renameMeal(mealId = mealId, newMealName = newName)
+            if (response.isSuccessful) {
+                val body = response.body() ?: throw Exception("Empty body")
+                body.toDomain()
+            } else {
+                throw Exception("Server error: ${response.code()} - ${response.message()}")
+            }
+        }
+    }
+
+    override suspend fun deleteMeal(mealId: String): Result<Unit> {
+        return runCatching {
+            val response = macroScoreApiService.deleteMeal(mealId = mealId)
+            if (!response.isSuccessful) {
+                throw Exception("Server error: ${response.code()} - ${response.message()}")
+            }
+        }
+    }
+
+    override suspend fun reorderMeal(orderedMeals: List<OrderedMealRequest>): Result<Unit> {
+        return runCatching {
+            val response = macroScoreApiService.reorderMeal(orderedMeals.map { orderedMeal -> orderedMeal.toDTO() })
+            if (!response.isSuccessful) {
                 throw Exception("Server error: ${response.code()} - ${response.message()}")
             }
         }

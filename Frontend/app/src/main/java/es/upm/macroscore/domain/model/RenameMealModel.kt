@@ -1,4 +1,6 @@
 package es.upm.macroscore.domain.model
 
-class RenameMealModel {
-}
+data class RenameMealModel (
+    val mealId: String,
+    val newName: String
+)

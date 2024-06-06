@@ -2,12 +2,15 @@ package es.upm.macroscore.ui
 
 import android.graphics.drawable.Animatable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import es.upm.macroscore.core.extensions.onTextChanged
 import es.upm.macroscore.databinding.FragmentBottomSheetEditProfileBinding
 
 class EditBottomSheet : BottomSheetDialogFragment() {
@@ -15,10 +18,10 @@ class EditBottomSheet : BottomSheetDialogFragment() {
     private var _binding: FragmentBottomSheetEditProfileBinding? = null
     private val binding get() = _binding!!
 
-    var onAcceptWithResponse: ((() -> Unit) -> Unit)? = null
-
+    private var loadingButtonIcon: Int? = null
     private var onAcceptAction: ((bottomSheet: EditBottomSheet) -> Unit)? = null
     private var onCancelAction: ((bottomSheet: EditBottomSheet) -> Unit)? = null
+    private var enableButtonCondition: ((String) -> Boolean)? = null
 
     class Builder(private val fragmentManager: FragmentManager) {
         private val bottomSheet = EditBottomSheet()
@@ -32,8 +35,13 @@ class EditBottomSheet : BottomSheetDialogFragment() {
         fun setEndIcon(endIcon: Int) = apply { args.putInt("endIcon", endIcon) }
         fun setPrefix(prefix: String) = apply { args.putString("prefix", prefix) }
         fun setSuffix(suffix: String) = apply { args.putString("suffix", suffix) }
-        fun setOnAcceptAction(action: (bottomSheet: EditBottomSheet) -> Unit) = apply { bottomSheet.onAcceptAction = action }
-        fun setOnCancelAction(action: (bottomSheet: EditBottomSheet) -> Unit) = apply { bottomSheet.onCancelAction = action }
+        fun setLoadingButtonIcon(icon: Int) = apply { args.putInt("loadingButtonIcon", icon) }
+        fun setOnAcceptAction(action: (bottomSheet: EditBottomSheet) -> Unit) =
+            apply { bottomSheet.onAcceptAction = action }
+        fun setOnCancelAction(action: (bottomSheet: EditBottomSheet) -> Unit) =
+            apply { bottomSheet.onCancelAction = action }
+        fun setEnableButtonCondition(condition: (String) -> Boolean) =
+            apply { bottomSheet.enableButtonCondition = condition }
 
         private fun build(): EditBottomSheet {
             bottomSheet.arguments = args
@@ -103,9 +111,18 @@ class EditBottomSheet : BottomSheetDialogFragment() {
         arguments?.getString("suffix")?.let {
             binding.textInputLayoutCopy.suffixText = it
         }
+        binding.editText.onTextChanged {
+            binding.buttonAccept.isEnabled = enableButtonCondition?.invoke(it) ?: true
+        }
     }
 
     private fun initButtons() {
+        binding.buttonAccept.isEnabled = enableButtonCondition?.invoke(binding.editText.text.toString()) ?: true
+        arguments?.getInt("loadingButtonIcon")?.let {
+            if (it != 0) {
+                loadingButtonIcon = it
+            }
+        }
         binding.buttonAccept.setOnClickListener {
             onAcceptAction?.invoke(this)
         }
@@ -114,11 +131,43 @@ class EditBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
+    fun getText(): String {
+        return binding.editText.text.toString()
+    }
+
+
     fun startEndIconAnimation() {
         (binding.textInputLayoutCopy.endIconDrawable as? Animatable)?.start()
     }
 
     fun stopEndIconAnimation() {
         (binding.textInputLayoutCopy.endIconDrawable as? Animatable)?.stop()
+    }
+
+    fun startButtonIconAnimation() {
+        binding.buttonAccept.icon =
+            loadingButtonIcon?.let { AppCompatResources.getDrawable(requireContext(), it) }
+        binding.buttonAccept.icon.setVisible(true, true)
+        (binding.buttonAccept.icon as? Animatable)?.start()
+    }
+
+    fun stopButtonIconAnimation() {
+        (binding.buttonAccept.icon as? Animatable)?.stop()
+        binding.buttonAccept.icon = null
+    }
+
+    fun block(block: Boolean) {
+        binding.editText.isEnabled = !block
+        binding.buttonAccept.isEnabled = !block
+        binding.buttonCancel.isEnabled = !block
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            if (binding.editText.isEnabled) {
+                requireActivity().onBackPressedDispatcher.onBackPressed()
+            }
+        }
     }
 }

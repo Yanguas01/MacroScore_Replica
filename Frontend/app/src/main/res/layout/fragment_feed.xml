@@ -63,15 +63,15 @@
         android:id="@+id/text_view_hint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintBottom_toTopOf="@id/divider"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:text="@string/foods_hint"
         android:fontFamily="@font/montserrat"
-        android:textSize="16sp"
         android:paddingHorizontal="24dp"
-        />
+        android:text="@string/foods_hint"
+        android:textSize="16sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/divider"
@@ -83,20 +83,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/recycler_view_feed" />
 
+    <include
+        android:id="@+id/shimmer_layout_feed"
+        layout="@layout/layout_loading_feed"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/add_meal"
         style="@style/Widget.Material3.Button.TextButton.Icon"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/background_text_button"
+        app:backgroundTint="@color/primary"
+        android:enabled="true"
         android:text="@string/add_meal"
-        android:textColor="@color/accentDark"
+        android:textColor="@color/add_meal_button_selector"
         app:icon="@drawable/ic_add"
         app:iconGravity="textStart"
-        app:iconTint="@color/accentDark"
+        app:iconTint="@color/add_meal_button_selector"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

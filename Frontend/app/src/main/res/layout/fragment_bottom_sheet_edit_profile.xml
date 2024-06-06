@@ -29,7 +29,6 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginVertical="16dp"
-        app:endIconDrawable="@drawable/ic_animated_loading"
         app:endIconMode="custom"
         app:endIconTint="@null"
         app:startIconTint="@color/secondaryDark">
@@ -48,11 +47,14 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:fontFamily="@font/montserrat"
+        app:iconTint="@null"
+        app:iconGravity="textEnd"
+        app:iconPadding="16dp"
         android:text="@string/accept"
         android:textAllCaps="true"
         android:textColor="@color/primary"
         android:textStyle="bold"
-        app:backgroundTint="@color/secondaryDark" />
+        app:backgroundTint="@color/icon_color_button_pie_chart_view_pager" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_cancel"

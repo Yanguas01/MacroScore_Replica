@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -18,7 +19,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MealDialogFragment : DialogFragment() {
 
-    private val viewModel by viewModels<FeedViewModel>()
+    private val viewModel by activityViewModels<FeedViewModel>()
 
     private var _binding: FragmentMealDialogBinding? = null
     private val binding get() = _binding!!
@@ -30,7 +31,10 @@ class MealDialogFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        dialog?.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -47,10 +51,8 @@ class MealDialogFragment : DialogFragment() {
     private fun initUIState() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.isReadyToDismiss.collect {
-                        super.dismiss()
-                    }
+                viewModel.isReadyToDismiss.collect {
+                    this@MealDialogFragment.dismiss()
                 }
             }
         }
@@ -59,7 +61,10 @@ class MealDialogFragment : DialogFragment() {
     private fun initToolbar() {
         binding.buttonClose.setOnClickListener { super.dismiss() }
         binding.buttonSave.setOnClickListener {
-            viewModel.addMeal(binding.textInputEditText.text.toString(), binding.checkboxSaveMeal.isChecked)
+            viewModel.addMeal(
+                binding.textInputEditText.text.toString(),
+                binding.checkboxSaveMeal.isChecked
+            )
         }
     }
 

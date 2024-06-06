@@ -48,11 +48,6 @@ class FeedViewHolder(
             true
         }
 
-        if (mealUIModel.state == null) {
-            mealUIModel.state =
-                if (mealUIModel.items.isEmpty()) MealState.EMPTY else MealState.EXPANDED
-        }
-
         updateUIBasedOnState(mealUIModel.state)
 
         val itemAdapter = ItemMealAdapter(mealUIModel.items)
@@ -129,7 +124,6 @@ class FeedViewHolder(
         }
 
     }
-
 
     @SuppressLint("RestrictedApi")
     private fun showPopupMenu(v: View, @MenuRes menuRes: Int, position: Int) {

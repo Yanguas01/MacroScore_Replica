@@ -5,10 +5,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import es.upm.macroscore.R
 import es.upm.macroscore.domain.usecase.CheckEmailUseCase
 import es.upm.macroscore.domain.usecase.CheckUsernameUseCase
+import es.upm.macroscore.domain.usecase.SaveMyUserUseCase
 import es.upm.macroscore.domain.usecase.LogUserUseCase
 import es.upm.macroscore.domain.usecase.RegisterUserUseCase
 import es.upm.macroscore.ui.model.SignUpFragmentUIModel
@@ -27,11 +27,12 @@ import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    val checkUsernameUseCase: CheckUsernameUseCase,
-    val checkEmailUseCase: CheckEmailUseCase,
-    val registerUserUseCase: RegisterUserUseCase,
-    val logUserUseCase: LogUserUseCase,
-    @ApplicationContext val context: Context
+    private val checkUsernameUseCase: CheckUsernameUseCase,
+    private val checkEmailUseCase: CheckEmailUseCase,
+    private val registerUserUseCase: RegisterUserUseCase,
+    private val logUserUseCase: LogUserUseCase,
+    private val saveMyUserUseCase: SaveMyUserUseCase,
+    private val context: Context
 ) : ViewModel() {
 
     private val _signUpParamsState = MutableStateFlow(SignUpParamsState())
@@ -284,9 +285,15 @@ class SignUpViewModel @Inject constructor(
                         password = _signUpFragmentUIModel.value.password,
                         keepLoggedIn = false
                     )
-                        .onSuccess {
-                            Log.d("SignUpViewModel", "Success")
-                            _signUpActionState.update { OnlineOperationState.Success }
+                        .onSuccess { _ ->
+                            saveMyUserUseCase()
+                                .onSuccess {
+                                    _signUpActionState.update { OnlineOperationState.Success }
+                                }
+                                .onFailure {
+                                    Log.e("LogInViewModel", it.message.toString())
+                                    _signUpActionState.update { _ -> OnlineOperationState.Error(it.toString()) }
+                                }
                         }
                         .onFailure {
                             _signUpActionState.update { OnlineOperationState.Error(it.toString()) }

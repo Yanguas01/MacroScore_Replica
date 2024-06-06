@@ -1,4 +1,3 @@
 package es.upm.macroscore.core.exceptions
 
-class MealAlreadySavedException {
-}
+class MealAlreadySavedException(message: String): Exception(message)

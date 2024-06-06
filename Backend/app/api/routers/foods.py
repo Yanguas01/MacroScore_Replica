@@ -37,6 +37,6 @@ async def search_foods(
             'total': total,
             'skip': skip,
             'limit': limit,
-            'nextUrl': next_page_url if next_skip < total else None
+            'next_url': next_page_url if next_skip < total else None
         }
     }

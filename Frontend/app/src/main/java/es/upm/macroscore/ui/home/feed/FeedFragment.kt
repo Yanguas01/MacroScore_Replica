@@ -3,9 +3,13 @@ package es.upm.macroscore.ui.home.feed
 import android.graphics.Canvas
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -19,11 +23,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import es.upm.macroscore.R
-import es.upm.macroscore.data.network.response.meals.MealByDateResponse
 import es.upm.macroscore.databinding.FragmentFeedBinding
 import es.upm.macroscore.ui.EditBottomSheet
 import es.upm.macroscore.ui.home.feed.adapter.FeedAdapter
 import es.upm.macroscore.ui.model.MealUIModel
+import es.upm.macroscore.ui.states.OnlineOperationState
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -35,6 +39,10 @@ class FeedFragment : Fragment() {
     private lateinit var itemTouchHelper: ItemTouchHelper
 
     private var mealList: List<MealUIModel> = emptyList()
+
+    private var state: OnlineOperationState = OnlineOperationState.Idle
+
+    private var bottomSheet: EditBottomSheet? = null
 
     private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!
@@ -129,11 +137,12 @@ class FeedFragment : Fragment() {
     }
 
     private fun initRecyclerView() {
-        feedAdapter = FeedAdapter(touchHelper = itemTouchHelper, onEditMeal = {
-            onEditMeal(it)
-        }, onDeleteMeal = {
-            onDeleteMeal(it)
-        }, addFood = {
+        feedAdapter = FeedAdapter(
+            viewModel = viewModel,
+            touchHelper = itemTouchHelper,
+            onEditMeal = { onEditMeal(it) },
+            onDeleteMeal = { onDeleteMeal(it) },
+            addFood = {
             findNavController().navigate(
                 FeedFragmentDirections.actionFeedFragmentToFoodDialogFragment(it)
             )
@@ -147,23 +156,30 @@ class FeedFragment : Fragment() {
     private fun onEditMeal(position: Int) {
         val meal = mealList[position]
 
-        val bottomSheet = EditBottomSheet.Builder(requireActivity().supportFragmentManager)
+        bottomSheet = EditBottomSheet.Builder(requireActivity().supportFragmentManager)
             .setTitle("Cambiar Nombre").setHint(R.string.meal_name)
-            .setInputType(InputType.TYPE_CLASS_TEXT).setEndIcon(R.drawable.ic_animated_loading)
-            .setText(meal.name).setOnAcceptAction { bottomSheet ->
-                bottomSheet.dismiss()
-            }.setOnCancelAction { bottomSheet ->
-                bottomSheet.dismiss()
+            .setInputType(InputType.TYPE_CLASS_TEXT).setText(meal.name)
+            .setLoadingButtonIcon(R.drawable.ic_animated_loading)
+            .setEnableButtonCondition { text -> text != meal.name && text.isNotEmpty() }
+            .setOnAcceptAction { bottomSheetObject ->
+                bottomSheetObject.startButtonIconAnimation()
+                bottomSheetObject.block(true)
+                viewModel.renameMeal(meal.id, bottomSheetObject.getText())
+            }.setOnCancelAction { bottomSheetObject ->
+                bottomSheetObject.dismiss()
             }.show()
     }
 
     private fun onDeleteMeal(position: Int) {
+        val meal = mealList[position]
+
         MaterialAlertDialogBuilder(requireContext()).setTitle("¿Estás seguro de que quieres eliminar la comida?")
             .setIcon(ResourcesCompat.getDrawable(resources, R.drawable.ic_alert, null))
             .setMessage("Si lo eliminas, tendrás que volver a crearlo.")
-            .setNegativeButton("Cancelar") { dialog, which ->
+            .setNegativeButton("Cancelar") { dialog, _ ->
                 dialog.dismiss()
-            }.setPositiveButton("Aceptar") { dialog, which ->
+            }.setPositiveButton("Aceptar") { dialog, _ ->
+                viewModel.deleteMeal(mealId = meal.id)
                 dialog.dismiss()
             }.show()
     }
@@ -181,17 +197,72 @@ class FeedFragment : Fragment() {
                 launch {
                     viewModel.currentDate.collect { currentDate ->
                         if (currentDate != null) {
-                            binding.textViewDate.text = this@FeedFragment.requireContext().getString(R.string.current_date, currentDate.dayOfWeek, currentDate.dayOfMonth, currentDate.month)
+                            binding.textViewDate.text =
+                                this@FeedFragment.requireContext().getString(
+                                    R.string.current_date,
+                                    currentDate.dayOfWeek,
+                                    currentDate.dayOfMonth,
+                                    currentDate.month
+                                )
                         }
+                    }
+                }
+                launch {
+                    viewModel.feedActionState.collect { newState ->
+                        Log.d("FeedFragment", state.toString())
+                        state = newState
+                        setState(state)
+                    }
+                }
+                launch {
+                    viewModel.closeBottomSheetEvent.collect {
+                        bottomSheet?.stopButtonIconAnimation()
+                        bottomSheet?.dismiss()
                     }
                 }
             }
         }
     }
 
+    private fun setState(state: OnlineOperationState) {
+        when (state) {
+            is OnlineOperationState.Idle -> {}
+            is OnlineOperationState.Loading -> {
+                binding.shimmerLayoutFeed.shimmerLayoutFeed.visibility = View.VISIBLE
+                binding.shimmerLayoutFeed.shimmerLayoutFeed.startShimmer()
+                binding.addMeal.isEnabled = false
+                binding.recyclerViewFeed.visibility = View.GONE
+                binding.textViewHint.visibility = View.GONE
+                requireActivity().window.setFlags(
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                )
+            }
+
+            is OnlineOperationState.Success -> {
+                binding.shimmerLayoutFeed.shimmerLayoutFeed.stopShimmer()
+                binding.shimmerLayoutFeed.shimmerLayoutFeed.visibility = View.GONE
+                binding.addMeal.isEnabled = true
+                binding.recyclerViewFeed.visibility = View.VISIBLE
+                requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            }
+
+            is OnlineOperationState.Error -> {
+                Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                binding.shimmerLayoutFeed.shimmerLayoutFeed.stopShimmer()
+                binding.shimmerLayoutFeed.shimmerLayoutFeed.visibility = View.GONE
+                binding.addMeal.isEnabled = true
+                binding.recyclerViewFeed.visibility = View.VISIBLE
+                requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            }
+        }
+    }
+
     private fun updateHint() {
         binding.textViewHint.visibility =
-            if (binding.recyclerViewFeed.adapter?.itemCount != 0) View.GONE else View.VISIBLE
+            if (binding.recyclerViewFeed.adapter?.itemCount != 0 ||
+                state is OnlineOperationState.Loading
+            ) View.GONE else View.VISIBLE
     }
 
     override fun onCreateView(
@@ -199,5 +270,15 @@ class FeedFragment : Fragment() {
     ): View {
         _binding = FragmentFeedBinding.inflate(layoutInflater, container, false)
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            if (state !is OnlineOperationState.Loading) {
+                isEnabled = false
+                requireActivity().onBackPressedDispatcher.onBackPressed()
+            }
+        }
     }
 }

@@ -7,7 +7,10 @@ import dagger.hilt.components.SingletonComponent
 import es.upm.macroscore.data.implementation.UserRepositoryImpl
 import es.upm.macroscore.data.network.MacroScoreApiService
 import es.upm.macroscore.data.implementation.MealRepositoryImpl
+import es.upm.macroscore.data.local.dao.MealDAO
+import es.upm.macroscore.data.local.dao.UserDAO
 import es.upm.macroscore.data.storage.TokenManager
+import es.upm.macroscore.data.storage.UserManager
 import es.upm.macroscore.domain.repositories.MealRepository
 import es.upm.macroscore.domain.repositories.UserRepository
 
@@ -18,9 +21,12 @@ object RepositoriesModule {
     @Provides
     fun provideUserRepository(
         macroScoreApiService: MacroScoreApiService,
-        tokenManager: TokenManager
+        userDAO: UserDAO,
+        mealDAO: MealDAO,
+        tokenManager: TokenManager,
+        userManager: UserManager
     ): UserRepository {
-        return UserRepositoryImpl(macroScoreApiService, tokenManager)
+        return UserRepositoryImpl(macroScoreApiService, userDAO, mealDAO, tokenManager, userManager)
     }
 
     @Provides

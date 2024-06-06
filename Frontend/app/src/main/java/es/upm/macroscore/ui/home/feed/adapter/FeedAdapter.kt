@@ -6,17 +6,29 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import es.upm.macroscore.R
+import es.upm.macroscore.ui.home.feed.FeedViewModel
 import es.upm.macroscore.ui.home.feed.meal.MealDiffUtil
 import es.upm.macroscore.ui.model.MealUIModel
+import kotlinx.coroutines.flow.onEach
 import java.util.Collections
 
 class FeedAdapter(
+    private val viewModel: FeedViewModel,
     private var mealList: List<MealUIModel> = emptyList(),
     private val touchHelper: ItemTouchHelper,
     private val onEditMeal: (position: Int) -> Unit,
     private val onDeleteMeal: (position: Int) -> Unit,
     private val addFood: (String) -> Unit
 ) : RecyclerView.Adapter<FeedViewHolder>() {
+
+    init {
+        viewModel.mealList.onEach { list ->
+            val mealDiffUtil = MealDiffUtil(mealList, list)
+            val result = DiffUtil.calculateDiff(mealDiffUtil)
+            mealList = list
+            result.dispatchUpdatesTo(this)
+        }
+    }
 
     fun updateList (newMealList: List<MealUIModel>) {
         val mealDiffUtil = MealDiffUtil(mealList, newMealList)
@@ -25,6 +37,7 @@ class FeedAdapter(
         result.dispatchUpdatesTo(this)
     }
 
+    /*
     fun moveItem(fromPosition: Int, toPosition: Int) {
         if (fromPosition < toPosition) {
             for (i in fromPosition until toPosition) {
@@ -36,6 +49,10 @@ class FeedAdapter(
             }
         }
         notifyItemMoved(fromPosition, toPosition)
+    }*/
+
+    fun moveItem(fromPosition: Int, toPosition: Int) {
+        viewModel.moveItem(fromPosition, toPosition)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedViewHolder {

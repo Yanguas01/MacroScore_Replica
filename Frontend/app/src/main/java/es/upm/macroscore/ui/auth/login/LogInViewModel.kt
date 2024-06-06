@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import es.upm.macroscore.data.storage.TokenManager
+import es.upm.macroscore.domain.usecase.SaveMyUserUseCase
 import es.upm.macroscore.domain.usecase.LogUserUseCase
 import es.upm.macroscore.ui.states.NoValidationFieldState
 import es.upm.macroscore.ui.states.OnlineOperationState
@@ -16,8 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LogInViewModel @Inject constructor(
-    val tokenManager: TokenManager, // TODO eliminar
-    val logUserUseCase: LogUserUseCase
+    val logUserUseCase: LogUserUseCase,
+    val saveMyUserUseCase: SaveMyUserUseCase
 ) : ViewModel() {
 
     private val _logInParamsState = MutableStateFlow(LogInParamsState())
@@ -54,7 +54,6 @@ class LogInViewModel @Inject constructor(
         password: String,
         keepLoggedIn: Boolean
     ) {
-        tokenManager.clearTokens()
         viewModelScope.launch {
             _logInActionState.update {
                 OnlineOperationState.Loading
@@ -64,12 +63,19 @@ class LogInViewModel @Inject constructor(
                 password = password,
                 keepLoggedIn = keepLoggedIn
             )
-                .onSuccess {
-                    _logInActionState.update { OnlineOperationState.Success }
+                .onSuccess { _ ->
+                    saveMyUserUseCase()
+                        .onSuccess {
+                            _logInActionState.update { OnlineOperationState.Success }
+                        }
+                        .onFailure {
+                            Log.e("LogInViewModel", it.message.toString())
+                            _logInActionState.update { _ -> OnlineOperationState.Error(it.toString()) }
+                        }
                 }
                 .onFailure {
-                    Log.d("LogInViewModel", it.message.toString())
-                    _logInActionState.update { OnlineOperationState.Error(it.toString()) }
+                    Log.e("LogInViewModel", it.message.toString())
+                    _logInActionState.update { _ -> OnlineOperationState.Error(it.toString()) }
                 }
         }
     }

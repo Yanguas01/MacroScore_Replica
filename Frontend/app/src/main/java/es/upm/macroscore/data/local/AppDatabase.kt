@@ -15,7 +15,7 @@ import es.upm.macroscore.data.local.entities.UserFoodEntity
     entities = [UserEntity::class, MealEntity::class, FoodEntity::class, UserFoodEntity::class],
     version = 1
 )
-abstract class Database: RoomDatabase() {
+abstract class AppDatabase: RoomDatabase() {
     abstract fun userDAO(): UserDAO
     abstract fun mealDAO(): MealDAO
     abstract fun foodDAO(): FoodDAO
