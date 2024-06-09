@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, ValidationInfo, field_validator, validator
 
 
 class User(BaseModel):
@@ -33,7 +33,8 @@ class FoodWeight(BaseModel):
 
 class FoodItem(Food, FoodWeight):
     @field_validator('id')
-    def validate_ids(cls, v, values, **kwargs):
+    def validate_ids(cls, v, info: ValidationInfo):
+        values = info.data
         if 'id' in values and v != values[id]:
             raise ValueError('Los id\'s no coinciden')
         return v

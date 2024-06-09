@@ -57,7 +57,7 @@ class FeedViewHolder(
         }
 
         initStateButtonsListeners(mealUIModel)
-        initAddFoodButtonListener(mealUIModel.name, addFood)
+        initAddFoodButtonListener(mealUIModel.id, addFood)
     }
 
     private fun updateUIBasedOnState(state: MealState?) {
@@ -157,7 +157,7 @@ class FeedViewHolder(
         popupMenu.show()
     }
 
-    private fun initAddFoodButtonListener(mealName: String, addFood: (String) -> Unit) {
-        binding.buttonAddFood.setOnClickListener { addFood(mealName) }
+    private fun initAddFoodButtonListener(mealId: String, addFood: (String) -> Unit) {
+        binding.buttonAddFood.setOnClickListener { addFood(mealId) }
     }
 }

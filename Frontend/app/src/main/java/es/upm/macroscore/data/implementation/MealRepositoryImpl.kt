@@ -1,10 +1,13 @@
 package es.upm.macroscore.data.implementation
 
+import android.util.Log
 import es.upm.macroscore.data.mappers.toDTO
 import es.upm.macroscore.data.network.MacroScoreApiService
+import es.upm.macroscore.domain.model.FoodModel
 import es.upm.macroscore.domain.model.MealModel
 import es.upm.macroscore.domain.model.RenameMealModel
 import es.upm.macroscore.domain.repositories.MealRepository
+import es.upm.macroscore.ui.request.AddFoodRequest
 import es.upm.macroscore.ui.request.OrderedMealRequest
 import es.upm.macroscore.ui.request.MealRequest
 import javax.inject.Inject
@@ -64,6 +67,22 @@ class MealRepositoryImpl @Inject constructor(
         return runCatching {
             val response = macroScoreApiService.reorderMeal(orderedMeals.map { orderedMeal -> orderedMeal.toDTO() })
             if (!response.isSuccessful) {
+                throw Exception("Server error: ${response.code()} - ${response.message()}")
+            }
+        }
+    }
+
+    override suspend fun addFoodToMeal(
+        mealId: String,
+        addFoodRequest: AddFoodRequest
+    ): Result<FoodModel> {
+        return runCatching {
+            val response = macroScoreApiService.addFoodToMeal(mealId, addFoodRequest.toDTO())
+            if (response.isSuccessful) {
+                val body = response.body() ?: throw Exception("Empty body")
+                body.toDomain()
+            } else {
+                Log.e("MealRepository", "Server error: ${response.code()} - ${response.message()}")
                 throw Exception("Server error: ${response.code()} - ${response.message()}")
             }
         }

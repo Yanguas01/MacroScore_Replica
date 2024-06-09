@@ -1,11 +1,13 @@
 package es.upm.macroscore.data.network
 
+import es.upm.macroscore.data.network.dto.meals.AddFoodDTO
 import es.upm.macroscore.data.network.dto.meals.MealDTO
 import es.upm.macroscore.data.network.dto.meals.OrderedMealDTO
 import es.upm.macroscore.data.network.dto.signup.SignUpDTO
 import es.upm.macroscore.data.network.response.foods.FoodListResponse
 import es.upm.macroscore.data.network.response.foods.FoodResponse
 import es.upm.macroscore.data.network.response.login.LogInResponse
+import es.upm.macroscore.data.network.response.meals.AddFoodResponse
 import es.upm.macroscore.data.network.response.signup.CheckEmailResponse
 import es.upm.macroscore.data.network.response.meals.MealByDateResponse
 import es.upm.macroscore.data.network.response.meals.RenameMealResponse
@@ -57,6 +59,9 @@ interface MacroScoreApiService {
 
     @PATCH("meals/reorder")
     suspend fun reorderMeal(@Body orderedMealList: List<OrderedMealDTO>): Response<Unit>
+
+    @POST("meals/{mealId}/foods")
+    suspend fun addFoodToMeal(@Path("mealId") mealId: String, @Body foodDTO: AddFoodDTO): Response<AddFoodResponse>
 
     @GET("foods/")
     suspend fun getFoodsByPattern(@Query("pattern") pattern: String, @Query("skip") skip: Int, @Query("limit") limit: Int): Response<FoodListResponse>

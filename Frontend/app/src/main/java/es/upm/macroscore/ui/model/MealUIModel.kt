@@ -6,6 +6,6 @@ data class MealUIModel(
     val id: String,
     val name: String,
     var index: Int,
-    var items: List<FoodUIModel>,
+    val items: MutableList<FoodUIModel>,
     var state: MealState
 )

@@ -9,7 +9,7 @@ import es.upm.macroscore.ui.home.feed.adapter.FoodDiffUtil
 import es.upm.macroscore.ui.model.FoodUIModel
 
 class FoodAdapter(
-    private val onItemSelected: (FoodUIModel) -> Unit
+    private val onItemSelected: (foodId: String) -> Unit
 ): PagingDataAdapter<FoodUIModel, FoodViewHolder>(FoodDiffUtil()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FoodViewHolder {

@@ -11,12 +11,12 @@ class FoodViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     private val binding = ItemRecyclerViewMealBinding.bind(view)
 
-    fun bind(foodModel: FoodUIModel?, onItemSelected: (FoodUIModel) -> Unit) {
+    fun bind(foodModel: FoodUIModel?, onItemSelected: (foodId: String) -> Unit) {
         binding.buttonMore.visibility = GONE
         binding.cardViewFoodMacros.visibility = GONE
         binding.root.setOnClickListener {
             if (foodModel != null) {
-                onItemSelected(foodModel)
+                onItemSelected(foodModel.id)
             }
         }
 

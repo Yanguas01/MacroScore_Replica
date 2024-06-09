@@ -25,6 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import es.upm.macroscore.R
 import es.upm.macroscore.databinding.FragmentFeedBinding
 import es.upm.macroscore.ui.EditBottomSheet
+import es.upm.macroscore.ui.EditBottomSheetInput
 import es.upm.macroscore.ui.home.feed.adapter.FeedAdapter
 import es.upm.macroscore.ui.model.MealUIModel
 import es.upm.macroscore.ui.states.OnlineOperationState
@@ -160,7 +161,10 @@ class FeedFragment : Fragment() {
             .setTitle("Cambiar Nombre").setHint(R.string.meal_name)
             .setInputType(InputType.TYPE_CLASS_TEXT).setText(meal.name)
             .setLoadingButtonIcon(R.drawable.ic_animated_loading)
-            .setEnableButtonCondition { text -> text != meal.name && text.isNotEmpty() }
+            .setEnableButtonCondition { input ->
+                val text = input as EditBottomSheetInput.StringInput
+                text.value.isNotBlank() && text.value != meal.name
+            }
             .setOnAcceptAction { bottomSheetObject ->
                 bottomSheetObject.startButtonIconAnimation()
                 bottomSheetObject.block(true)

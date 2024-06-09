@@ -2,6 +2,7 @@ package es.upm.macroscore.ui
 
 import android.graphics.drawable.Animatable
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +22,7 @@ class EditBottomSheet : BottomSheetDialogFragment() {
     private var loadingButtonIcon: Int? = null
     private var onAcceptAction: ((bottomSheet: EditBottomSheet) -> Unit)? = null
     private var onCancelAction: ((bottomSheet: EditBottomSheet) -> Unit)? = null
-    private var enableButtonCondition: ((String) -> Boolean)? = null
+    private var enableButtonCondition: ((EditBottomSheetInput) -> Boolean)? = null
 
     class Builder(private val fragmentManager: FragmentManager) {
         private val bottomSheet = EditBottomSheet()
@@ -40,7 +41,7 @@ class EditBottomSheet : BottomSheetDialogFragment() {
             apply { bottomSheet.onAcceptAction = action }
         fun setOnCancelAction(action: (bottomSheet: EditBottomSheet) -> Unit) =
             apply { bottomSheet.onCancelAction = action }
-        fun setEnableButtonCondition(condition: (String) -> Boolean) =
+        fun setEnableButtonCondition(condition: (EditBottomSheetInput) -> Boolean) =
             apply { bottomSheet.enableButtonCondition = condition }
 
         private fun build(): EditBottomSheet {
@@ -112,12 +113,29 @@ class EditBottomSheet : BottomSheetDialogFragment() {
             binding.textInputLayoutCopy.suffixText = it
         }
         binding.editText.onTextChanged {
-            binding.buttonAccept.isEnabled = enableButtonCondition?.invoke(it) ?: true
+            binding.buttonAccept.isEnabled = enableButtonCondition?.invoke(setInputAsInputType(it)) ?: true
+        }
+    }
+
+    private fun setInputAsInputType(text: String): EditBottomSheetInput {
+        return when (binding.editText.inputType) {
+            InputType.TYPE_CLASS_TEXT -> {
+                EditBottomSheetInput.StringInput(text)
+            }
+            InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL -> {
+                val input = if(text.isNotBlank()) {
+                    text.toDouble()
+                } else {
+                    0.0
+                }
+                EditBottomSheetInput.DoubleInput(input)
+            }
+            else -> { throw Exception("Input del dato incorrecto") }
         }
     }
 
     private fun initButtons() {
-        binding.buttonAccept.isEnabled = enableButtonCondition?.invoke(binding.editText.text.toString()) ?: true
+        binding.buttonAccept.isEnabled = enableButtonCondition?.invoke(setInputAsInputType(binding.editText.text.toString())) ?: true
         arguments?.getInt("loadingButtonIcon")?.let {
             if (it != 0) {
                 loadingButtonIcon = it

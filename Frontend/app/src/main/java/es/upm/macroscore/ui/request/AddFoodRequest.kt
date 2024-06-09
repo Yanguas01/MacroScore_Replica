@@ -1,6 +1,6 @@
 package es.upm.macroscore.ui.request
 
-data class FoodRequest (
+data class AddFoodRequest (
     val foodId: String,
     val weight: Double
 )

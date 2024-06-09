@@ -1,8 +1,6 @@
 package es.upm.macroscore.ui.home.feed
 
 import android.util.Log
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -10,6 +8,7 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.upm.macroscore.core.exceptions.MealAlreadySavedException
+import es.upm.macroscore.domain.usecase.AddFoodToMealUseCase
 import es.upm.macroscore.domain.usecase.AddMealUseCase
 import es.upm.macroscore.domain.usecase.DeleteMealUseCase
 import es.upm.macroscore.domain.usecase.GetFoodsByPatternUseCase
@@ -21,29 +20,23 @@ import es.upm.macroscore.ui.mappers.toUIModel
 import es.upm.macroscore.ui.model.DateUIModel
 import es.upm.macroscore.ui.model.FoodUIModel
 import es.upm.macroscore.ui.model.MealUIModel
+import es.upm.macroscore.ui.request.AddFoodRequest
 import es.upm.macroscore.ui.request.MealRequest
 import es.upm.macroscore.ui.request.OrderedMealRequest
 import es.upm.macroscore.ui.states.OnlineOperationState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -64,7 +57,8 @@ class FeedViewModel @Inject constructor(
     private val renameMealUseCase: RenameMealUseCase,
     private val deleteMealUseCase: DeleteMealUseCase,
     private val reorderMealsUseCase: ReorderMealsUseCase,
-    private val getFoodsByPatternUseCase: GetFoodsByPatternUseCase
+    private val getFoodsByPatternUseCase: GetFoodsByPatternUseCase,
+    private val addFoodToMealUseCase: AddFoodToMealUseCase
 ) : ViewModel() {
 
     private val _calendar by lazy { MutableStateFlow<Calendar>(Calendar.getInstance()) }
@@ -79,7 +73,7 @@ class FeedViewModel @Inject constructor(
         MutableStateFlow(OnlineOperationState.Idle)
     val feedActionState: StateFlow<OnlineOperationState> = _feedActionState
 
-    private val _currentMealName: MutableStateFlow<String> = MutableStateFlow("")
+    private val _currentMealId: MutableStateFlow<String> = MutableStateFlow("")
 
     private val _mealDialogState: MutableStateFlow<OnlineOperationState> =
         MutableStateFlow(OnlineOperationState.Idle)
@@ -277,6 +271,24 @@ class FeedViewModel @Inject constructor(
         }
     }
 
+    fun addFoodToMeal(foodId: String, weight: Double) {
+        viewModelScope.launch {
+            addFoodToMealUseCase(
+                _currentMealId.value,
+                AddFoodRequest(foodId, weight)
+            )
+                .onSuccess { food ->
+                    val meal = _mealList.value.find { it.id == _currentMealId.value }
+                    meal?.items?.add(food.toUIModel())
+                    _closeBottomSheetEvent.emit(Unit)
+                }
+                .onFailure { exception ->
+                    Log.e("FeedViewModel", exception.message.toString())
+                    handleException(_feedActionState, exception)
+                }
+        }
+    }
+
     fun setPattern(pattern: String) {
         _patternFlow.value = pattern.trimEnd()
     }
@@ -285,7 +297,7 @@ class FeedViewModel @Inject constructor(
         _mealDialogState.update { OnlineOperationState.Idle }
     }
 
-    fun setCurrentMealName(name: String) {
-        _currentMealName.value = name
+    fun setCurrentMealId(id: String) {
+        _currentMealId.value = id
     }
 }

@@ -37,7 +37,7 @@
         android:theme="@style/Theme.FullScreenDialog"
         tools:layout="@layout/fragment_food_dialog">
         <argument
-            android:name="meal_name"
+            android:name="meal_id"
             app:argType="string" />
     </dialog>
     <dialog

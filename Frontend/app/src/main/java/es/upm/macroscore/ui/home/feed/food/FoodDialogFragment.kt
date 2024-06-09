@@ -45,29 +45,18 @@ class FoodDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.setCurrentMealName(args.mealName)
+        viewModel.setCurrentMealId(args.mealId)
         initUI()
     }
 
     private fun initUI() {
         initToolbar()
-        initUIState()
         initNavigation()
     }
 
     private fun initToolbar() {
         binding.buttonClose.setOnClickListener {
             super.dismiss()
-        }
-    }
-
-    private fun initUIState() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.foods.collect {
-
-                }
-            }
         }
     }
 

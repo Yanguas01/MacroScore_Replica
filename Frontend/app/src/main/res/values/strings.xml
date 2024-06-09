@@ -99,7 +99,8 @@
     <string name="grams">gramos</string>
     <string name="edit">Editar</string>
     <string name="delete">Borrar</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Search Fragment -->
+    <string name="quantity">Cantidad</string>
 
 </resources>
