@@ -93,7 +93,7 @@ class UserRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 val body = response.body() ?: throw Exception("Empty body")
                 userDAO.insertUser(body.toUserEntity())
-                mealDAO.insertAll(body.orderMeal.mapIndexed { i, it ->  MealEntity(userId = body.id, order = i, name = it) } )
+                mealDAO.insertAll(body.orderMeal.mapIndexed { i, it ->  MealEntity(userId = body.id, order = i, name = it) })
                 userManager.saveUserId(body.id)
             } else {
                 throw Exception("Server error: ${response.code()} - ${response.message()}")

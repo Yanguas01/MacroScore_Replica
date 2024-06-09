@@ -1,5 +1,6 @@
 package es.upm.macroscore.ui.home.feed.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -31,25 +32,17 @@ class FeedAdapter(
     }
 
     fun updateList (newMealList: List<MealUIModel>) {
+        Log.d("FeedAdapter", mealList.toString())
+        Log.d("FeedAdapter", newMealList.toString())
+
+        Log.d("FeedAdapter", (mealList == newMealList).toString())
+
         val mealDiffUtil = MealDiffUtil(mealList, newMealList)
         val result = DiffUtil.calculateDiff(mealDiffUtil)
+
         mealList = newMealList
         result.dispatchUpdatesTo(this)
     }
-
-    /*
-    fun moveItem(fromPosition: Int, toPosition: Int) {
-        if (fromPosition < toPosition) {
-            for (i in fromPosition until toPosition) {
-                Collections.swap(mealList, i, i + 1)
-            }
-        } else {
-            for (i in fromPosition downTo toPosition + 1) {
-                Collections.swap(mealList, i, i - 1)
-            }
-        }
-        notifyItemMoved(fromPosition, toPosition)
-    }*/
 
     fun moveItem(fromPosition: Int, toPosition: Int) {
         viewModel.moveItem(fromPosition, toPosition)
@@ -69,6 +62,6 @@ class FeedAdapter(
     override fun getItemCount() = mealList.size
 
     override fun onBindViewHolder(holder: FeedViewHolder, position: Int) {
-        holder.bind(mealList[position], position, touchHelper, addFood)
+        holder.bind(mealList[position], touchHelper, addFood)
     }
 }

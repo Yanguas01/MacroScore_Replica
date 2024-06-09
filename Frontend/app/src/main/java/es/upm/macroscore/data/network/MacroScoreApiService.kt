@@ -3,6 +3,7 @@ package es.upm.macroscore.data.network
 import es.upm.macroscore.data.network.dto.meals.MealDTO
 import es.upm.macroscore.data.network.dto.meals.OrderedMealDTO
 import es.upm.macroscore.data.network.dto.signup.SignUpDTO
+import es.upm.macroscore.data.network.response.foods.FoodListResponse
 import es.upm.macroscore.data.network.response.foods.FoodResponse
 import es.upm.macroscore.data.network.response.login.LogInResponse
 import es.upm.macroscore.data.network.response.signup.CheckEmailResponse
@@ -58,6 +59,6 @@ interface MacroScoreApiService {
     suspend fun reorderMeal(@Body orderedMealList: List<OrderedMealDTO>): Response<Unit>
 
     @GET("foods/")
-    suspend fun getFoodsByPattern(@Query("pattern") pattern: String, @Query("skip") skip: Int, @Query("limit") limit: Int): Response<List<FoodResponse>>
+    suspend fun getFoodsByPattern(@Query("pattern") pattern: String, @Query("skip") skip: Int, @Query("limit") limit: Int): Response<FoodListResponse>
 
 }

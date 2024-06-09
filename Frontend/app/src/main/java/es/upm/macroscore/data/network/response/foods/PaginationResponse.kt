@@ -6,5 +6,5 @@ data class PaginationResponse(
     @SerializedName("total") val total: Int,
     @SerializedName("skip") val skip: Int,
     @SerializedName("limit") val limit: Int,
-    @SerializedName("next_url") val nextUrl: Int,
+    @SerializedName("next_url") val nextUrl: String?,
 )

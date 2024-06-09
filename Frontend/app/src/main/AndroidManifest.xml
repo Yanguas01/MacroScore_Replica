@@ -29,8 +29,6 @@
         <activity
             android:name=".ui.home.HomeActivity"
             android:exported="true" >
-
-
         </activity>
     </application>
 

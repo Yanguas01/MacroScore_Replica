@@ -17,6 +17,7 @@ import es.upm.macroscore.R
 import es.upm.macroscore.databinding.FragmentFoodDialogBinding
 import es.upm.macroscore.ui.home.feed.FeedViewModel
 import es.upm.macroscore.ui.home.feed.food.viewpageradapter.ViewPagerAdapter
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -63,8 +64,8 @@ class FoodDialogFragment : DialogFragment() {
     private fun initUIState() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.isReadyToDismiss.collect {
-                    this@FoodDialogFragment.dismiss()
+                viewModel.foods.collect {
+
                 }
             }
         }

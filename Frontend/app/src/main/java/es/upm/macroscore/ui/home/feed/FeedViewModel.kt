@@ -1,30 +1,49 @@
 package es.upm.macroscore.ui.home.feed
 
 import android.util.Log
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import androidx.paging.PagingSource
-import androidx.paging.PagingState
+import androidx.paging.cachedIn
+import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.upm.macroscore.core.exceptions.MealAlreadySavedException
 import es.upm.macroscore.domain.usecase.AddMealUseCase
 import es.upm.macroscore.domain.usecase.DeleteMealUseCase
+import es.upm.macroscore.domain.usecase.GetFoodsByPatternUseCase
 import es.upm.macroscore.domain.usecase.GetMealsByDateUseCase
 import es.upm.macroscore.domain.usecase.RenameMealUseCase
 import es.upm.macroscore.domain.usecase.ReorderMealsUseCase
+import es.upm.macroscore.ui.home.feed.meal.ErrorCodes
 import es.upm.macroscore.ui.mappers.toUIModel
 import es.upm.macroscore.ui.model.DateUIModel
 import es.upm.macroscore.ui.model.FoodUIModel
 import es.upm.macroscore.ui.model.MealUIModel
-import es.upm.macroscore.ui.request.OrderedMealRequest
 import es.upm.macroscore.ui.request.MealRequest
+import es.upm.macroscore.ui.request.OrderedMealRequest
 import es.upm.macroscore.ui.states.OnlineOperationState
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -35,18 +54,22 @@ import java.util.Locale
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
+
+
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class FeedViewModel @Inject constructor(
     private val getMealsByDateUseCase: GetMealsByDateUseCase,
     private val addMealUseCase: AddMealUseCase,
     private val renameMealUseCase: RenameMealUseCase,
     private val deleteMealUseCase: DeleteMealUseCase,
-    private val reorderMealsUseCase: ReorderMealsUseCase
+    private val reorderMealsUseCase: ReorderMealsUseCase,
+    private val getFoodsByPatternUseCase: GetFoodsByPatternUseCase
 ) : ViewModel() {
 
     private val _calendar by lazy { MutableStateFlow<Calendar>(Calendar.getInstance()) }
-
     private val _currentDate = MutableStateFlow<DateUIModel?>(null)
+
     val currentDate: StateFlow<DateUIModel?> = _currentDate
 
     private val _mealList = MutableStateFlow(emptyList<MealUIModel>())
@@ -56,14 +79,28 @@ class FeedViewModel @Inject constructor(
         MutableStateFlow(OnlineOperationState.Idle)
     val feedActionState: StateFlow<OnlineOperationState> = _feedActionState
 
-    private var _currentMealName = MutableStateFlow("")
-    private val currentMealName: StateFlow<String> = _currentMealName
+    private val _currentMealName: MutableStateFlow<String> = MutableStateFlow("")
 
-    private val _foods = MutableStateFlow<PagingData<FoodUIModel>>(PagingData.empty())
-    val foods get(): StateFlow<PagingData<FoodUIModel>> = _foods
+    private val _mealDialogState: MutableStateFlow<OnlineOperationState> =
+        MutableStateFlow(OnlineOperationState.Idle)
+    val mealDialogState: StateFlow<OnlineOperationState> = _mealDialogState
 
-    private val _closeDialogEvent = MutableSharedFlow<Unit>(replay = 0)
-    val isReadyToDismiss: SharedFlow<Unit> = _closeDialogEvent
+    private val _patternFlow = MutableStateFlow("")
+    val foods : Flow<PagingData<FoodUIModel>> = _patternFlow
+        .debounce(300)
+        .filter {
+            it.length > 2
+        }
+        .distinctUntilChanged()
+        .flatMapLatest { pattern ->
+            getFoodsByPatternUseCase(pattern)
+        }
+        .map { pagingData ->
+            pagingData.map {
+                it.toUIModel()
+            }
+        }
+        .cachedIn(viewModelScope)
 
     private val _closeBottomSheetEvent = MutableSharedFlow<Unit>(replay = 0)
     val closeBottomSheetEvent: SharedFlow<Unit> = _closeBottomSheetEvent
@@ -113,13 +150,14 @@ class FeedViewModel @Inject constructor(
                     _feedActionState.update { OnlineOperationState.Success }
                 }
                 .onFailure { exception ->
-                    handleException(exception)
+                    handleException(_feedActionState, exception)
                 }
         }
     }
 
     fun addMeal(name: String, saveMeal: Boolean) {
         if (name !in _mealList.value.map { meal -> meal.name }) {
+            _mealDialogState.update { OnlineOperationState.Loading }
             viewModelScope.launch {
                 addMealUseCase(
                     MealRequest(
@@ -132,16 +170,17 @@ class FeedViewModel @Inject constructor(
                     )
                 )
                     .onSuccess {
-                        closeDialog()
                         val updatedList = _mealList.value + it.toUIModel()
                         _mealList.value = updatedList
+                        _mealDialogState.update{ OnlineOperationState.Success }
+                        _mealDialogState.update { OnlineOperationState.Idle }
                     }
                     .onFailure { exception ->
-                        handleException(exception)
+                        handleException(_mealDialogState, exception)
                     }
             }
         } else {
-            _feedActionState.update { OnlineOperationState.Error("Ya existe una comida con ese nombre") }
+            _mealDialogState.update { OnlineOperationState.Error("Ya existe una comida con ese nombre", ErrorCodes.ERROR_ID_MEAL_ALREADY_EXISTS) }
         }
     }
 
@@ -164,22 +203,25 @@ class FeedViewModel @Inject constructor(
                         _closeBottomSheetEvent.emit(Unit)
                     }
                     .onFailure { exception ->
-                        handleException(exception)
+                        handleException(_feedActionState, exception)
                     }
             }
         } else {
-            _feedActionState.update { OnlineOperationState.Error("Ya existe una comida con ese nombre") }
+            _feedActionState.update { OnlineOperationState.Error("Ya existe una comida con ese nombre", ErrorCodes.ERROR_ID_MEAL_ALREADY_EXISTS) }
         }
     }
 
-    private fun handleException(exception: Throwable) {
+    private fun handleException(
+        state: MutableStateFlow<OnlineOperationState>,
+        exception: Throwable
+    ) {
         when (exception) {
             is IOException -> {
-                _feedActionState.update { OnlineOperationState.Error("Error de red: ${exception.message}") }
+                state.update { OnlineOperationState.Error("Error de red: ${exception.message}") }
             }
 
             is HttpException -> {
-                _feedActionState.update { OnlineOperationState.Error("Error HTTP: ${exception.message}") }
+                state.update { OnlineOperationState.Error("Error HTTP: ${exception.message}") }
             }
 
             is CancellationException -> {
@@ -187,13 +229,13 @@ class FeedViewModel @Inject constructor(
             }
 
             is MealAlreadySavedException -> {
-                _feedActionState.update {
-                    OnlineOperationState.Error("Ya tienes guardada una comida con ese nombre")
+                state.update {
+                    OnlineOperationState.Error("Ya tienes guardada una comida con ese nombre", ErrorCodes.ERROR_ID_MEAL_IN_TEMPLATE)
                 }
             }
 
             else -> {
-                _feedActionState.update { OnlineOperationState.Error("Unknown Error: ${exception.message}") }
+                state.update { OnlineOperationState.Error("Unknown Error: ${exception.message}") }
             }
         }
     }
@@ -205,7 +247,7 @@ class FeedViewModel @Inject constructor(
                     _mealList.update { list -> list.filterNot { it.id == mealId } }
                 }
                 .onFailure { exception ->
-                    handleException(exception)
+                    handleException(_feedActionState, exception)
                 }
         }
     }
@@ -218,46 +260,32 @@ class FeedViewModel @Inject constructor(
                 it.index = index
             }
         }
-        _mealList.value = reorderedList
+        _mealList.update { reorderedList }
         reorderMeals()
     }
 
     private fun reorderMeals() {
         viewModelScope.launch {
-            val requestList = _mealList.value.map { meal -> OrderedMealRequest(meal.id, meal.name, meal.index) }
+            val requestList =
+                _mealList.value.map { meal -> OrderedMealRequest(meal.id, meal.name, meal.index) }
             reorderMealsUseCase(
                 requestList
             )
                 .onFailure { exception ->
-                    handleException(exception)
+                    handleException(_feedActionState, exception)
                 }
         }
     }
 
-    fun getFoods() {
-        viewModelScope.launch {
-            val pagingSource = object : PagingSource<Int, FoodUIModel>() {
-                override suspend fun load(params: LoadParams<Int>): LoadResult<Int, FoodUIModel> {
-                    val page = params.key ?: 1
-                    val response =
-                }
+    fun setPattern(pattern: String) {
+        _patternFlow.value = pattern.trimEnd()
+    }
 
-                override fun getRefreshKey(state: PagingState<Int, FoodUIModel>): Int? {
-                   /* return state.anchorPosition?.let { anchorPosition ->
-                        state.closestItemToPosition(anchorPosition)?.prevKey
-                    }*/
-                }
-            }
-        }
+    fun resetMealDialogState() {
+        _mealDialogState.update { OnlineOperationState.Idle }
     }
 
     fun setCurrentMealName(name: String) {
         _currentMealName.value = name
-    }
-
-    private fun closeDialog() {
-        viewModelScope.launch {
-            _closeDialogEvent.emit(Unit)
-        }
     }
 }

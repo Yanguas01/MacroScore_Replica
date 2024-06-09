@@ -1,22 +1,26 @@
 package es.upm.macroscore.ui.home.feed.meal
 
+import android.content.res.ColorStateList
+import android.graphics.drawable.Animatable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import dagger.hilt.android.AndroidEntryPoint
 import es.upm.macroscore.R
+import es.upm.macroscore.core.extensions.onTextChanged
 import es.upm.macroscore.databinding.FragmentMealDialogBinding
 import es.upm.macroscore.ui.home.feed.FeedViewModel
+import es.upm.macroscore.ui.states.OnlineOperationState
 import kotlinx.coroutines.launch
 
-@AndroidEntryPoint
 class MealDialogFragment : DialogFragment() {
 
     private val viewModel by activityViewModels<FeedViewModel>()
@@ -26,7 +30,7 @@ class MealDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.Theme_FullScreenDialog)
+        setStyle(STYLE_NO_TITLE, R.style.Theme_FullScreenDialog)
     }
 
     override fun onStart() {
@@ -40,55 +44,126 @@ class MealDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initUI()
+        initUIState()
     }
 
     private fun initUI() {
-        initUIState()
         initToolbar()
-        initCommonMeals()
+        initTextInputLayout()
+    }
+
+    private fun initTextInputLayout() {
+        binding.editTextMealName.onTextChanged {
+            viewModel.resetMealDialogState()
+        }
+        initCommonMealsButtons()
+    }
+
+    private fun initToolbar() {
+        binding.buttonClose.setOnClickListener {
+            viewModel.resetMealDialogState()
+            this.dismiss()
+        }
+        binding.buttonSave.setOnClickListener {
+            viewModel.addMeal(
+                binding.editTextMealName.text.toString(),
+                binding.checkBoxSaveMeal.isChecked
+            )
+        }
+    }
+
+    private fun initCommonMealsButtons() {
+        binding.buttonBreakfast.setOnClickListener {
+            binding.editTextMealName.setText(binding.buttonBreakfast.text)
+        }
+        binding.buttonBrunch.setOnClickListener {
+            binding.editTextMealName.setText(binding.buttonBrunch.text)
+        }
+        binding.buttonLunch.setOnClickListener {
+            binding.editTextMealName.setText(binding.buttonLunch.text)
+        }
+        binding.buttonAfternoonSnack.setOnClickListener {
+            binding.editTextMealName.setText(binding.buttonAfternoonSnack.text)
+        }
+        binding.buttonDinner.setOnClickListener {
+            binding.editTextMealName.setText(binding.buttonDinner.text)
+        }
     }
 
     private fun initUIState() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.isReadyToDismiss.collect {
-                    this@MealDialogFragment.dismiss()
+                viewModel.mealDialogState.collect { state ->
+                    handleState(state)
                 }
             }
         }
     }
 
-    private fun initToolbar() {
-        binding.buttonClose.setOnClickListener { super.dismiss() }
-        binding.buttonSave.setOnClickListener {
-            viewModel.addMeal(
-                binding.textInputEditText.text.toString(),
-                binding.checkboxSaveMeal.isChecked
-            )
-        }
-    }
+    private fun handleState(state: OnlineOperationState) {
+        when (state) {
+            is OnlineOperationState.Idle -> {
+                binding.textInputMealName.error = null
+                binding.checkBoxSaveMeal.buttonTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.secondary
+                    )
+                )
+                binding.checkBoxSaveMeal.setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.text
+                    )
+                )
+                binding.imageViewCheckBoxError.visibility = View.GONE
+                binding.textViewCheckBoxError.visibility = View.GONE
+            }
+            is OnlineOperationState.Loading -> {
+                binding.imageViewLoading.visibility = View.VISIBLE
+                (binding.imageViewLoading.drawable as? Animatable)?.start()
+            }
 
-    private fun initCommonMeals() {
-        binding.buttonBreakfast.setOnClickListener {
-            binding.textInputEditText.setText(binding.buttonBreakfast.text)
-        }
-        binding.buttonBrunch.setOnClickListener {
-            binding.textInputEditText.setText(binding.buttonBrunch.text)
-        }
-        binding.buttonLunch.setOnClickListener {
-            binding.textInputEditText.setText(binding.buttonLunch.text)
-        }
-        binding.buttonAfternoonSnack.setOnClickListener {
-            binding.textInputEditText.setText(binding.buttonAfternoonSnack.text)
-        }
-        binding.buttonDinner.setOnClickListener {
-            binding.textInputEditText.setText(binding.buttonDinner.text)
+            is OnlineOperationState.Success -> {
+                (binding.imageViewLoading.drawable as? Animatable)?.stop()
+                binding.imageViewLoading.visibility = View.GONE
+                requireActivity().onBackPressedDispatcher.onBackPressed()
+            }
+
+            is OnlineOperationState.Error -> {
+                (binding.imageViewLoading.drawable as? Animatable)?.stop()
+                binding.imageViewLoading.visibility = View.GONE
+                when (state.errorId) {
+                    ErrorCodes.ERROR_ID_MEAL_ALREADY_EXISTS -> {
+                        binding.textInputMealName.error = state.message
+                    }
+
+                    ErrorCodes.ERROR_ID_MEAL_IN_TEMPLATE -> {
+                        binding.checkBoxSaveMeal.buttonTintList = ColorStateList.valueOf(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.md_theme_light_error
+                            )
+                        )
+                        binding.checkBoxSaveMeal.setTextColor(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.md_theme_light_error
+                            )
+                        )
+                        binding.imageViewCheckBoxError.visibility = View.VISIBLE
+                        binding.textViewCheckBoxError.visibility = View.VISIBLE
+                    }
+
+                    else -> Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
         }
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMealDialogBinding.inflate(layoutInflater, container, false)

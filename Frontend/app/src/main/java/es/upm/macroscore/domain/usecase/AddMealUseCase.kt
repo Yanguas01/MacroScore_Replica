@@ -1,5 +1,6 @@
 package es.upm.macroscore.domain.usecase
 
+import android.util.Log
 import es.upm.macroscore.core.exceptions.MealAlreadySavedException
 import es.upm.macroscore.domain.model.MealModel
 import es.upm.macroscore.domain.repositories.MealRepository
@@ -19,6 +20,7 @@ class AddMealUseCase @Inject constructor(
             if (mealRequest.saveMeal) {
                 val userOrderMealResult = userRepository.getUserOrderMeal()
                 if (userOrderMealResult.isSuccess) {
+                    Log.d("AddMealUseCase", "User Order Meal: ${userOrderMealResult.getOrThrow().toString()}")
                     val userOrderMeal = userOrderMealResult.getOrThrow()
                     if (mealRequest.name !in userOrderMeal.orderMeal) {
                         mealRepository.addMeal(mealRequest)

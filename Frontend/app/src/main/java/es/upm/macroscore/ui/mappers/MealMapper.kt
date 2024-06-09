@@ -14,12 +14,3 @@ fun MealModel.toUIModel() = MealUIModel(
     items = this.items.map { item -> item.toUIModel() },
     state = if (this.items.isEmpty()) MealState.EMPTY else MealState.EXPANDED
 )
-
-fun FoodModel.toUIModel() = FoodUIModel(
-    name = this.name,
-    kcalPer100 = this.kcalPer100,
-    carbsPer100 = this.carbsPer100,
-    protsPer100 = this.protsPer100,
-    fatsPer100 = this.fatsPer100,
-    state = FoodState.COLLAPSED
-)

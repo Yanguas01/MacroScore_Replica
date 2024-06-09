@@ -30,7 +30,7 @@ class FeedViewHolder(
     private lateinit var context: Context
     private val binding = ItemRecyclerViewFeedBinding.bind(view)
 
-    fun bind(mealUIModel: MealUIModel, position: Int, touchHelper: ItemTouchHelper, addFood: (String) -> Unit) {
+    fun bind(mealUIModel: MealUIModel, touchHelper: ItemTouchHelper, addFood: (String) -> Unit) {
         context = binding.root.context
 
         binding.mealTitle.text = mealUIModel.name
@@ -56,7 +56,7 @@ class FeedViewHolder(
             adapter = itemAdapter
         }
 
-        initStateButtonsListeners(mealUIModel, position)
+        initStateButtonsListeners(mealUIModel)
         initAddFoodButtonListener(mealUIModel.name, addFood)
     }
 
@@ -99,9 +99,9 @@ class FeedViewHolder(
         }
     }
 
-    private fun initStateButtonsListeners(mealModel: MealUIModel, position: Int) {
+    private fun initStateButtonsListeners(mealModel: MealUIModel) {
         binding.buttonMoreSettings.setOnClickListener {
-            showPopupMenu(it, R.menu.meal_menu, position)
+            showPopupMenu(it, R.menu.meal_menu)
         }
         binding.buttonMinimize.setOnClickListener {
             mealModel.state = if (mealModel.state == MealState.MINIMIZED) {
@@ -110,7 +110,7 @@ class FeedViewHolder(
                 MealState.MINIMIZED
             }
             updateUIBasedOnState(mealModel.state)
-            onUpdate(adapterPosition)
+            onUpdate(bindingAdapterPosition)
         }
 
         binding.mealSummarize.setOnClickListener {
@@ -120,13 +120,13 @@ class FeedViewHolder(
                 MealState.COLLAPSED
             }
             updateUIBasedOnState(mealModel.state)
-            onUpdate(adapterPosition)
+            onUpdate(bindingAdapterPosition)
         }
 
     }
 
     @SuppressLint("RestrictedApi")
-    private fun showPopupMenu(v: View, @MenuRes menuRes: Int, position: Int) {
+    private fun showPopupMenu(v: View, @MenuRes menuRes: Int) {
         val popupMenu = PopupMenu(context, v)
         popupMenu.menuInflater.inflate(menuRes, popupMenu.menu)
 
@@ -143,11 +143,11 @@ class FeedViewHolder(
         popupMenu.setOnMenuItemClickListener { menuItem: MenuItem ->
             when(menuItem.itemId) {
                 R.id.edit -> {
-                    onEditMeal(position)
+                    onEditMeal(bindingAdapterPosition)
                     true
                 }
                 R.id.delete -> {
-                    onDeleteMeal(position)
+                    onDeleteMeal(bindingAdapterPosition)
                     true
                 }
                 else -> { false }

@@ -18,7 +18,7 @@ import androidx.room.PrimaryKey
 )
 data class MealEntity(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo("id") val id: Int = -1,
+    @ColumnInfo("id") val id: Int = 0,
     @ColumnInfo("user_id") val userId: String,
     @ColumnInfo("order") val order: Int,
     @ColumnInfo("name") val name: String,

@@ -11,15 +11,11 @@
         android:label="fragment_feed"
         tools:layout="@layout/fragment_feed">
         <action
-            android:id="@+id/action_feedFragment_to_mealDialogFragment"
-            app:destination="@id/mealDialogFragment"
-            app:enterAnim="@anim/slide_up_dialog"
-            app:exitAnim="@anim/slide_down_dialog" />
-        <action
             android:id="@+id/action_feedFragment_to_foodDialogFragment"
-            app:destination="@id/foodDialogFragment"
-            app:enterAnim="@anim/slide_up_dialog"
-            app:exitAnim="@anim/slide_down_dialog" />
+            app:destination="@id/foodDialogFragment"/>
+        <action
+            android:id="@+id/action_feedFragment_to_mealDialogFragment"
+            app:destination="@id/mealDialogFragment" />
     </fragment>
 
     <fragment
@@ -35,19 +31,19 @@
         tools:layout="@layout/fragment_statistics" />
 
     <dialog
-        android:id="@+id/mealDialogFragment"
-        android:name="es.upm.macroscore.ui.home.feed.meal.MealDialogFragment"
-        android:label="fragment_meal_dialog"
-        tools:layout="@layout/fragment_meal_dialog" />
-
-    <dialog
         android:id="@+id/foodDialogFragment"
         android:name="es.upm.macroscore.ui.home.feed.food.FoodDialogFragment"
         android:label="fragment_food_dialog"
+        android:theme="@style/Theme.FullScreenDialog"
         tools:layout="@layout/fragment_food_dialog">
         <argument
             android:name="meal_name"
             app:argType="string" />
     </dialog>
+    <dialog
+        android:id="@+id/mealDialogFragment"
+        android:name="es.upm.macroscore.ui.home.feed.meal.MealDialogFragment"
+        android:label="fragment_meal_dialog"
+        tools:layout="@layout/fragment_meal_dialog" />
 
 </navigation>
