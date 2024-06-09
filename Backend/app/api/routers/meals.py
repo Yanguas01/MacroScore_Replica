@@ -151,7 +151,8 @@ async def patch_new_weight(
     return {
         'message': f'Peso actualizado en {modified_count} alimentos con éxito',
         'meal_id': meal_id,
-        'food_id': food_id
+        'food_id': food_id,
+        'weight': weight
     }
 
 

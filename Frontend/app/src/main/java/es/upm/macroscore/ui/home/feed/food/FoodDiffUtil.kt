@@ -1,4 +1,4 @@
-package es.upm.macroscore.ui.home.feed.adapter
+package es.upm.macroscore.ui.home.feed.food
 
 import androidx.recyclerview.widget.DiffUtil
 import es.upm.macroscore.ui.model.FoodUIModel

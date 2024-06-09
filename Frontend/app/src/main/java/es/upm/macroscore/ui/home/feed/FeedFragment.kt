@@ -39,8 +39,6 @@ class FeedFragment : Fragment() {
     private lateinit var feedAdapter: FeedAdapter
     private lateinit var itemTouchHelper: ItemTouchHelper
 
-    private var mealList: List<MealUIModel> = emptyList()
-
     private var state: OnlineOperationState = OnlineOperationState.Idle
 
     private var bottomSheet: EditBottomSheet? = null
@@ -143,6 +141,8 @@ class FeedFragment : Fragment() {
             touchHelper = itemTouchHelper,
             onEditMeal = { onEditMeal(it) },
             onDeleteMeal = { onDeleteMeal(it) },
+            onEditFood = { mealPosition, foodPosition -> onEditFood(mealPosition, foodPosition) },
+            onDeleteFood = { mealPosition, foodId -> onDeleteFood(mealPosition, foodId) },
             addFood = {
             findNavController().navigate(
                 FeedFragmentDirections.actionFeedFragmentToFoodDialogFragment(it)
@@ -155,7 +155,7 @@ class FeedFragment : Fragment() {
     }
 
     private fun onEditMeal(position: Int) {
-        val meal = mealList[position]
+        val meal = feedAdapter.currentList[position]
 
         bottomSheet = EditBottomSheet.Builder(requireActivity().supportFragmentManager)
             .setTitle("Cambiar Nombre").setHint(R.string.meal_name)
@@ -174,18 +174,41 @@ class FeedFragment : Fragment() {
             }.show()
     }
 
-    private fun onDeleteMeal(position: Int) {
-        val meal = mealList[position]
-
+    private fun onDeleteMeal(mealId: String) {
         MaterialAlertDialogBuilder(requireContext()).setTitle("¿Estás seguro de que quieres eliminar la comida?")
             .setIcon(ResourcesCompat.getDrawable(resources, R.drawable.ic_alert, null))
             .setMessage("Si lo eliminas, tendrás que volver a crearlo.")
             .setNegativeButton("Cancelar") { dialog, _ ->
                 dialog.dismiss()
             }.setPositiveButton("Aceptar") { dialog, _ ->
-                viewModel.deleteMeal(mealId = meal.id)
+                viewModel.deleteMeal(mealId = mealId)
                 dialog.dismiss()
             }.show()
+    }
+
+    private fun onEditFood(mealPosition: Int, foodPosition: Int) {
+        bottomSheet = EditBottomSheet.Builder(parentFragmentManager)
+            .setTitle("Introducir cantidad")
+            .setHint(R.string.quantity)
+            .setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
+            .setSuffix("gramos")
+            .setLoadingButtonIcon(R.drawable.ic_animated_loading)
+            .setEnableButtonCondition { input ->
+                val double = input as EditBottomSheetInput.DoubleInput
+                double.value > 0
+            }
+            .setOnAcceptAction { bottomSheetObject ->
+                bottomSheetObject.startButtonIconAnimation()
+                bottomSheetObject.block(true)
+                // viewModel.addFoodToMeal(foodId, bottomSheetObject.getText().toDouble())
+            }
+            .setOnCancelAction { bottomSheetObject ->
+                bottomSheetObject.dismiss()
+            }.show()
+    }
+
+    private fun onDeleteFood(mealPosition: Int, foodId: String) {
+
     }
 
     private fun initUIState() {
@@ -193,9 +216,9 @@ class FeedFragment : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.mealList.collect {
-                        mealList = it
-                        feedAdapter.updateList(it)
-                        updateHint()
+                        feedAdapter.submitList(it) {
+                            updateHint()
+                        }
                     }
                 }
                 launch {
@@ -242,7 +265,6 @@ class FeedFragment : Fragment() {
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
                 )
             }
-
             is OnlineOperationState.Success -> {
                 binding.shimmerLayoutFeed.shimmerLayoutFeed.stopShimmer()
                 binding.shimmerLayoutFeed.shimmerLayoutFeed.visibility = View.GONE
@@ -250,7 +272,6 @@ class FeedFragment : Fragment() {
                 binding.recyclerViewFeed.visibility = View.VISIBLE
                 requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
             }
-
             is OnlineOperationState.Error -> {
                 Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
                 binding.shimmerLayoutFeed.shimmerLayoutFeed.stopShimmer()
@@ -264,7 +285,7 @@ class FeedFragment : Fragment() {
 
     private fun updateHint() {
         binding.textViewHint.visibility =
-            if (binding.recyclerViewFeed.adapter?.itemCount != 0 ||
+            if (feedAdapter.itemCount != 0 ||
                 state is OnlineOperationState.Loading
             ) View.GONE else View.VISIBLE
     }

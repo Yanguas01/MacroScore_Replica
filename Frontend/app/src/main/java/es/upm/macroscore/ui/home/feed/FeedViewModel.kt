@@ -48,7 +48,6 @@ import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
 
-
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class FeedViewModel @Inject constructor(
@@ -80,7 +79,7 @@ class FeedViewModel @Inject constructor(
     val mealDialogState: StateFlow<OnlineOperationState> = _mealDialogState
 
     private val _patternFlow = MutableStateFlow("")
-    val foods : Flow<PagingData<FoodUIModel>> = _patternFlow
+    val foods: Flow<PagingData<FoodUIModel>> = _patternFlow
         .debounce(300)
         .filter {
             it.length > 2
@@ -98,6 +97,9 @@ class FeedViewModel @Inject constructor(
 
     private val _closeBottomSheetEvent = MutableSharedFlow<Unit>(replay = 0)
     val closeBottomSheetEvent: SharedFlow<Unit> = _closeBottomSheetEvent
+
+    private val _closeFoodBottomSheetEvent = MutableSharedFlow<Unit>(replay = 0)
+    val closeFoodBottomSheetEvent: SharedFlow<Unit> = _closeFoodBottomSheetEvent
 
     private var job: Job? = null
 
@@ -166,7 +168,7 @@ class FeedViewModel @Inject constructor(
                     .onSuccess {
                         val updatedList = _mealList.value + it.toUIModel()
                         _mealList.value = updatedList
-                        _mealDialogState.update{ OnlineOperationState.Success }
+                        _mealDialogState.update { OnlineOperationState.Success }
                         _mealDialogState.update { OnlineOperationState.Idle }
                     }
                     .onFailure { exception ->
@@ -174,7 +176,12 @@ class FeedViewModel @Inject constructor(
                     }
             }
         } else {
-            _mealDialogState.update { OnlineOperationState.Error("Ya existe una comida con ese nombre", ErrorCodes.ERROR_ID_MEAL_ALREADY_EXISTS) }
+            _mealDialogState.update {
+                OnlineOperationState.Error(
+                    "Ya existe una comida con ese nombre",
+                    ErrorCodes.ERROR_ID_MEAL_ALREADY_EXISTS
+                )
+            }
         }
     }
 
@@ -201,7 +208,12 @@ class FeedViewModel @Inject constructor(
                     }
             }
         } else {
-            _feedActionState.update { OnlineOperationState.Error("Ya existe una comida con ese nombre", ErrorCodes.ERROR_ID_MEAL_ALREADY_EXISTS) }
+            _feedActionState.update {
+                OnlineOperationState.Error(
+                    "Ya existe una comida con ese nombre",
+                    ErrorCodes.ERROR_ID_MEAL_ALREADY_EXISTS
+                )
+            }
         }
     }
 
@@ -224,7 +236,10 @@ class FeedViewModel @Inject constructor(
 
             is MealAlreadySavedException -> {
                 state.update {
-                    OnlineOperationState.Error("Ya tienes guardada una comida con ese nombre", ErrorCodes.ERROR_ID_MEAL_IN_TEMPLATE)
+                    OnlineOperationState.Error(
+                        "Ya tienes guardada una comida con ese nombre",
+                        ErrorCodes.ERROR_ID_MEAL_IN_TEMPLATE
+                    )
                 }
             }
 
@@ -238,7 +253,11 @@ class FeedViewModel @Inject constructor(
         viewModelScope.launch {
             deleteMealUseCase(mealId)
                 .onSuccess {
-                    _mealList.update { list -> list.filterNot { it.id == mealId } }
+                    _mealList.update { list -> list
+                        .filterNot { it.id == mealId }
+                        .mapIndexed { i, meal -> meal.copy(index = i) }
+                    }
+                    _feedActionState.update { OnlineOperationState.Success }
                 }
                 .onFailure { exception ->
                     handleException(_feedActionState, exception)
@@ -278,12 +297,19 @@ class FeedViewModel @Inject constructor(
                 AddFoodRequest(foodId, weight)
             )
                 .onSuccess { food ->
-                    val meal = _mealList.value.find { it.id == _currentMealId.value }
-                    meal?.items?.add(food.toUIModel())
-                    _closeBottomSheetEvent.emit(Unit)
+                    _mealList.update {
+                        it.map { meal ->
+                            if (meal.id == _currentMealId.value) {
+                                meal.state = MealState.EXPANDED
+                                meal.copy(items = meal.items + food.toUIModel())
+                            } else {
+                                meal
+                            }
+                        }
+                    }
+                    _closeFoodBottomSheetEvent.emit(Unit)
                 }
                 .onFailure { exception ->
-                    Log.e("FeedViewModel", exception.message.toString())
                     handleException(_feedActionState, exception)
                 }
         }

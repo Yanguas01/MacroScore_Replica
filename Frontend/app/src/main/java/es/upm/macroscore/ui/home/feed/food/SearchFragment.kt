@@ -25,6 +25,7 @@ import es.upm.macroscore.ui.EditBottomSheet
 import es.upm.macroscore.ui.EditBottomSheetInput
 import es.upm.macroscore.ui.home.feed.FeedViewModel
 import es.upm.macroscore.ui.home.feed.food.adapter.FoodAdapter
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -73,7 +74,7 @@ class SearchFragment : Fragment() {
                 double.value > 0
             }
             .setOnAcceptAction { bottomSheetObject ->
-                bottomSheetObject.startEndIconAnimation()
+                bottomSheetObject.startButtonIconAnimation()
                 bottomSheetObject.block(true)
                 viewModel.addFoodToMeal(foodId, bottomSheetObject.getText().toDouble())
             }
@@ -97,7 +98,7 @@ class SearchFragment : Fragment() {
                     }
                 }
                 launch {
-                    viewModel.closeBottomSheetEvent.collect {
+                    viewModel.closeFoodBottomSheetEvent.collect {
                         bottomSheet?.stopButtonIconAnimation()
                         bottomSheet?.dismiss()
                         (parentFragment as DialogFragment).dismiss()

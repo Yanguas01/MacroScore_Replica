@@ -24,7 +24,9 @@ class FeedViewHolder(
     view: View,
     private val onUpdate: (position: Int) -> Unit,
     private val onEditMeal: (position: Int) -> Unit,
-    private val onDeleteMeal: (position: Int) -> Unit
+    private val onDeleteMeal: (mealId: String) -> Unit,
+    private val onEditFood: (mealPosition: Int, foodPosition: Int) -> Unit,
+    private val onDeleteFood: (mealPosition: Int, foodId: String) -> Unit
 ) : RecyclerView.ViewHolder(view) {
 
     private lateinit var context: Context
@@ -35,13 +37,13 @@ class FeedViewHolder(
 
         binding.mealTitle.text = mealUIModel.name
         binding.totalKcal.text =
-            context.getString(R.string.total_kcal, mealUIModel.items.sumOf { it.kcalPer100 })
+            context.getString(R.string.total_kcal, mealUIModel.items.sumOf { it.kcalPer100 * it.weight!! / 100})
         binding.totalCarbs.text =
-            context.getString(R.string.total_carbs, mealUIModel.items.sumOf { it.carbsPer100 })
+            context.getString(R.string.total_carbs, mealUIModel.items.sumOf { it.carbsPer100 * it.weight!! / 100})
         binding.totalProts.text =
-            context.getString(R.string.total_prots, mealUIModel.items.sumOf { it.protsPer100 })
+            context.getString(R.string.total_prots, mealUIModel.items.sumOf { it.protsPer100 * it.weight!! / 100})
         binding.totalFats.text =
-            context.getString(R.string.total_fats, mealUIModel.items.sumOf { it.fatsPer100 })
+            context.getString(R.string.total_fats, mealUIModel.items.sumOf { it.fatsPer100 * it.weight!! / 100})
 
         binding.ivReorder.setOnLongClickListener {
             touchHelper.startDrag(this)
@@ -50,11 +52,16 @@ class FeedViewHolder(
 
         updateUIBasedOnState(mealUIModel.state)
 
-        val itemAdapter = ItemMealAdapter(mealUIModel.items)
+        val itemAdapter = ItemMealAdapter(
+            mealPosition = bindingAdapterPosition,
+            onEditFood = onEditFood,
+            onDeleteFood = onDeleteFood
+        )
         binding.recyclerViewMeal.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = itemAdapter
         }
+        itemAdapter.submitList(mealUIModel.items)
 
         initStateButtonsListeners(mealUIModel)
         initAddFoodButtonListener(mealUIModel.id, addFood)
@@ -101,7 +108,7 @@ class FeedViewHolder(
 
     private fun initStateButtonsListeners(mealModel: MealUIModel) {
         binding.buttonMoreSettings.setOnClickListener {
-            showPopupMenu(it, R.menu.meal_menu)
+            showPopupMenu(it, mealModel, R.menu.meal_menu)
         }
         binding.buttonMinimize.setOnClickListener {
             mealModel.state = if (mealModel.state == MealState.MINIMIZED) {
@@ -126,7 +133,7 @@ class FeedViewHolder(
     }
 
     @SuppressLint("RestrictedApi")
-    private fun showPopupMenu(v: View, @MenuRes menuRes: Int) {
+    private fun showPopupMenu(v: View, mealModel: MealUIModel, @MenuRes menuRes: Int) {
         val popupMenu = PopupMenu(context, v)
         popupMenu.menuInflater.inflate(menuRes, popupMenu.menu)
 
@@ -147,7 +154,7 @@ class FeedViewHolder(
                     true
                 }
                 R.id.delete -> {
-                    onDeleteMeal(bindingAdapterPosition)
+                    onDeleteMeal(mealModel.id)
                     true
                 }
                 else -> { false }

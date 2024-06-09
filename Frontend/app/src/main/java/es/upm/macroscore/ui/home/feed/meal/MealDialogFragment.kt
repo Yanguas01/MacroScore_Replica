@@ -127,7 +127,7 @@ class MealDialogFragment : DialogFragment() {
             is OnlineOperationState.Success -> {
                 (binding.imageViewLoading.drawable as? Animatable)?.stop()
                 binding.imageViewLoading.visibility = View.GONE
-                requireActivity().onBackPressedDispatcher.onBackPressed()
+                dismiss()
             }
 
             is OnlineOperationState.Error -> {
