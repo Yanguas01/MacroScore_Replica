@@ -187,20 +187,24 @@ class FeedFragment : Fragment() {
     }
 
     private fun onEditFood(mealPosition: Int, foodPosition: Int) {
+        val meal = feedAdapter.currentList[mealPosition]
+        val food = meal.items[foodPosition]
+
         bottomSheet = EditBottomSheet.Builder(parentFragmentManager)
             .setTitle("Introducir cantidad")
+            .setText(food.weight.toString())
             .setHint(R.string.quantity)
             .setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
             .setSuffix("gramos")
             .setLoadingButtonIcon(R.drawable.ic_animated_loading)
             .setEnableButtonCondition { input ->
                 val double = input as EditBottomSheetInput.DoubleInput
-                double.value > 0
+                double.value > 0 && double.value != food.weight
             }
             .setOnAcceptAction { bottomSheetObject ->
                 bottomSheetObject.startButtonIconAnimation()
                 bottomSheetObject.block(true)
-                // viewModel.addFoodToMeal(foodId, bottomSheetObject.getText().toDouble())
+                viewModel.editFoodWeight(meal.id, food.id, bottomSheetObject.getText().toDouble())
             }
             .setOnCancelAction { bottomSheetObject ->
                 bottomSheetObject.dismiss()
@@ -208,7 +212,17 @@ class FeedFragment : Fragment() {
     }
 
     private fun onDeleteFood(mealPosition: Int, foodId: String) {
+        val mealId = feedAdapter.currentList[mealPosition].id
 
+        MaterialAlertDialogBuilder(requireContext()).setTitle("¿Estás seguro de que quieres eliminar el alimento?")
+            .setIcon(ResourcesCompat.getDrawable(resources, R.drawable.ic_alert, null))
+            .setMessage("Si lo eliminas, tendrás que volver a crearlo.")
+            .setNegativeButton("Cancelar") { dialog, _ ->
+                dialog.dismiss()
+            }.setPositiveButton("Aceptar") { dialog, _ ->
+                viewModel.deleteFood(mealId = mealId, foodId = foodId)
+                dialog.dismiss()
+            }.show()
     }
 
     private fun initUIState() {

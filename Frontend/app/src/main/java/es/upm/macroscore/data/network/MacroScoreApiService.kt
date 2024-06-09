@@ -8,6 +8,7 @@ import es.upm.macroscore.data.network.response.foods.FoodListResponse
 import es.upm.macroscore.data.network.response.foods.FoodResponse
 import es.upm.macroscore.data.network.response.login.LogInResponse
 import es.upm.macroscore.data.network.response.meals.AddFoodResponse
+import es.upm.macroscore.data.network.response.meals.EditFoodWeightResponse
 import es.upm.macroscore.data.network.response.signup.CheckEmailResponse
 import es.upm.macroscore.data.network.response.meals.MealByDateResponse
 import es.upm.macroscore.data.network.response.meals.RenameMealResponse
@@ -62,6 +63,12 @@ interface MacroScoreApiService {
 
     @POST("meals/{mealId}/foods")
     suspend fun addFoodToMeal(@Path("mealId") mealId: String, @Body foodDTO: AddFoodDTO): Response<AddFoodResponse>
+
+    @PATCH("meals/{mealId}/foods/{foodId}/weight")
+    suspend fun editFoodWeight(@Path("mealId") mealId: String, @Path("foodId") foodId: String, @Body weight: Double): Response<EditFoodWeightResponse>
+
+    @DELETE("meals/{mealId}/foods/{foodId}")
+    suspend fun deleteFood(@Path("mealId") mealId: String, @Path("foodId") foodId: String) : Response<Unit>
 
     @GET("foods/")
     suspend fun getFoodsByPattern(@Query("pattern") pattern: String, @Query("skip") skip: Int, @Query("limit") limit: Int): Response<FoodListResponse>

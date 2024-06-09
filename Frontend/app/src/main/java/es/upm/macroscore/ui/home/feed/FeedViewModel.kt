@@ -10,7 +10,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import es.upm.macroscore.core.exceptions.MealAlreadySavedException
 import es.upm.macroscore.domain.usecase.AddFoodToMealUseCase
 import es.upm.macroscore.domain.usecase.AddMealUseCase
+import es.upm.macroscore.domain.usecase.DeleteFoodUseCase
 import es.upm.macroscore.domain.usecase.DeleteMealUseCase
+import es.upm.macroscore.domain.usecase.EditFoodWeightUseCase
 import es.upm.macroscore.domain.usecase.GetFoodsByPatternUseCase
 import es.upm.macroscore.domain.usecase.GetMealsByDateUseCase
 import es.upm.macroscore.domain.usecase.RenameMealUseCase
@@ -57,7 +59,9 @@ class FeedViewModel @Inject constructor(
     private val deleteMealUseCase: DeleteMealUseCase,
     private val reorderMealsUseCase: ReorderMealsUseCase,
     private val getFoodsByPatternUseCase: GetFoodsByPatternUseCase,
-    private val addFoodToMealUseCase: AddFoodToMealUseCase
+    private val addFoodToMealUseCase: AddFoodToMealUseCase,
+    private val editFoodWeightUseCase: EditFoodWeightUseCase,
+    private val deleteFoodUseCase: DeleteFoodUseCase
 ) : ViewModel() {
 
     private val _calendar by lazy { MutableStateFlow<Calendar>(Calendar.getInstance()) }
@@ -308,6 +312,65 @@ class FeedViewModel @Inject constructor(
                         }
                     }
                     _closeFoodBottomSheetEvent.emit(Unit)
+                }
+                .onFailure { exception ->
+                    handleException(_feedActionState, exception)
+                }
+        }
+    }
+
+    fun editFoodWeight(mealId: String, foodId: String, newWeight: Double) {
+        viewModelScope.launch {
+            editFoodWeightUseCase(
+                mealId, foodId, newWeight
+            )
+                .onSuccess { editFoodWeightModel ->
+                    _mealList.update {
+                        it.map { meal ->
+                            if (editFoodWeightModel.mealId == meal.id) {
+                                val items = meal.items.map { food ->
+                                    if (editFoodWeightModel.foodId == food.id) {
+                                        food.copy(weight = editFoodWeightModel.weight)
+                                    } else {
+                                        food
+                                    }
+                                }
+                                meal.copy(items = items)
+                            } else {
+                                meal
+                            }
+                        }
+                    }
+                    _closeBottomSheetEvent.emit(Unit)
+                }
+                .onFailure { exception ->
+                    handleException(_feedActionState, exception)
+                }
+        }
+    }
+
+    fun deleteFood(mealId: String, foodId: String) {
+        viewModelScope.launch {
+            deleteFoodUseCase(
+                mealId, foodId
+            )
+                .onSuccess {
+                    _mealList.update {
+                        it.map { meal ->
+                            if (meal.id == mealId) {
+                                val items = meal.items.filterNot { food ->
+                                    food.id == foodId
+                                }
+                                if (items.isEmpty()) {
+                                    meal.copy(state = MealState.EMPTY, items = items)
+                                } else {
+                                    meal.copy(items = items)
+                                }
+                            } else {
+                                meal
+                            }
+                        }
+                    }
                 }
                 .onFailure { exception ->
                     handleException(_feedActionState, exception)
