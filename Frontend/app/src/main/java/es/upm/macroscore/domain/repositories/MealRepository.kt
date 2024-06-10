@@ -5,6 +5,7 @@ import es.upm.macroscore.data.network.response.meals.EditFoodWeightResponse
 import es.upm.macroscore.domain.model.EditFoodWeightModel
 import es.upm.macroscore.domain.model.FoodModel
 import es.upm.macroscore.domain.model.MealModel
+import es.upm.macroscore.domain.model.MealsByWeekModel
 import es.upm.macroscore.domain.model.RenameMealModel
 import es.upm.macroscore.ui.request.AddFoodRequest
 import es.upm.macroscore.ui.request.OrderedMealRequest
@@ -20,5 +21,6 @@ interface MealRepository {
     suspend fun addFoodToMeal(mealId: String, addFoodRequest: AddFoodRequest): Result<FoodModel>
     suspend fun editFoodWeight(mealId: String, foodId: String, newWeight: Double): Result<EditFoodWeightModel>
     suspend fun deleteFood(mealId: String, foodId: String): Result<Unit>
+    suspend fun getMealsByWeek(startWeekDate: String, endWeekDate: String): Result<MealsByWeekModel>
 
 }

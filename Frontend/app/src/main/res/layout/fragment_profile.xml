@@ -7,7 +7,7 @@
     android:background="@color/primary"
     tools:context=".ui.home.profile.ProfileFragment">
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="100dp"
@@ -21,314 +21,253 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/text_view_subtitle_general_data"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_general_data"
+        style="@style/Widget.Material3.Button.TextButton.Icon"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@drawable/background_text_button"
         android:fontFamily="@font/montserrat"
-        android:padding="16dp"
         android:text="Datos Generales"
-        android:textSize="16sp"
+        android:textAlignment="textStart"
+        android:textColor="@color/text"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/text_input_layout_username"
+        app:backgroundTint="@color/primary"
+        app:icon="@drawable/ic_next"
+        app:iconGravity="end"
+        app:iconTint="@color/text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_layout_username"
-        style="@style/Widget.App.TextInputLayout.FilledBox"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/layout_button_general_data_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:clickable="false"
-        android:enabled="false"
-        android:focusable="false"
-        android:hint="@string/username"
-        app:endIconMode="custom"
-        app:endIconTint="@null"
-        app:layout_constraintEnd_toStartOf="@id/button_edit_username"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_view_subtitle_general_data"
-        app:startIconDrawable="@drawable/ic_profile"
-        app:startIconTint="@color/secondaryDark">
-
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/edit_text_username"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:inputType="text" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_edit_username"
-        style="@style/Widget.App.IconButton"
-        android:layout_marginEnd="16dp"
-        android:backgroundTint="@color/primaryDark"
-        app:icon="@drawable/ic_edit"
-        app:iconTint="@color/secondaryDark"
+        android:orientation="vertical"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/text_input_layout_username"
-        app:layout_constraintTop_toTopOf="@id/text_input_layout_username"
-        app:rippleColor="?attr/colorControlHighlight" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_layout_email"
-        style="@style/Widget.App.TextInputLayout.FilledBox"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:clickable="false"
-        android:enabled="false"
-        android:focusable="false"
-        android:hint="@string/email"
-        app:endIconMode="custom"
-        app:endIconTint="@color/secondaryDark"
-        app:layout_constraintEnd_toStartOf="@id/button_edit_email"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_input_layout_username"
-        app:startIconDrawable="@drawable/ic_email"
-        app:startIconTint="@color/secondaryDark">
+        app:layout_constraintTop_toBottomOf="@id/button_general_data">
 
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/edit_text_email"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_username"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:inputType="text" />
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_text_button"
+            android:fontFamily="@font/montserrat"
+            android:text="Nombre de usuario"
+            android:textAlignment="textStart"
+            android:textColor="@color/text"
+            app:backgroundTint="@color/white"
+            app:icon="@drawable/ic_next"
+            app:iconGravity="end"
+            app:iconTint="@color/text" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_email"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_text_button"
+            android:fontFamily="@font/montserrat"
+            android:text="Correo electrónico"
+            android:textAlignment="textStart"
+            android:textColor="@color/text"
+            app:backgroundTint="@color/white"
+            app:icon="@drawable/ic_next"
+            app:iconGravity="end"
+            app:iconTint="@color/text" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_edit_email"
-        style="@style/Widget.App.IconButton"
-        android:layout_marginEnd="16dp"
-        android:backgroundTint="@color/primaryDark"
-        app:icon="@drawable/ic_edit"
-        app:iconTint="@color/secondaryDark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/text_input_layout_email"
-        app:layout_constraintTop_toTopOf="@id/text_input_layout_email"
-        app:rippleColor="?attr/colorControlHighlight" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/divider"
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginHorizontal="8dp"
-        app:dividerColor="@color/secondaryDark"
+        app:dividerColor="@color/primaryDark"
+        app:layout_constraintBottom_toTopOf="@id/button_personal_data"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_input_layout_email" />
+        app:layout_constraintTop_toBottomOf="@id/layout_button_general_data_container" />
 
-    <TextView
-        android:id="@+id/text_view_subtitle_personal_data"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_personal_data"
+        style="@style/Widget.Material3.Button.TextButton.Icon"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@drawable/background_text_button"
         android:fontFamily="@font/montserrat"
-        android:padding="16dp"
         android:text="Datos Personales"
-        android:textSize="16sp"
+        android:textAlignment="textStart"
+        android:textColor="@color/text"
         android:textStyle="bold"
+        app:backgroundTint="@color/primary"
+        app:icon="@drawable/ic_next"
+        app:iconGravity="end"
+        app:iconTint="@color/text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/divider" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_layout_gender"
-        style="@style/Widget.App.DropdownMenu.Filled"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/layout_button_personal_data_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:clickable="false"
-        android:enabled="false"
-        android:focusable="false"
-        android:hint="@string/gender"
-        app:layout_constraintEnd_toStartOf="@id/button_edit_gender"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_view_subtitle_personal_data"
-        app:startIconDrawable="@drawable/ic_sex"
-        app:startIconTint="@color/secondaryDark">
+        app:layout_constraintTop_toBottomOf="@id/button_personal_data">
 
-        <AutoCompleteTextView
-            android:id="@+id/autocomplete_text_view_gender"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_gender"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:inputType="none"
-            app:simpleItems="@array/gender" />
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_text_button"
+            android:fontFamily="@font/montserrat"
+            android:text="Género"
+            android:textAlignment="textStart"
+            android:textColor="@color/text"
+            app:backgroundTint="@color/white"
+            app:icon="@drawable/ic_next"
+            app:iconGravity="end"
+            app:iconTint="@color/text"/>
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_physical_activity_level"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_text_button"
+            android:fontFamily="@font/montserrat"
+            android:text="Nivel de actividad física"
+            android:textAlignment="textStart"
+            android:textColor="@color/text"
+            app:backgroundTint="@color/white"
+            app:icon="@drawable/ic_next"
+            app:iconGravity="end"
+            app:iconTint="@color/text" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_height"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_text_button"
+            android:fontFamily="@font/montserrat"
+            android:text="Altura"
+            android:textAlignment="textStart"
+            android:textColor="@color/text"
+            app:backgroundTint="@color/white"
+            app:icon="@drawable/ic_next"
+            app:iconGravity="end"
+            app:iconTint="@color/text" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_weight"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_text_button"
+            android:fontFamily="@font/montserrat"
+            android:text="Peso"
+            android:textAlignment="textStart"
+            android:textColor="@color/text"
+            app:backgroundTint="@color/white"
+            app:icon="@drawable/ic_next"
+            app:iconGravity="end"
+            app:iconTint="@color/text" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_age"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_text_button"
+            android:fontFamily="@font/montserrat"
+            android:text="Edad"
+            android:textAlignment="textStart"
+            android:textColor="@color/text"
+            app:backgroundTint="@color/white"
+            app:icon="@drawable/ic_next"
+            app:iconGravity="end"
+            app:iconTint="@color/text" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider2"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginHorizontal="8dp"
+        app:dividerColor="@color/primaryDark"
+        app:layout_constraintBottom_toTopOf="@id/button_saved_meals"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_button_personal_data_container" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_edit_gender"
-        style="@style/Widget.App.IconButton"
-        android:layout_marginEnd="16dp"
-        android:backgroundTint="@color/primaryDark"
-        app:icon="@drawable/ic_edit"
-        app:iconTint="@color/secondaryDark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/text_input_layout_gender"
-        app:layout_constraintTop_toTopOf="@id/text_input_layout_gender"
-        app:rippleColor="?attr/colorControlHighlight" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_layout_physical_activity_level"
-        style="@style/Widget.App.DropdownMenu.Filled"
+        android:id="@+id/button_saved_meals"
+        style="@style/Widget.Material3.Button.TextButton.Icon"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:clickable="false"
-        android:enabled="false"
-        android:focusable="false"
-        app:layout_constraintEnd_toStartOf="@id/button_edit_physical_activity_level"
+        android:background="@drawable/background_text_button"
+        android:fontFamily="@font/montserrat"
+        android:text="Comidas guardadas"
+        android:textAlignment="textStart"
+        android:textColor="@color/text"
+        android:textStyle="bold"
+        app:backgroundTint="@color/primary"
+        app:icon="@drawable/ic_next"
+        app:iconGravity="end"
+        app:iconTint="@color/text"
+        app:layout_constraintBottom_toTopOf="@id/divider3"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_input_layout_gender"
-        app:startIconDrawable="@drawable/ic_physical_activity"
-        app:startIconTint="@color/secondaryDark">
+        app:layout_constraintTop_toBottomOf="@id/divider2" />
 
-        <AutoCompleteTextView
-            android:id="@+id/autocomplete_text_view_physical_activity_level"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:hint="@string/physical_activity_level"
-            android:inputType="none"
-            app:simpleItems="@array/physical_activity_level" />
-
-    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider3"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginHorizontal="8dp"
+        app:dividerColor="@color/primaryDark"
+        app:layout_constraintBottom_toTopOf="@id/button_password"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_saved_meals" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_edit_physical_activity_level"
-        style="@style/Widget.App.IconButton"
-        android:layout_marginEnd="16dp"
-        android:backgroundTint="@color/primaryDark"
-        app:icon="@drawable/ic_edit"
-        app:iconTint="@color/secondaryDark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/text_input_layout_physical_activity_level"
-        app:layout_constraintTop_toTopOf="@id/text_input_layout_physical_activity_level"
-        app:rippleColor="?attr/colorControlHighlight" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_layout_height"
-        style="@style/Widget.App.TextInputLayout.FilledBox"
+        android:id="@+id/button_password"
+        style="@style/Widget.Material3.Button.TextButton.Icon"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:clickable="false"
-        android:enabled="false"
-        android:focusable="false"
-        android:hint="Altura"
-        app:endIconMode="custom"
-        app:endIconTint="@color/secondaryDark"
-        app:layout_constraintEnd_toStartOf="@id/button_edit_height"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_input_layout_physical_activity_level"
-        app:prefixText="cm"
-        app:prefixTextAppearance="@color/secondaryDark"
-        app:prefixTextColor="@color/secondaryDark"
-        app:startIconDrawable="@drawable/ic_height"
-        app:startIconTint="@color/secondaryDark">
-
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/edit_text_height"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:inputType="number" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_edit_height"
-        style="@style/Widget.App.IconButton"
-        android:layout_marginEnd="16dp"
-        android:backgroundTint="@color/primaryDark"
-        app:icon="@drawable/ic_edit"
-        app:iconTint="@color/secondaryDark"
+        android:background="@drawable/background_text_button"
+        android:fontFamily="@font/montserrat"
+        android:text="Contraseña"
+        android:textAlignment="textStart"
+        android:textColor="@color/text"
+        android:textStyle="bold"
+        app:backgroundTint="@color/primary"
+        app:icon="@drawable/ic_next"
+        app:iconGravity="end"
+        app:iconTint="@color/text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/text_input_layout_height"
-        app:layout_constraintTop_toTopOf="@id/text_input_layout_height"
-        app:rippleColor="?attr/colorControlHighlight" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider3" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_layout_weight"
-        style="@style/Widget.App.TextInputLayout.FilledBox"
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider4"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:clickable="false"
-        android:enabled="false"
-        android:focusable="false"
-        android:hint="Peso"
-        app:endIconMode="custom"
-        app:endIconTint="@color/secondaryDark"
-        app:layout_constraintEnd_toStartOf="@id/button_edit_weight"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_input_layout_height"
-        app:prefixText="kg"
-        app:prefixTextAppearance="@color/secondaryDark"
-        app:prefixTextColor="@color/secondaryDark"
-        app:startIconDrawable="@drawable/ic_weight"
-        app:startIconTint="@color/secondaryDark">
-
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/edit_text_weight"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:inputType="number" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_edit_weight"
-        style="@style/Widget.App.IconButton"
-        android:layout_marginEnd="16dp"
-        android:backgroundTint="@color/primaryDark"
-        app:icon="@drawable/ic_edit"
-        app:iconTint="@color/secondaryDark"
+        android:layout_height="1dp"
+        android:layout_marginHorizontal="8dp"
+        app:dividerColor="@color/primaryDark"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/text_input_layout_weight"
-        app:layout_constraintTop_toTopOf="@id/text_input_layout_weight"
-        app:rippleColor="?attr/colorControlHighlight" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_layout_age"
-        style="@style/Widget.App.TextInputLayout.FilledBox"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:clickable="false"
-        android:enabled="false"
-        android:focusable="false"
-        android:hint="Edad"
-        app:endIconMode="custom"
-        app:endIconTint="@color/secondaryDark"
-        app:layout_constraintEnd_toStartOf="@id/button_edit_age"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_input_layout_weight"
-        app:prefixTextAppearance="@color/secondaryDark"
-        app:prefixTextColor="@color/secondaryDark"
-        app:startIconDrawable="@drawable/ic_age"
-        app:startIconTint="@color/secondaryDark">
-
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/edit_text_age"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:inputType="number" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_edit_age"
-        style="@style/Widget.App.IconButton"
-        android:layout_marginEnd="16dp"
-        android:backgroundTint="@color/primaryDark"
-        app:icon="@drawable/ic_edit"
-        app:iconTint="@color/secondaryDark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/text_input_layout_age"
-        app:layout_constraintTop_toTopOf="@id/text_input_layout_age"
-        app:rippleColor="?attr/colorControlHighlight" />
-
+        app:layout_constraintTop_toBottomOf="@id/button_password" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

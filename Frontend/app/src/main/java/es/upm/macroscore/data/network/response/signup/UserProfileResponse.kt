@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import es.upm.macroscore.domain.model.UserProfileModel
 
 data class UserProfileResponse(
-    @SerializedName("gender") val gender: String,
+    @SerializedName("gender") val gender: Int,
     @SerializedName("height") val height: Int,
     @SerializedName("weight") val weight: Int,
     @SerializedName("age") val age: Int,

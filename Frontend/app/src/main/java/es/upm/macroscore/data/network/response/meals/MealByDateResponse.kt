@@ -15,6 +15,7 @@ data class MealByDateResponse(
     fun toDomain() = MealModel(
         id = this.id,
         name = this.name,
+        date = this.date,
         index = this.index,
         items = this.mealItemResponses.map { item -> item.toDomain() }
     )

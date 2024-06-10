@@ -1,17 +1,16 @@
 package es.upm.macroscore.data.implementation
 
-import android.util.Log
 import es.upm.macroscore.data.mappers.toDTO
 import es.upm.macroscore.data.network.MacroScoreApiService
-import es.upm.macroscore.data.network.response.meals.EditFoodWeightResponse
 import es.upm.macroscore.domain.model.EditFoodWeightModel
 import es.upm.macroscore.domain.model.FoodModel
 import es.upm.macroscore.domain.model.MealModel
+import es.upm.macroscore.domain.model.MealsByWeekModel
 import es.upm.macroscore.domain.model.RenameMealModel
 import es.upm.macroscore.domain.repositories.MealRepository
 import es.upm.macroscore.ui.request.AddFoodRequest
-import es.upm.macroscore.ui.request.OrderedMealRequest
 import es.upm.macroscore.ui.request.MealRequest
+import es.upm.macroscore.ui.request.OrderedMealRequest
 import javax.inject.Inject
 
 class MealRepositoryImpl @Inject constructor(
@@ -67,7 +66,8 @@ class MealRepositoryImpl @Inject constructor(
 
     override suspend fun reorderMeal(orderedMeals: List<OrderedMealRequest>): Result<Unit> {
         return runCatching {
-            val response = macroScoreApiService.reorderMeal(orderedMeals.map { orderedMeal -> orderedMeal.toDTO() })
+            val response =
+                macroScoreApiService.reorderMeal(orderedMeals.map { orderedMeal -> orderedMeal.toDTO() })
             if (!response.isSuccessful) {
                 throw Exception("Server error: ${response.code()} - ${response.message()}")
             }
@@ -109,6 +109,21 @@ class MealRepositoryImpl @Inject constructor(
         return runCatching {
             val response = macroScoreApiService.deleteFood(mealId = mealId, foodId = foodId)
             if (!response.isSuccessful) {
+                throw Exception("Server error: ${response.code()} - ${response.message()}")
+            }
+        }
+    }
+
+    override suspend fun getMealsByWeek(
+        startWeekDate: String,
+        endWeekDate: String
+    ): Result<MealsByWeekModel> {
+        return runCatching {
+            val response = macroScoreApiService.getMealsByWeek(startWeekDate, endWeekDate)
+            if (response.isSuccessful) {
+                val body = response.body() ?: throw Exception("Empty body")
+                body.toDomain()
+            } else {
                 throw Exception("Server error: ${response.code()} - ${response.message()}")
             }
         }

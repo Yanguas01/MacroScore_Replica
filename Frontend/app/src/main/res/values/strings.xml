@@ -84,10 +84,10 @@
     <string name="week_number">Semana %1$d de %2$d</string>
     <string name="week_range">%1$s - %2$s</string>
 
-    <!-- Layout Macros Chart -->
-    <string name="carbs_summarize">%.2fg/%2.fg\nCarbohidratos</string>
-    <string name="prots_summarize">%.2fg/%2.fg\nProteínas</string>
-    <string name="fats_summarize">%.2fg/%2.fg\nGrasas</string>
+    <!-- Item Macros Chart -->
+    <string name="carbs_summarize">%.2fg/%.2fg\nCarbohidratos</string>
+    <string name="prots_summarize">%.2fg/%.2fg\nProteínas</string>
+    <string name="fats_summarize">%.2fg/%.2fg\nGrasas</string>
 
     <!-- Profile Fragment -->
 

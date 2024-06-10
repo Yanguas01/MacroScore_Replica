@@ -10,7 +10,7 @@ data class UserEntity(
     @ColumnInfo(name = "id") val id: String,
     @ColumnInfo(name = "username") val username: String,
     @ColumnInfo(name = "email") val email: String,
-    @ColumnInfo(name = "gender") val gender: String,
+    @ColumnInfo(name = "gender") val gender: Int,
     @ColumnInfo(name = "height") val height: Int,
     @ColumnInfo(name = "weight") val weight: Int,
     @ColumnInfo(name = "physical_activity_level") val physicalActivityLevel: Int,

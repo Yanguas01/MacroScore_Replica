@@ -11,6 +11,7 @@ import es.upm.macroscore.data.network.response.meals.AddFoodResponse
 import es.upm.macroscore.data.network.response.meals.EditFoodWeightResponse
 import es.upm.macroscore.data.network.response.signup.CheckEmailResponse
 import es.upm.macroscore.data.network.response.meals.MealByDateResponse
+import es.upm.macroscore.data.network.response.meals.MealsByWeekResponse
 import es.upm.macroscore.data.network.response.meals.RenameMealResponse
 import es.upm.macroscore.data.network.response.signup.CheckUsernameResponse
 import es.upm.macroscore.data.network.response.signup.SignUpResponse
@@ -52,23 +53,26 @@ interface MacroScoreApiService {
     @POST("meals")
     suspend fun addMeal(@Body mealDTO: MealDTO): Response<MealByDateResponse>
 
-    @PATCH("meals/{mealId}/rename")
-    suspend fun renameMeal(@Path("mealId") mealId: String, @Body newMealName: String): Response<RenameMealResponse>
+    @PATCH("meals/{meal_id}/rename")
+    suspend fun renameMeal(@Path("meal_id") mealId: String, @Body newMealName: String): Response<RenameMealResponse>
 
-    @DELETE("meals/{mealId}")
-    suspend fun deleteMeal(@Path("mealId") mealId: String) : Response<Unit>
+    @DELETE("meals/{meal_id}")
+    suspend fun deleteMeal(@Path("meal_id") mealId: String) : Response<Unit>
 
     @PATCH("meals/reorder")
     suspend fun reorderMeal(@Body orderedMealList: List<OrderedMealDTO>): Response<Unit>
 
-    @POST("meals/{mealId}/foods")
-    suspend fun addFoodToMeal(@Path("mealId") mealId: String, @Body foodDTO: AddFoodDTO): Response<AddFoodResponse>
+    @POST("meals/{meal_id}/foods")
+    suspend fun addFoodToMeal(@Path("meal_id") mealId: String, @Body foodDTO: AddFoodDTO): Response<AddFoodResponse>
 
-    @PATCH("meals/{mealId}/foods/{foodId}/weight")
-    suspend fun editFoodWeight(@Path("mealId") mealId: String, @Path("foodId") foodId: String, @Body weight: Double): Response<EditFoodWeightResponse>
+    @PATCH("meals/{meal_id}/foods/{food_id}/weight")
+    suspend fun editFoodWeight(@Path("meal_id") mealId: String, @Path("food_id") foodId: String, @Body weight: Double): Response<EditFoodWeightResponse>
 
-    @DELETE("meals/{mealId}/foods/{foodId}")
-    suspend fun deleteFood(@Path("mealId") mealId: String, @Path("foodId") foodId: String) : Response<Unit>
+    @DELETE("meals/{meal_id}/foods/{food_id}")
+    suspend fun deleteFood(@Path("meal_id") mealId: String, @Path("food_id") foodId: String) : Response<Unit>
+
+    @GET("meals/week")
+    suspend fun getMealsByWeek(@Query("start_week_date") startWeekDate: String, @Query("end_week_date") endWeekDate: String): Response<MealsByWeekResponse>
 
     @GET("foods/")
     suspend fun getFoodsByPattern(@Query("pattern") pattern: String, @Query("skip") skip: Int, @Query("limit") limit: Int): Response<FoodListResponse>
