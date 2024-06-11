@@ -25,9 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import es.upm.macroscore.R
 import es.upm.macroscore.databinding.FragmentFeedBinding
 import es.upm.macroscore.ui.EditBottomSheet
-import es.upm.macroscore.ui.EditBottomSheetInput
 import es.upm.macroscore.ui.home.feed.adapter.FeedAdapter
-import es.upm.macroscore.ui.model.MealUIModel
 import es.upm.macroscore.ui.states.OnlineOperationState
 import kotlinx.coroutines.launch
 
@@ -38,6 +36,7 @@ class FeedFragment : Fragment() {
 
     private lateinit var feedAdapter: FeedAdapter
     private lateinit var itemTouchHelper: ItemTouchHelper
+    private var originalItemAnimator: RecyclerView.ItemAnimator? = null
 
     private var state: OnlineOperationState = OnlineOperationState.Idle
 
@@ -63,9 +62,11 @@ class FeedFragment : Fragment() {
 
     private fun initToolbar() {
         binding.buttonPreviousDay.setOnClickListener {
+            binding.recyclerViewFeed.itemAnimator = null
             viewModel.previousDay()
         }
         binding.buttonNextDay.setOnClickListener {
+            binding.recyclerViewFeed.itemAnimator = null
             viewModel.nextDay()
         }
     }
@@ -79,6 +80,7 @@ class FeedFragment : Fragment() {
                     viewHolder: RecyclerView.ViewHolder,
                     target: RecyclerView.ViewHolder
                 ): Boolean {
+                    binding.recyclerViewFeed.itemAnimator = originalItemAnimator
                     val adapter = recyclerView.adapter as FeedAdapter
                     val from = viewHolder.bindingAdapterPosition
                     val to = target.bindingAdapterPosition
@@ -139,6 +141,10 @@ class FeedFragment : Fragment() {
         feedAdapter = FeedAdapter(
             viewModel = viewModel,
             touchHelper = itemTouchHelper,
+            onUpdate = {
+                binding.recyclerViewFeed.itemAnimator = originalItemAnimator
+                feedAdapter.notifyItemChanged(it)
+            },
             onEditMeal = { onEditMeal(it) },
             onDeleteMeal = { onDeleteMeal(it) },
             onEditFood = { mealPosition, foodPosition -> onEditFood(mealPosition, foodPosition) },
@@ -151,6 +157,8 @@ class FeedFragment : Fragment() {
         binding.recyclerViewFeed.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = feedAdapter
+            originalItemAnimator = itemAnimator
+            itemAnimator = null
         }
     }
 
@@ -161,11 +169,11 @@ class FeedFragment : Fragment() {
             .setTitle("Cambiar Nombre").setHint(R.string.meal_name)
             .setInputType(InputType.TYPE_CLASS_TEXT).setText(meal.name)
             .setLoadingButtonIcon(R.drawable.ic_animated_loading)
-            .setEnableButtonCondition { input ->
-                val text = input as EditBottomSheetInput.StringInput
-                text.value.isNotBlank() && text.value != meal.name
+            .setOnTextChangedAction { text, bottomSheet ->
+                if (text.isBlank()) bottomSheet.setTextFieldError("El campo no puede estar vacío")
             }
             .setOnAcceptAction { bottomSheetObject ->
+                binding.recyclerViewFeed.itemAnimator = originalItemAnimator
                 bottomSheetObject.startButtonIconAnimation()
                 bottomSheetObject.block(true)
                 viewModel.renameMeal(meal.id, bottomSheetObject.getText())
@@ -175,12 +183,14 @@ class FeedFragment : Fragment() {
     }
 
     private fun onDeleteMeal(mealId: String) {
+
         MaterialAlertDialogBuilder(requireContext()).setTitle("¿Estás seguro de que quieres eliminar la comida?")
             .setIcon(ResourcesCompat.getDrawable(resources, R.drawable.ic_alert, null))
             .setMessage("Si lo eliminas, tendrás que volver a crearlo.")
             .setNegativeButton("Cancelar") { dialog, _ ->
                 dialog.dismiss()
             }.setPositiveButton("Aceptar") { dialog, _ ->
+                binding.recyclerViewFeed.itemAnimator = originalItemAnimator
                 viewModel.deleteMeal(mealId = mealId)
                 dialog.dismiss()
             }.show()
@@ -197,11 +207,11 @@ class FeedFragment : Fragment() {
             .setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
             .setSuffix("gramos")
             .setLoadingButtonIcon(R.drawable.ic_animated_loading)
-            .setEnableButtonCondition { input ->
-                val double = input as EditBottomSheetInput.DoubleInput
-                double.value > 0 && double.value != food.weight
+            .setOnTextChangedAction { text, bottomSheet ->
+                if (text.toDouble() > 0) bottomSheet.setTextFieldError("La cantidad no puede ser menor o igual que 0")
             }
             .setOnAcceptAction { bottomSheetObject ->
+                binding.recyclerViewFeed.itemAnimator = originalItemAnimator
                 bottomSheetObject.startButtonIconAnimation()
                 bottomSheetObject.block(true)
                 viewModel.editFoodWeight(meal.id, food.id, bottomSheetObject.getText().toDouble())
@@ -220,6 +230,7 @@ class FeedFragment : Fragment() {
             .setNegativeButton("Cancelar") { dialog, _ ->
                 dialog.dismiss()
             }.setPositiveButton("Aceptar") { dialog, _ ->
+                binding.recyclerViewFeed.itemAnimator = originalItemAnimator
                 viewModel.deleteFood(mealId = mealId, foodId = foodId)
                 dialog.dismiss()
             }.show()
@@ -231,7 +242,10 @@ class FeedFragment : Fragment() {
                 launch {
                     viewModel.mealList.collect {
                         feedAdapter.submitList(it) {
-                            updateHint()
+                            if (state !is OnlineOperationState.Idle) {
+                                updateHint()
+                                viewModel.setStateAsSuccess()
+                            }
                         }
                     }
                 }

@@ -9,5 +9,5 @@ fun MealModel.toUIModel() = MealUIModel(
     name = this.name,
     index = this.index,
     items = this.items.map { item -> item.toUIModel() }.toMutableList(),
-    state = if (this.items.isEmpty()) MealState.EMPTY else MealState.EXPANDED
+    state = if (this.items.isEmpty()) MealState.EMPTY else MealState.COLLAPSED
 )

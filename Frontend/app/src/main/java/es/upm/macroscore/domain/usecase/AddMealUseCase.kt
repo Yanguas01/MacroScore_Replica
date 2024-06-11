@@ -20,9 +20,7 @@ class AddMealUseCase @Inject constructor(
             if (mealRequest.saveMeal) {
                 val userOrderMealResult = userRepository.getUserOrderMeal()
                 if (userOrderMealResult.isSuccess) {
-                    Log.d("AddMealUseCase", "User Order Meal: ${userOrderMealResult.getOrThrow().toString()}")
-                    val userOrderMeal = userOrderMealResult.getOrThrow()
-                    if (mealRequest.name !in userOrderMeal.orderMeal) {
+                    if (mealRequest.name !in userOrderMealResult.getOrThrow()) {
                         mealRepository.addMeal(mealRequest)
                     } else {
                         Result.failure(MealAlreadySavedException("The meal is already saved in the user's meals template"))

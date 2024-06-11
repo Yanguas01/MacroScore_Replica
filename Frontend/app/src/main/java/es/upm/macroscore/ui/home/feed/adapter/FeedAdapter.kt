@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.onEach
 class FeedAdapter(
     private val viewModel: FeedViewModel,
     private val touchHelper: ItemTouchHelper,
+    private val onUpdate: (position: Int) -> Unit,
     private val onEditMeal: (position: Int) -> Unit,
     private val onDeleteMeal: (mealId: String) -> Unit,
     private val onEditFood: (mealPosition: Int, foodPosition: Int) -> Unit,
@@ -31,9 +32,7 @@ class FeedAdapter(
         return FeedViewHolder(
             LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_recycler_view_feed, parent, false),
-            onUpdate = { position ->
-                notifyItemChanged(position)
-            },
+            onUpdate = onUpdate,
             onEditMeal = onEditMeal,
             onDeleteMeal = onDeleteMeal,
             onEditFood = onEditFood,

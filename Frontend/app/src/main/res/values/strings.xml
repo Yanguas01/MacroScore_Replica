@@ -90,6 +90,9 @@
     <string name="fats_summarize">%.2fg/%.2fg\nGrasas</string>
 
     <!-- Profile Fragment -->
+    <string name="centimeters">cm</string>
+    <string name="kilograms">kg</string>
+    <string name="years">años</string>
 
     <!-- Edit Profile Bottom Sheet -->
     <string name="title_edit_profile">Editar %s</string>

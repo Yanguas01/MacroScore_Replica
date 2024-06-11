@@ -4,6 +4,7 @@ import es.upm.macroscore.data.network.dto.meals.AddFoodDTO
 import es.upm.macroscore.data.network.dto.meals.MealDTO
 import es.upm.macroscore.data.network.dto.meals.OrderedMealDTO
 import es.upm.macroscore.data.network.dto.signup.SignUpDTO
+import es.upm.macroscore.data.network.dto.users.UserUpdateDTO
 import es.upm.macroscore.data.network.response.foods.FoodListResponse
 import es.upm.macroscore.data.network.response.foods.FoodResponse
 import es.upm.macroscore.data.network.response.login.LogInResponse
@@ -15,6 +16,7 @@ import es.upm.macroscore.data.network.response.meals.MealsByWeekResponse
 import es.upm.macroscore.data.network.response.meals.RenameMealResponse
 import es.upm.macroscore.data.network.response.signup.CheckUsernameResponse
 import es.upm.macroscore.data.network.response.signup.SignUpResponse
+import es.upm.macroscore.data.network.response.users.UserUpdateResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -43,6 +45,9 @@ interface MacroScoreApiService {
 
     @GET("users/me")
     suspend fun getMyUser(): Response<SignUpResponse>
+
+    @PATCH("users/me/update")
+    suspend fun editMyUser(@Body userUpdateDTO: UserUpdateDTO): Response<UserUpdateResponse>
 
     @POST("refresh")
     suspend fun refreshToken(@Body refreshToken: String): Response<LogInResponse>

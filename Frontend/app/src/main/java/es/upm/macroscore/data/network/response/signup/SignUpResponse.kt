@@ -1,7 +1,7 @@
 package es.upm.macroscore.data.network.response.signup
 
 import com.google.gson.annotations.SerializedName
-import es.upm.macroscore.domain.model.SignUpModel
+import es.upm.macroscore.domain.model.UserModel
 
 data class SignUpResponse(
     @SerializedName("id") val id: String,
@@ -11,7 +11,7 @@ data class SignUpResponse(
     @SerializedName("profile") val profile: UserProfileResponse
 ) {
 
-    fun toDomain() = SignUpModel(
+    fun toDomain() = UserModel(
         id = this.id,
         username = username,
         email = email,

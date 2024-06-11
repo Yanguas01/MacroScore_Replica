@@ -270,4 +270,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/button_password" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_log_out"
+        style="@style/Widget.Material3.Button.TextButton.Icon"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_text_button"
+        android:fontFamily="@font/montserrat"
+        android:text="Cerrar Sesión"
+        android:textColor="@color/md_theme_light_error"
+        android:textStyle="bold"
+        app:backgroundTint="@color/primary"
+        app:icon="@drawable/ic_log_out"
+        app:iconGravity="textStart"
+        app:iconPadding="8dp"
+        app:iconTint="@color/md_theme_light_error"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -65,6 +65,8 @@ async def update_user(
     user: User = Depends(get_current_user),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ) -> dict:
+    if update_fields.username is not None:
+        user.username = update_fields.username
     if update_fields.email is not None:
         user.email = update_fields.email
     if update_fields.gender is not None:

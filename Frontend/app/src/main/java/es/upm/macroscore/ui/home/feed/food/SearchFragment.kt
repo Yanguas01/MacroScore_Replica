@@ -2,7 +2,6 @@ package es.upm.macroscore.ui.home.feed.food
 
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,10 +21,8 @@ import es.upm.macroscore.R
 import es.upm.macroscore.core.extensions.onTextChanged
 import es.upm.macroscore.databinding.FragmentSearchBinding
 import es.upm.macroscore.ui.EditBottomSheet
-import es.upm.macroscore.ui.EditBottomSheetInput
 import es.upm.macroscore.ui.home.feed.FeedViewModel
 import es.upm.macroscore.ui.home.feed.food.adapter.FoodAdapter
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -69,9 +66,10 @@ class SearchFragment : Fragment() {
             .setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
             .setSuffix("gramos")
             .setLoadingButtonIcon(R.drawable.ic_animated_loading)
-            .setEnableButtonCondition { input ->
-                val double = input as EditBottomSheetInput.DoubleInput
-                double.value > 0
+            .setOnTextChangedAction { text, bottomSheet ->
+                if (text.isNotBlank()) {
+                    if (text.toDouble() <= 0.0) bottomSheet.setTextFieldError("Introduzca una cantidad válida")
+                }
             }
             .setOnAcceptAction { bottomSheetObject ->
                 bottomSheetObject.startButtonIconAnimation()

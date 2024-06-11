@@ -5,20 +5,19 @@ import es.upm.macroscore.data.local.dao.MealDAO
 import es.upm.macroscore.data.local.dao.UserDAO
 import es.upm.macroscore.data.local.entities.MealEntity
 import es.upm.macroscore.data.mappers.toDTO
-import es.upm.macroscore.data.mappers.toSignUpModel
+import es.upm.macroscore.data.mappers.toDomain
 import es.upm.macroscore.data.mappers.toUserEntity
 import es.upm.macroscore.data.network.MacroScoreApiService
-import es.upm.macroscore.data.network.response.login.LogInResponse
-import es.upm.macroscore.data.network.response.signup.SignUpResponse
 import es.upm.macroscore.data.storage.TokenManager
 import es.upm.macroscore.data.storage.UserManager
 import es.upm.macroscore.domain.repositories.UserRepository
 import es.upm.macroscore.domain.model.EmailStatus
 import es.upm.macroscore.domain.model.LoginModel
-import es.upm.macroscore.domain.model.SignUpModel
+import es.upm.macroscore.domain.model.UserModel
 import es.upm.macroscore.domain.request.LogInRequest
 import es.upm.macroscore.domain.request.SignUpRequest
 import es.upm.macroscore.domain.model.UsernameStatus
+import es.upm.macroscore.ui.request.UserUpdateRequest
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
@@ -59,7 +58,7 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun registerUser(
         signUpRequest: SignUpRequest
-    ): Result<SignUpModel> {
+    ): Result<UserModel> {
         return runCatching {
             val response = macroScoreApiService.createNewUser(signUpRequest.toDTO())
             if (response.isSuccessful) {
@@ -101,15 +100,40 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getUserOrderMeal(): Result<SignUpModel> {
+    override suspend fun getUserOrderMeal(): Result<List<String>> {
+        return runCatching {
+            val userId = userManager.getUserId()
+
+            if (userId.isNotEmpty()) {
+                mealDAO.getMealsByUserId(userId).map { mealEntity -> mealEntity.name }
+            } else {
+                throw Exception("SharedPreferencesError: There is not a user id saved")
+            }
+        }
+    }
+
+    override suspend fun getMyUser(): Result<UserModel> {
         return runCatching {
             val userId = userManager.getUserId()
 
             if (userId.isNotEmpty()) {
                 val orderMeal = mealDAO.getMealsByUserId(userId).map { mealEntity -> mealEntity.name }
-                userDAO.getUserById(userId).toSignUpModel(orderMeal)
+                userDAO.getUserById(userId).toDomain(orderMeal)
             } else {
                 throw Exception("SharedPreferencesError: There is not a user id saved")
+            }
+        }
+    }
+
+    override suspend fun updateMyUser(userUpdateRequest: UserUpdateRequest): Result<Unit> {
+        return runCatching {
+            val response = macroScoreApiService.editMyUser(userUpdateRequest.toDTO())
+
+            if (response.isSuccessful) {
+                val body = response.body() ?: throw Exception("Empty body")
+                userDAO.insertUser(body.user.toUserEntity())
+            } else {
+                throw Exception("Server error: ${response.code()} - ${response.message()}")
             }
         }
     }

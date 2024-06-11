@@ -69,12 +69,12 @@ class FeedViewModel @Inject constructor(
 
     val currentDate: StateFlow<DateUIModel?> = _currentDate
 
-    private val _mealList = MutableStateFlow(emptyList<MealUIModel>())
-    val mealList: StateFlow<List<MealUIModel>> = _mealList
-
     private val _feedActionState: MutableStateFlow<OnlineOperationState> =
         MutableStateFlow(OnlineOperationState.Idle)
     val feedActionState: StateFlow<OnlineOperationState> = _feedActionState
+
+    private val _mealList = MutableStateFlow(emptyList<MealUIModel>())
+    val mealList: StateFlow<List<MealUIModel>> = _mealList
 
     private val _currentMealId: MutableStateFlow<String> = MutableStateFlow("")
 
@@ -147,7 +147,6 @@ class FeedViewModel @Inject constructor(
                 }
                 .onSuccess { list ->
                     _mealList.value = list.sortedBy { it.index }
-                    _feedActionState.update { OnlineOperationState.Success }
                 }
                 .onFailure { exception ->
                     handleException(_feedActionState, exception)
@@ -172,8 +171,6 @@ class FeedViewModel @Inject constructor(
                     .onSuccess {
                         val updatedList = _mealList.value + it.toUIModel()
                         _mealList.value = updatedList
-                        _mealDialogState.update { OnlineOperationState.Success }
-                        _mealDialogState.update { OnlineOperationState.Idle }
                     }
                     .onFailure { exception ->
                         handleException(_mealDialogState, exception)
@@ -261,7 +258,6 @@ class FeedViewModel @Inject constructor(
                         .filterNot { it.id == mealId }
                         .mapIndexed { i, meal -> meal.copy(index = i) }
                     }
-                    _feedActionState.update { OnlineOperationState.Success }
                 }
                 .onFailure { exception ->
                     handleException(_feedActionState, exception)
@@ -388,5 +384,9 @@ class FeedViewModel @Inject constructor(
 
     fun setCurrentMealId(id: String) {
         _currentMealId.value = id
+    }
+
+    fun setStateAsSuccess() {
+        _feedActionState.update { OnlineOperationState.Success }
     }
 }
