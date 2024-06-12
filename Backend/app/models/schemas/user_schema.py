@@ -24,3 +24,8 @@ class UserUpdateRequest(BaseModel):
     weight: int | None = None
     age: int | None = None
     physical_activity_level: int | None = None
+
+
+class UpdatePassword(BaseModel):
+    old_password: str
+    new_password: str

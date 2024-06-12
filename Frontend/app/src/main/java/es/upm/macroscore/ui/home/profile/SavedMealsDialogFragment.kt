@@ -63,7 +63,6 @@ class SavedMealsDialogFragment : DialogFragment() {
         val savedMealsAdapter = SavedMealsAdapter(
             onDelete = { onDeleteMeal(it) }
         )
-        Log.d("SavedMealsDialogFragment", viewModel.user.value?.orderMeal.toString())
         savedMealsAdapter.submitList(viewModel.user.value?.orderMeal) {
             binding.recyclerViewSavedMeals.apply {
                 layoutManager = LinearLayoutManager(context)

@@ -1,14 +1,14 @@
-from fastapi import APIRouter, Body, Depends, Query, status
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.api.dependencies import get_current_user, get_db
 from app.crud.crud_user import (get_user_by_email, get_user_by_username,
                                 update_order_meal, update_user_by_id)
 from app.models.domain import User
-from app.models.schemas.user_schema import UserOut, UserUpdateRequest
+from app.models.schemas.user_schema import UserOut, UserUpdateRequest, UpdatePassword
 from app.services.user_service import set_new_password
 
-from app.core.config import settings
+from app.utils.helpers import get_password_hash, verify_password
 
 router: APIRouter = APIRouter(prefix='/users')
 
@@ -88,13 +88,18 @@ async def update_user(
 
 @router.patch('/me/update_password', status_code=status.HTTP_200_OK)
 async def update_password(
-    new_password: str = Body(...),
+    password_request: UpdatePassword = Body(...),
     user: User = Depends(get_current_user),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ) -> dict:
+    if not verify_password(password_request.old_password, user.hashed_password):
+        raise HTTPException(
+            status_code = status.HTTP_400_BAD_REQUEST,
+            detail="Old password is incorrect"
+        )
     message: str = 'Se ha actualizado correctamente la contraseña' if await set_new_password(
         db=db,
         user_id=user.id,
-        new_password=new_password
+        new_password=get_password_hash(password_request.new_password)
     ) == 1 else 'No se ha actualizado correctamente la contraseña'
     return {'message': message}

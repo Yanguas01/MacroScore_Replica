@@ -4,9 +4,9 @@ import es.upm.macroscore.data.network.dto.meals.AddFoodDTO
 import es.upm.macroscore.data.network.dto.meals.MealDTO
 import es.upm.macroscore.data.network.dto.meals.OrderedMealDTO
 import es.upm.macroscore.data.network.dto.signup.SignUpDTO
+import es.upm.macroscore.data.network.dto.users.UpdatePasswordDTO
 import es.upm.macroscore.data.network.dto.users.UserUpdateDTO
 import es.upm.macroscore.data.network.response.foods.FoodListResponse
-import es.upm.macroscore.data.network.response.foods.FoodResponse
 import es.upm.macroscore.data.network.response.login.LogInResponse
 import es.upm.macroscore.data.network.response.meals.AddFoodResponse
 import es.upm.macroscore.data.network.response.meals.EditFoodWeightResponse
@@ -48,6 +48,9 @@ interface MacroScoreApiService {
 
     @PATCH("users/me/update")
     suspend fun editMyUser(@Body userUpdateDTO: UserUpdateDTO): Response<UserUpdateResponse>
+
+    @PATCH("users/me/update_password")
+    suspend fun editMyPassword(@Body updatePasswordDTO: UpdatePasswordDTO): Response<Unit>
 
     @POST("refresh")
     suspend fun refreshToken(@Body refreshToken: String): Response<LogInResponse>
