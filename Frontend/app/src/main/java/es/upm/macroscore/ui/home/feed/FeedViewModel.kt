@@ -17,7 +17,7 @@ import es.upm.macroscore.domain.usecase.GetFoodsByPatternUseCase
 import es.upm.macroscore.domain.usecase.GetMealsByDateUseCase
 import es.upm.macroscore.domain.usecase.RenameMealUseCase
 import es.upm.macroscore.domain.usecase.ReorderMealsUseCase
-import es.upm.macroscore.ui.home.feed.meal.ErrorCodes
+import es.upm.macroscore.ui.home.feed.meal.MealErrorCodes
 import es.upm.macroscore.ui.mappers.toUIModel
 import es.upm.macroscore.ui.model.DateUIModel
 import es.upm.macroscore.ui.model.FoodUIModel
@@ -153,6 +153,7 @@ class FeedViewModel @Inject constructor(
                     }
                     .onSuccess { list ->
                         _mealList.value = list.sortedBy { it.index }
+                        _feedActionState.update { OnlineOperationState.Success }
                     }
                     .onFailure { exception ->
                         handleException(_feedActionState, exception)
@@ -179,6 +180,7 @@ class FeedViewModel @Inject constructor(
                         .onSuccess {
                             val updatedList = _mealList.value + it.toUIModel()
                             _mealList.value = updatedList
+                            _mealDialogState.update { OnlineOperationState.Success }
                         }
                         .onFailure { exception ->
                             handleException(_mealDialogState, exception)
@@ -189,7 +191,7 @@ class FeedViewModel @Inject constructor(
             _mealDialogState.update {
                 OnlineOperationState.Error(
                     "Ya existe una comida con ese nombre",
-                    ErrorCodes.ERROR_ID_MEAL_ALREADY_EXISTS
+                    MealErrorCodes.ERROR_ID_MEAL_ALREADY_EXISTS
                 )
             }
         }
@@ -223,7 +225,7 @@ class FeedViewModel @Inject constructor(
             _feedActionState.update {
                 OnlineOperationState.Error(
                     "Ya existe una comida con ese nombre",
-                    ErrorCodes.ERROR_ID_MEAL_ALREADY_EXISTS
+                    MealErrorCodes.ERROR_ID_MEAL_ALREADY_EXISTS
                 )
             }
         }
@@ -250,7 +252,7 @@ class FeedViewModel @Inject constructor(
                 state.update {
                     OnlineOperationState.Error(
                         "Ya tienes guardada una comida con ese nombre",
-                        ErrorCodes.ERROR_ID_MEAL_IN_TEMPLATE
+                        MealErrorCodes.ERROR_ID_MEAL_IN_TEMPLATE
                     )
                 }
             }

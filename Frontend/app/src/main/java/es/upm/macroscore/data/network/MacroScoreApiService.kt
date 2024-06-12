@@ -52,6 +52,9 @@ interface MacroScoreApiService {
     @PATCH("users/me/update_password")
     suspend fun editMyPassword(@Body updatePasswordDTO: UpdatePasswordDTO): Response<Unit>
 
+    @DELETE("users/me/{meal_name}")
+    suspend fun deleteMealFromSavedMeals(@Path("meal_name") mealName: String): Response<Unit>
+
     @POST("refresh")
     suspend fun refreshToken(@Body refreshToken: String): Response<LogInResponse>
 

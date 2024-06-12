@@ -1,25 +1,28 @@
 package es.upm.macroscore.ui.home.profile
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import es.upm.macroscore.R
 import es.upm.macroscore.databinding.FragmentSavedMealsDialogBinding
-import es.upm.macroscore.ui.home.feed.FeedFragmentDirections
-import es.upm.macroscore.ui.home.feed.adapter.FeedAdapter
 import es.upm.macroscore.ui.home.profile.adapter.SavedMealsAdapter
+import kotlinx.coroutines.launch
 
 
 class SavedMealsDialogFragment : DialogFragment() {
 
     private val viewModel by activityViewModels<ProfileViewModel>()
+
+    private var savedMealsAdapter: SavedMealsAdapter? = null
 
     private var _binding: FragmentSavedMealsDialogBinding? = null
     private val binding get() = _binding!!
@@ -32,14 +35,12 @@ class SavedMealsDialogFragment : DialogFragment() {
     override fun onStart() {
         super.onStart()
         dialog?.window?.setLayout(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
         )
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSavedMealsDialogBinding.inflate(layoutInflater, container, false)
         return binding.root
@@ -48,6 +49,21 @@ class SavedMealsDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initUI()
+        initUIState()
+    }
+
+    private fun initUIState() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.user.collect { user ->
+                        if (user != null) {
+                            savedMealsAdapter?.submitList(user.orderMeal)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun initUI() {
@@ -60,10 +76,8 @@ class SavedMealsDialogFragment : DialogFragment() {
     }
 
     private fun initRecyclerView() {
-        val savedMealsAdapter = SavedMealsAdapter(
-            onDelete = { onDeleteMeal(it) }
-        )
-        savedMealsAdapter.submitList(viewModel.user.value?.orderMeal) {
+        savedMealsAdapter = SavedMealsAdapter(onDelete = { onDeleteMeal(it) })
+        savedMealsAdapter?.submitList(viewModel.user.value?.orderMeal) {
             binding.recyclerViewSavedMeals.apply {
                 layoutManager = LinearLayoutManager(context)
                 adapter = savedMealsAdapter
@@ -72,6 +86,13 @@ class SavedMealsDialogFragment : DialogFragment() {
     }
 
     private fun onDeleteMeal(mealName: String) {
-        viewModel.deleteMealFromSavedMeals(mealName)
+        MaterialAlertDialogBuilder(requireContext()).setTitle("¿Estás seguro de que quieres eliminar la comida?")
+            .setIcon(ResourcesCompat.getDrawable(resources, R.drawable.ic_alert, null))
+            .setNegativeButton("Cancelar") { dialog, _ ->
+                dialog.dismiss()
+            }.setPositiveButton("Aceptar") { dialog, _ ->
+                viewModel.deleteMealFromSavedMeals(mealName)
+                dialog.dismiss()
+            }.show()
     }
 }

@@ -4,13 +4,16 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import es.upm.macroscore.core.exceptions.BadRequestException
 import es.upm.macroscore.domain.model.UserModel
 import es.upm.macroscore.domain.usecase.CheckEmailUseCase
 import es.upm.macroscore.domain.usecase.CheckUsernameUseCase
+import es.upm.macroscore.domain.usecase.DeleteMealFromSavedMealsUseCase
 import es.upm.macroscore.domain.usecase.EditUserUseCase
 import es.upm.macroscore.domain.usecase.GetMyUserUseCase
-import es.upm.macroscore.domain.usecase.LogUserUseCase
 import es.upm.macroscore.domain.usecase.SignOutUseCase
+import es.upm.macroscore.domain.usecase.UpdatePasswordUseCase
+import es.upm.macroscore.ui.request.UserUpdatePasswordRequest
 import es.upm.macroscore.ui.request.UserUpdateRequest
 import es.upm.macroscore.ui.states.OnlineOperationState
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +36,9 @@ class ProfileViewModel @Inject constructor(
     private val checkUsernameUseCase: CheckUsernameUseCase,
     private val checkEmailUseCase: CheckEmailUseCase,
     private val editUserUseCase: EditUserUseCase,
-    private val signOutUseCase: SignOutUseCase
+    private val signOutUseCase: SignOutUseCase,
+    private val deleteMealFromSavedMealsUseCase: DeleteMealFromSavedMealsUseCase,
+    private val updatePasswordUseCase: UpdatePasswordUseCase
 ) : ViewModel() {
 
     private val _user = MutableStateFlow<UserModel?>(null)
@@ -46,13 +51,16 @@ class ProfileViewModel @Inject constructor(
     val fieldError get(): StateFlow<String?> = _fieldError
 
     private val _stopAnimationEvent = MutableSharedFlow<Unit>(replay = 0)
-    val stopAnimationEvent: SharedFlow<Unit> = _stopAnimationEvent
+    val stopAnimationEvent get(): SharedFlow<Unit> = _stopAnimationEvent
 
-    private val _closeDialogEvent = MutableSharedFlow<Unit>(replay = 0)
-    val closeDialogEvent: SharedFlow<Unit> = _closeDialogEvent
+    private val _closeSheetEvent = MutableSharedFlow<Unit>(replay = 0)
+    val closeSheetEvent get(): SharedFlow<Unit> = _closeSheetEvent
+
+    private val _updatePasswordBottomSheetState = MutableStateFlow<OnlineOperationState>(OnlineOperationState.Idle)
+    val updatePasswordBottomSheetState get() : StateFlow<OnlineOperationState> = _updatePasswordBottomSheetState
 
     private val _signOutEvent = MutableSharedFlow<Unit>(replay = 0)
-    val signOutEvent: SharedFlow<Unit> = _signOutEvent
+    val signOutEvent get(): SharedFlow<Unit> = _signOutEvent
 
     private var job: Job? = null
 
@@ -86,11 +94,13 @@ class ProfileViewModel @Inject constructor(
 
             val userUpdateRequest = UserUpdateRequest()
 
-            when(userField) {
+            when (userField) {
                 UserField.USERNAME -> userUpdateRequest.username = newField
                 UserField.EMAIL -> userUpdateRequest.email = newField
                 UserField.GENDER -> userUpdateRequest.gender = newField.toInt()
-                UserField.PHYSICAL_ACTIVITY_LEVEL -> userUpdateRequest.physicalActivityLevel = newField.toInt()
+                UserField.PHYSICAL_ACTIVITY_LEVEL -> userUpdateRequest.physicalActivityLevel =
+                    newField.toInt()
+
                 UserField.HEIGHT -> userUpdateRequest.height = newField.toInt()
                 UserField.WEIGHT -> userUpdateRequest.weight = newField.toInt()
                 UserField.AGE -> userUpdateRequest.age = newField.toInt()
@@ -99,27 +109,21 @@ class ProfileViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 editUserUseCase(
                     userUpdateRequest
-                )
-                    .onSuccess {
+                ).onSuccess {
                         if (userField == UserField.USERNAME) {
-                            signOutUseCase()
-                                .onSuccess {
+                            signOutUseCase().onSuccess {
                                     _signOutEvent.emit(Unit)
-                                }
-                                .onFailure { exception ->
+                                }.onFailure { exception ->
                                     handleException(exception)
                                 }
                         }
-                        getMyUserUseCase()
-                            .onSuccess { user ->
+                        getMyUserUseCase().onSuccess { user ->
                                 _user.update { user }
-                                _closeDialogEvent.emit(Unit)
-                            }
-                            .onFailure { exception ->
+                                _closeSheetEvent.emit(Unit)
+                            }.onFailure { exception ->
                                 handleException(exception)
                             }
-                    }
-                    .onFailure { exception ->
+                    }.onFailure { exception ->
                         handleException(exception)
                     }
             }
@@ -164,7 +168,9 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             val errorMessage = when {
                 trimmedEmail.isEmpty() -> "La dirección de correo electrónico no puede estar vacía"
-                !android.util.Patterns.EMAIL_ADDRESS.matcher(trimmedEmail).matches() -> "La dirección de correo electrónico no es válida"
+                !android.util.Patterns.EMAIL_ADDRESS.matcher(trimmedEmail)
+                    .matches() -> "La dirección de correo electrónico no es válida"
+
                 else -> {
                     withContext(Dispatchers.IO) {
                         try {
@@ -190,11 +196,9 @@ class ProfileViewModel @Inject constructor(
     fun signOut() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                signOutUseCase()
-                    .onSuccess {
+                signOutUseCase().onSuccess {
                         _signOutEvent.emit(Unit)
-                    }
-                    .onFailure { exception ->
+                    }.onFailure { exception ->
                         handleException(exception)
                     }
             }
@@ -202,6 +206,66 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun deleteMealFromSavedMeals(mealName: String) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                deleteMealFromSavedMealsUseCase(mealName).onSuccess {
+                        getMyUserUseCase()
+                            .onSuccess { user ->
+                                _user.update { user }
+                            }.onFailure { exception ->
+                                handleException(exception)
+                            }
+                    }.onFailure { exception ->
+                        handleException(exception)
+                    }
+            }
+        }
+    }
 
+    fun changePassword(oldPassword: String, newPassword: String, repeatedPassword: String) {
+        if (newPassword.length < 8) {
+            _updatePasswordBottomSheetState.update { OnlineOperationState.Error("La contraseña debe superar los 7 caracteres", ProfileErrorCodes.ERROR_BAD_INPUT) }
+        } else if (newPassword != repeatedPassword) {
+            _updatePasswordBottomSheetState.update { OnlineOperationState.Error("Las contraseñas no coinciden", ProfileErrorCodes.ERROR_PASSWORDS_DONT_MATCHES) }
+        } else {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                _updatePasswordBottomSheetState.update { OnlineOperationState.Loading }
+                updatePasswordUseCase(
+                    UserUpdatePasswordRequest(oldPassword, newPassword)
+                )
+                    .onSuccess {
+                        _updatePasswordBottomSheetState.update { OnlineOperationState.Success }
+                    }
+                    .onFailure { exception ->
+                        when (exception) {
+                            is IOException -> _updatePasswordBottomSheetState.update {
+                                OnlineOperationState.Error(
+                                    "Error de red: ${exception.message}"
+                                )
+                            }
+
+                            is HttpException -> _updatePasswordBottomSheetState.update {
+                                OnlineOperationState.Error(
+                                    "Error HTTP: ${exception.message}"
+                                )
+                            }
+
+                            is BadRequestException -> _updatePasswordBottomSheetState.update {
+                                OnlineOperationState.Error(
+                                    "La contraseña no es correcta", ProfileErrorCodes.ERROR_BAD_REQUEST
+                                )
+                            }
+
+                            else -> _updatePasswordBottomSheetState.update {
+                                OnlineOperationState.Error(
+                                    "Unknown Error: ${exception.message}"
+                                )
+                            }
+                        }
+                    }
+            }
+            }
+        }
     }
 }

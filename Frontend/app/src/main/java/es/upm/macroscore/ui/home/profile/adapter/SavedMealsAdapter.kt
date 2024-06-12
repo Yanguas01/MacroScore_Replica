@@ -12,7 +12,7 @@ class SavedMealsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SavedMealsViewHolder {
         return SavedMealsViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.item_saved_meals, parent, false),
-            { }
+            onDelete
         )
     }
 

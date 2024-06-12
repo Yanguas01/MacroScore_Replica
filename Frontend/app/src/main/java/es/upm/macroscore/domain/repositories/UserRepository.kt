@@ -6,6 +6,7 @@ import es.upm.macroscore.domain.model.UserModel
 import es.upm.macroscore.domain.request.LogInRequest
 import es.upm.macroscore.domain.request.SignUpRequest
 import es.upm.macroscore.domain.model.UsernameStatus
+import es.upm.macroscore.ui.request.UserUpdatePasswordRequest
 import es.upm.macroscore.ui.request.UserUpdateRequest
 
 interface UserRepository {
@@ -19,4 +20,6 @@ interface UserRepository {
     suspend fun getUserOrderMeal(): Result<List<String>>
     suspend fun getMyUser(): Result<UserModel>
     suspend fun updateMyUser(userUpdateRequest: UserUpdateRequest): Result<Unit>
+    suspend fun updateMyPassword(userUpdatePasswordRequest: UserUpdatePasswordRequest): Result<Unit>
+    suspend fun deleteMealFromSavedMeals(mealName: String): Result<Unit>
 }

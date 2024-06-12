@@ -3,7 +3,6 @@ package es.upm.macroscore.ui.home.feed.meal
 import android.content.res.ColorStateList
 import android.graphics.drawable.Animatable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -134,11 +133,11 @@ class MealDialogFragment : DialogFragment() {
                 (binding.imageViewLoading.drawable as? Animatable)?.stop()
                 binding.imageViewLoading.visibility = View.GONE
                 when (state.errorId) {
-                    ErrorCodes.ERROR_ID_MEAL_ALREADY_EXISTS -> {
+                    MealErrorCodes.ERROR_ID_MEAL_ALREADY_EXISTS -> {
                         binding.textInputMealName.error = state.message
                     }
 
-                    ErrorCodes.ERROR_ID_MEAL_IN_TEMPLATE -> {
+                    MealErrorCodes.ERROR_ID_MEAL_IN_TEMPLATE -> {
                         binding.checkBoxSaveMeal.buttonTintList = ColorStateList.valueOf(
                             ContextCompat.getColor(
                                 requireContext(),

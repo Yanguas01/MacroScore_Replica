@@ -68,7 +68,7 @@ class ProfileFragment : Fragment() {
                     }
                 }
                 launch {
-                    viewModel.closeDialogEvent.collect {
+                    viewModel.closeSheetEvent.collect {
                         bottomSheet?.dismiss()
                         dropdownFieldsBottomSheet?.dismiss()
                     }
@@ -109,6 +109,10 @@ class ProfileFragment : Fragment() {
 
         binding.buttonSavedMeals.setOnClickListener {
             findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToSavedMealsDialogFragment())
+        }
+
+        binding.buttonPassword.setOnClickListener {
+            UpdatePasswordBottomSheet().show(parentFragmentManager, "Update Password Bottom Sheet")
         }
 
         binding.buttonLogOut.setOnClickListener {

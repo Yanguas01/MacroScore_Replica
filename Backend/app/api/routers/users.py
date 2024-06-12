@@ -100,6 +100,6 @@ async def update_password(
     message: str = 'Se ha actualizado correctamente la contraseña' if await set_new_password(
         db=db,
         user_id=user.id,
-        new_password=get_password_hash(password_request.new_password)
+        new_password=password_request.new_password
     ) == 1 else 'No se ha actualizado correctamente la contraseña'
     return {'message': message}

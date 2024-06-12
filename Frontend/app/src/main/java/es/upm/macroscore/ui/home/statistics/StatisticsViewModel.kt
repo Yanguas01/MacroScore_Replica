@@ -4,11 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import es.upm.macroscore.core.exceptions.MealAlreadySavedException
 import es.upm.macroscore.domain.model.DailyIntakeModel
 import es.upm.macroscore.domain.model.NutritionalNeedsModel
 import es.upm.macroscore.domain.usecase.GetMealsByWeekUseCase
-import es.upm.macroscore.ui.home.feed.meal.ErrorCodes
 import es.upm.macroscore.ui.states.OnlineOperationState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
