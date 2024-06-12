@@ -81,10 +81,9 @@ class FeedFragment : Fragment() {
                     target: RecyclerView.ViewHolder
                 ): Boolean {
                     binding.recyclerViewFeed.itemAnimator = originalItemAnimator
-                    val adapter = recyclerView.adapter as FeedAdapter
                     val from = viewHolder.bindingAdapterPosition
                     val to = target.bindingAdapterPosition
-                    adapter.moveItem(from, to)
+                    viewModel.moveItem(from, to)
                     return true
                 }
 

@@ -22,7 +22,11 @@
         android:id="@+id/profileFragment"
         android:name="es.upm.macroscore.ui.home.profile.ProfileFragment"
         android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_savedMealsDialogFragment"
+            app:destination="@id/savedMealsDialogFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/statisticsFragment"
@@ -45,5 +49,10 @@
         android:name="es.upm.macroscore.ui.home.feed.meal.MealDialogFragment"
         android:label="fragment_meal_dialog"
         tools:layout="@layout/fragment_meal_dialog" />
+    <dialog
+        android:id="@+id/savedMealsDialogFragment"
+        android:name="es.upm.macroscore.ui.home.profile.SavedMealsDialogFragment"
+        android:label="fragment_saved_meals_dialog"
+        tools:layout="@layout/fragment_saved_meals_dialog" />
 
 </navigation>

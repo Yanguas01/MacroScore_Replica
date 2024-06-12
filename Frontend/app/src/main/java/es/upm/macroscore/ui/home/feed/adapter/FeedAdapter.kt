@@ -24,10 +24,6 @@ class FeedAdapter(
     private val addFood: (String) -> Unit
 ) : ListAdapter<MealUIModel, FeedViewHolder>(MealDiffUtil()) {
 
-    fun moveItem(fromPosition: Int, toPosition: Int) {
-        viewModel.moveItem(fromPosition, toPosition)
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedViewHolder {
         return FeedViewHolder(
             LayoutInflater.from(parent.context)

@@ -1,5 +1,6 @@
 package es.upm.macroscore.ui.home.profile
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -8,6 +9,8 @@ import es.upm.macroscore.domain.usecase.CheckEmailUseCase
 import es.upm.macroscore.domain.usecase.CheckUsernameUseCase
 import es.upm.macroscore.domain.usecase.EditUserUseCase
 import es.upm.macroscore.domain.usecase.GetMyUserUseCase
+import es.upm.macroscore.domain.usecase.LogUserUseCase
+import es.upm.macroscore.domain.usecase.SignOutUseCase
 import es.upm.macroscore.ui.request.UserUpdateRequest
 import es.upm.macroscore.ui.states.OnlineOperationState
 import kotlinx.coroutines.Dispatchers
@@ -22,13 +25,15 @@ import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val getMyUserUseCase: GetMyUserUseCase,
     private val checkUsernameUseCase: CheckUsernameUseCase,
     private val checkEmailUseCase: CheckEmailUseCase,
-    private val editUserUseCase: EditUserUseCase
+    private val editUserUseCase: EditUserUseCase,
+    private val signOutUseCase: SignOutUseCase
 ) : ViewModel() {
 
     private val _user = MutableStateFlow<UserModel?>(null)
@@ -45,6 +50,9 @@ class ProfileViewModel @Inject constructor(
 
     private val _closeDialogEvent = MutableSharedFlow<Unit>(replay = 0)
     val closeDialogEvent: SharedFlow<Unit> = _closeDialogEvent
+
+    private val _signOutEvent = MutableSharedFlow<Unit>(replay = 0)
+    val signOutEvent: SharedFlow<Unit> = _signOutEvent
 
     private var job: Job? = null
 
@@ -68,6 +76,7 @@ class ProfileViewModel @Inject constructor(
         when (exception) {
             is IOException -> _profileState.update { OnlineOperationState.Error("Error de red: ${exception.message}") }
             is HttpException -> _profileState.update { OnlineOperationState.Error("Error HTTP: ${exception.message}") }
+            is CancellationException -> Log.e("ProfileViewModel", "Job Cancelado")
             else -> _profileState.update { OnlineOperationState.Error("Unknown Error: ${exception.message}") }
         }
     }
@@ -84,7 +93,7 @@ class ProfileViewModel @Inject constructor(
                 UserField.PHYSICAL_ACTIVITY_LEVEL -> userUpdateRequest.physicalActivityLevel = newField.toInt()
                 UserField.HEIGHT -> userUpdateRequest.height = newField.toInt()
                 UserField.WEIGHT -> userUpdateRequest.weight = newField.toInt()
-                UserField.AGE -> userUpdateRequest.weight = newField.toInt()
+                UserField.AGE -> userUpdateRequest.age = newField.toInt()
             }
 
             withContext(Dispatchers.IO) {
@@ -92,6 +101,15 @@ class ProfileViewModel @Inject constructor(
                     userUpdateRequest
                 )
                     .onSuccess {
+                        if (userField == UserField.USERNAME) {
+                            signOutUseCase()
+                                .onSuccess {
+                                    _signOutEvent.emit(Unit)
+                                }
+                                .onFailure { exception ->
+                                    handleException(exception)
+                                }
+                        }
                         getMyUserUseCase()
                             .onSuccess { user ->
                                 _user.update { user }
@@ -167,5 +185,23 @@ class ProfileViewModel @Inject constructor(
             }
             _fieldError.update { errorMessage }
         }
+    }
+
+    fun signOut() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                signOutUseCase()
+                    .onSuccess {
+                        _signOutEvent.emit(Unit)
+                    }
+                    .onFailure { exception ->
+                        handleException(exception)
+                    }
+            }
+        }
+    }
+
+    fun deleteMealFromSavedMeals(mealName: String) {
+
     }
 }

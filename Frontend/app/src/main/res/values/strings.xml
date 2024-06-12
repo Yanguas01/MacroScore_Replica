@@ -106,4 +106,7 @@
     <!-- Search Fragment -->
     <string name="quantity">Cantidad</string>
 
+    <!-- Saved Meals Dialog Fragment -->
+    <string name="edit_saved">Editar comidas guardadas</string>
+
 </resources>

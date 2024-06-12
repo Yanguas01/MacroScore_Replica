@@ -14,6 +14,7 @@ interface UserRepository {
     suspend fun checkEmail(email: String): Result<EmailStatus>
     suspend fun registerUser(signUpRequest: SignUpRequest): Result<UserModel>
     suspend fun logUser(logInRequest: LogInRequest): Result<LoginModel>
+    suspend fun signOut(): Result<Unit>
     suspend fun saveMyUser(): Result<Unit>
     suspend fun getUserOrderMeal(): Result<List<String>>
     suspend fun getMyUser(): Result<UserModel>

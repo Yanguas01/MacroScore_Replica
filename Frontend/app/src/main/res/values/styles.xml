@@ -106,6 +106,7 @@
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:textColorHint">@color/secondaryDark</item>
+        <item name="android:clickable">true</item>
         <item name="boxStrokeColor">@color/secondary</item>
         <item name="boxBackgroundColor">@color/primaryDark</item>
         <item name="boxStrokeWidth">1dp</item>

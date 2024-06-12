@@ -85,6 +85,12 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun signOut(): Result<Unit> {
+        return runCatching {
+            tokenManager.clearTokens()
+        }
+    }
+
     override suspend fun saveMyUser(): Result<Unit> {
         return runCatching {
             val response = macroScoreApiService.getMyUser()

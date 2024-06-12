@@ -4,9 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primary"
-    android:orientation="vertical"
-    tools:context=".ui.home.feed.food.FoodDialogFragment">
+    tools:context=".ui.home.profile.SavedMealsDialogFragment">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/toolbar"
@@ -14,7 +12,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_width="0dp"
-        app:layout_constraintBottom_toTopOf="@id/tab_layout"
         android:layout_height="wrap_content"
         android:background="@color/primaryDark"
         android:orientation="horizontal"
@@ -35,57 +32,25 @@
             android:layout_weight="1"
             android:fontFamily="@font/montserrat"
             android:gravity="center_vertical"
-            android:text="@string/add_food"
+            android:text="@string/edit_saved"
             android:textColor="@color/text"
             android:textSize="20sp"
             android:textStyle="bold" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tab_layout"
-        app:tabGravity="fill"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_saved_meals"
         android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/primary"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:tabPadding="0dp"
-        app:tabInlineLabel="true"
-        app:tabIconTint="@color/tab_selector"
-        app:tabSelectedTextColor="@color/secondary"
-        app:tabTextColor="@color/text"
-        app:tabIndicatorFullWidth="false"
-        app:tabIndicatorColor="@color/secondary"
-        app:tabIndicatorAnimationMode="elastic"
-        app:tabIndicatorHeight="4dp"
-        app:tabSelectedTextAppearance="@style/TextAppearance.App.BodySmall.Selected"
-        app:tabTextAppearance="@style/TextAppearance.App.BodySmall"
-        android:backgroundTint="@color/primaryDark"
-        android:layout_height="wrap_content">
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/search"
-            android:icon="@drawable/ic_search"
-            />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/favourites"
-            android:icon="@drawable/ic_favourite"
-            />
-
-    </com.google.android.material.tabs.TabLayout>
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/view_pager_food"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tab_layout"/>
+        android:foregroundGravity="center"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="16dp"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

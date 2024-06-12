@@ -8,10 +8,12 @@ import es.upm.macroscore.domain.usecase.SaveMyUserUseCase
 import es.upm.macroscore.domain.usecase.LogUserUseCase
 import es.upm.macroscore.ui.states.NoValidationFieldState
 import es.upm.macroscore.ui.states.OnlineOperationState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -55,28 +57,30 @@ class LogInViewModel @Inject constructor(
         keepLoggedIn: Boolean
     ) {
         viewModelScope.launch {
-            _logInActionState.update {
-                OnlineOperationState.Loading
+            withContext(Dispatchers.IO) {
+                _logInActionState.update {
+                    OnlineOperationState.Loading
+                }
+                logUserUseCase(
+                    username = username,
+                    password = password,
+                    keepLoggedIn = keepLoggedIn
+                )
+                    .onSuccess { _ ->
+                        saveMyUserUseCase()
+                            .onSuccess {
+                                _logInActionState.update { OnlineOperationState.Success }
+                            }
+                            .onFailure {
+                                Log.e("LogInViewModel", it.message.toString())
+                                _logInActionState.update { _ -> OnlineOperationState.Error(it.toString()) }
+                            }
+                    }
+                    .onFailure {
+                        Log.e("LogInViewModel", it.message.toString())
+                        _logInActionState.update { _ -> OnlineOperationState.Error(it.toString()) }
+                    }
             }
-            logUserUseCase(
-                username = username,
-                password = password,
-                keepLoggedIn = keepLoggedIn
-            )
-                .onSuccess { _ ->
-                    saveMyUserUseCase()
-                        .onSuccess {
-                            _logInActionState.update { OnlineOperationState.Success }
-                        }
-                        .onFailure {
-                            Log.e("LogInViewModel", it.message.toString())
-                            _logInActionState.update { _ -> OnlineOperationState.Error(it.toString()) }
-                        }
-                }
-                .onFailure {
-                    Log.e("LogInViewModel", it.message.toString())
-                    _logInActionState.update { _ -> OnlineOperationState.Error(it.toString()) }
-                }
         }
     }
 }

@@ -33,7 +33,7 @@
         app:suffixText="@string/grams">
 
         <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/edit_text"
+            android:id="@+id/autocomplete_text_view"
             android:inputType="numberDecimal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>

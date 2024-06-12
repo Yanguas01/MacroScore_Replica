@@ -115,11 +115,15 @@ async def reorder_meals(
     db: AsyncIOMotorDatabase = Depends(get_db)
 ) -> dict:
     modified_count: int = await set_new_indexes(db, user.id, meals)
+    print(f"modified_count: {modified_count}")
     order_mapping: dict = {meal.name: meal.index for meal in meals}
+    print(f"order_mapping: {modified_count}")
     default_meals_list: list = sorted(
         {meal for meal in user.order_meal if meal in order_mapping},
         key=lambda meal: order_mapping[meal]
     )
+    print(f"default_meals_list: {default_meals_list}")
+    print(f"user.order_meal: {user.order_meal}")
     if default_meals_list != set(user.order_meal):
         await update_order_meal(db, user.id, default_meals_list)
     return {

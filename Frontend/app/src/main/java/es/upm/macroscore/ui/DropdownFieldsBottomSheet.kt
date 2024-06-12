@@ -32,7 +32,6 @@ class DropdownFieldsBottomSheet : BottomSheetDialogFragment() {
         fun setTitle(title: String) = apply { args.putString("title", title) }
         fun setText(text: String?) = apply { args.putString("text", text) }
         fun setSimpleItems(simpleItems: Int) = apply { args.putInt("simpleItems", simpleItems) }
-        fun setInputType(inputType: Int) = apply { args.putInt("inputType", inputType) }
         fun setHint(hint: Int) = apply { args.putInt("hint", hint) }
         fun setStartIcon(startIcon: Int) = apply { args.putInt("startIcon", startIcon) }
         fun setLoadingButtonIcon(icon: Int) = apply { args.putInt("loadingButtonIcon", icon) }
@@ -83,13 +82,10 @@ class DropdownFieldsBottomSheet : BottomSheetDialogFragment() {
 
     private fun initTextInputLayout() {
         arguments?.getString("text")?.let {
-            binding.editText.setText(it)
-        }
-        arguments?.getInt("inputType")?.let {
-            binding.editText.inputType = it
+            binding.autocompleteTextView.setText(it)
         }
         arguments?.getInt("simpleItems")?.let {
-            binding.editText.setSimpleItems(it)
+            binding.autocompleteTextView.setSimpleItems(it)
         }
         arguments?.getInt("hint")?.let {
             binding.textInputLayoutCopy.hint = requireContext().getString(it)
@@ -97,7 +93,10 @@ class DropdownFieldsBottomSheet : BottomSheetDialogFragment() {
         arguments?.getInt("startIcon")?.let {
             if (it != 0) startIcon = it
         }
-        binding.editText.onTextChanged {
+        binding.textInputLayoutCopy.isEnabled = true
+        binding.textInputLayoutCopy.isClickable = true
+
+        binding.autocompleteTextView.onTextChanged {
             binding.buttonAccept.isEnabled = if (it.isNotBlank() && it.trimEnd() != arguments?.getString("text")) {
                 onTextChangedAction?.invoke(it, this)
                 true
@@ -120,26 +119,12 @@ class DropdownFieldsBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    fun getText(): String {
-        return binding.editText.text.toString()
-    }
-
     fun getTextField(): TextInputLayout {
         return binding.textInputLayoutCopy
     }
 
     fun setTextFieldError(text: String?) {
         binding.textInputLayoutCopy.error = text
-    }
-
-    fun startEndIconAnimation() {
-        binding.textInputLayoutCopy.endIconDrawable?.setVisible(true, true)
-        (binding.textInputLayoutCopy.endIconDrawable as? Animatable)?.start()
-    }
-
-    fun stopEndIconAnimation() {
-        (binding.textInputLayoutCopy.endIconDrawable as? Animatable)?.stop()
-        binding.textInputLayoutCopy.endIconDrawable = null
     }
 
     fun startButtonIconAnimation() {
@@ -149,13 +134,8 @@ class DropdownFieldsBottomSheet : BottomSheetDialogFragment() {
         (binding.buttonAccept.icon as? Animatable)?.start()
     }
 
-    fun stopButtonIconAnimation() {
-        (binding.buttonAccept.icon as? Animatable)?.stop()
-        binding.buttonAccept.icon = null
-    }
-
     fun block(block: Boolean) {
-        binding.editText.isEnabled = !block
+        binding.autocompleteTextView.isEnabled = !block
         binding.buttonAccept.isEnabled = !block
         binding.buttonCancel.isEnabled = !block
     }
@@ -163,7 +143,7 @@ class DropdownFieldsBottomSheet : BottomSheetDialogFragment() {
     override fun onResume() {
         super.onResume()
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            if (binding.editText.isEnabled) {
+            if (binding.autocompleteTextView.isEnabled) {
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }
         }

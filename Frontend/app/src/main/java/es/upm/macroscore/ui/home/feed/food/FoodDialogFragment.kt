@@ -7,9 +7,6 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
@@ -17,8 +14,6 @@ import es.upm.macroscore.R
 import es.upm.macroscore.databinding.FragmentFoodDialogBinding
 import es.upm.macroscore.ui.home.feed.FeedViewModel
 import es.upm.macroscore.ui.home.feed.food.viewpageradapter.ViewPagerAdapter
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class FoodDialogFragment : DialogFragment() {

@@ -10,11 +10,13 @@ import es.upm.macroscore.domain.model.NutritionalNeedsModel
 import es.upm.macroscore.domain.usecase.GetMealsByWeekUseCase
 import es.upm.macroscore.ui.home.feed.meal.ErrorCodes
 import es.upm.macroscore.ui.states.OnlineOperationState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -48,7 +50,6 @@ class StatisticsViewModel @Inject constructor(
     private var job: Job? = null
 
     init {
-        Log.e("StatisticsViewModel", "----------------0----------------")
         _weekNumber.value = Pair(calendar.get(Calendar.WEEK_OF_YEAR), calendar.get(Calendar.YEAR))
         updateWeekRange(0)
     }
@@ -68,34 +69,37 @@ class StatisticsViewModel @Inject constructor(
         _statisticsState.update { OnlineOperationState.Loading }
 
         job = viewModelScope.launch {
-            Log.e("StatisticsViewModel", "----------------1----------------")
-            val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-            val requestFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-            calendar.firstDayOfWeek = Calendar.MONDAY
-            calendar.add(Calendar.WEEK_OF_YEAR, weekOffset)
+            withContext(Dispatchers.IO) {
 
-            calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
-            val startOfWeek = dateFormat.format(calendar.time)
-            val startOfWeekRequest = requestFormat.format(calendar.time)
+                val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                val requestFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-            calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
-            val endOfWeek = dateFormat.format(calendar.time)
-            val endOfWeekRequest = requestFormat.format(calendar.time)
+                calendar.firstDayOfWeek = Calendar.MONDAY
+                calendar.add(Calendar.WEEK_OF_YEAR, weekOffset)
 
-            _weekRange.value = Pair(startOfWeek, endOfWeek)
-            _weekDays.value = getDatesBetween(startOfWeekRequest, endOfWeekRequest)
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+                val startOfWeek = dateFormat.format(calendar.time)
+                val startOfWeekRequest = requestFormat.format(calendar.time)
 
-            getMealsByWeekUseCase(
-                startOfWeekRequest, endOfWeekRequest
-            )
-                .onSuccess { data ->
-                    _statisticsData.update { data }
-                    _statisticsState.update { OnlineOperationState.Success }
-                }
-                .onFailure { exception ->
-                    handleException(exception)
-                }
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+                val endOfWeek = dateFormat.format(calendar.time)
+                val endOfWeekRequest = requestFormat.format(calendar.time)
+
+                _weekRange.value = Pair(startOfWeek, endOfWeek)
+                _weekDays.value = getDatesBetween(startOfWeekRequest, endOfWeekRequest)
+
+                getMealsByWeekUseCase(
+                    startOfWeekRequest, endOfWeekRequest
+                )
+                    .onSuccess { data ->
+                        _statisticsData.update { data }
+                        _statisticsState.update { OnlineOperationState.Success }
+                    }
+                    .onFailure { exception ->
+                        handleException(exception)
+                    }
+            }
         }
     }
 
