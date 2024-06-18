@@ -82,6 +82,7 @@ class UserRepositoryImpl @Inject constructor(
                 tokenManager.saveTokens(body)
                 body.toDomain()
             } else {
+                Log.e("UserRepository", "Server LOG error: ${response.code()} - ${response.message()}")
                 if (response.code() == 400) {
                     throw BadRequestException("Server error: ${response.code()} - ${response.message()}")
                 } else {
@@ -94,6 +95,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun signOut(): Result<Unit> {
         return runCatching {
             tokenManager.clearTokens()
+            userManager.clearUserId()
         }
     }
 
@@ -103,7 +105,15 @@ class UserRepositoryImpl @Inject constructor(
 
             if (response.isSuccessful) {
                 val body = response.body() ?: throw Exception("Empty body")
+                Log.i("UserRepository", "Inserting User: ${body.toUserEntity()} to database")
                 userDAO.insertUser(body.toUserEntity())
+                Log.i("UserRepository", "Inserting Meals: ${body.orderMeal.mapIndexed { i, it ->
+                    MealEntity(
+                        userId = body.id,
+                        order = i,
+                        name = it
+                    )
+                }} to database")
                 mealDAO.insertAll(body.orderMeal.mapIndexed { i, it ->
                     MealEntity(
                         userId = body.id,
@@ -113,6 +123,7 @@ class UserRepositoryImpl @Inject constructor(
                 })
                 userManager.saveUserId(body.id)
             } else {
+                Log.e("UserRepository", "Server SMU error: ${response.code()} - ${response.message()}")
                 throw Exception("Server error: ${response.code()} - ${response.message()}")
             }
         }
@@ -121,7 +132,6 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun getUserOrderMeal(): Result<List<String>> {
         return runCatching {
             val userId = userManager.getUserId()
-
             if (userId.isNotEmpty()) {
                 mealDAO.getMealsByUserId(userId).map { mealEntity -> mealEntity.name }
             } else {

@@ -1,11 +1,11 @@
-package es.upm.macroscore.ui.mappers
+package es.upm.macroscore.data.mappers
 
+import es.upm.macroscore.data.local.entities.FoodEntity
 import es.upm.macroscore.domain.model.FoodModel
-import es.upm.macroscore.ui.model.FoodUIModel
 
-fun FoodModel.toUIModel() = FoodUIModel(
+
+fun FoodModel.toEntity() = FoodEntity(
     id = this.id,
-    weight = this.weight,
     name = this.name,
     kcalPer100 = this.kcalPer100,
     carbsPer100 = this.carbsPer100,
@@ -13,13 +13,11 @@ fun FoodModel.toUIModel() = FoodUIModel(
     fatsPer100 = this.fatsPer100
 )
 
-fun FoodModel.toUIModel(favorites: List<FoodUIModel>) = FoodUIModel(
+fun FoodEntity.toDomain() = FoodModel(
     id = this.id,
-    weight = this.weight,
     name = this.name,
     kcalPer100 = this.kcalPer100,
     carbsPer100 = this.carbsPer100,
     protsPer100 = this.protsPer100,
-    fatsPer100 = this.fatsPer100,
-    favorite = favorites.any { it.id == id }
+    fatsPer100 = this.fatsPer100
 )

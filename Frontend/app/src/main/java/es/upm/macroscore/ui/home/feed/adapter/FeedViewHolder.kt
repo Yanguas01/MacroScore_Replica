@@ -26,45 +26,58 @@ class FeedViewHolder(
     private val onEditMeal: (position: Int) -> Unit,
     private val onDeleteMeal: (mealId: String) -> Unit,
     private val onEditFood: (mealPosition: Int, foodPosition: Int) -> Unit,
-    private val onDeleteFood: (mealPosition: Int, foodId: String) -> Unit
+    private val onDeleteFood: (mealPosition: Int, foodId: String) -> Unit,
+    private val toggleFavorite: (mealPosition: Int, foodPosition: Int) -> Unit
 ) : RecyclerView.ViewHolder(view) {
 
     private lateinit var context: Context
     private val binding = ItemRecyclerViewFeedBinding.bind(view)
 
-    fun bind(mealUIModel: MealUIModel, touchHelper: ItemTouchHelper, addFood: (String) -> Unit) {
+    fun bind(mealUIModel: MealUIModel?, touchHelper: ItemTouchHelper, addFood: (String) -> Unit) {
         context = binding.root.context
 
-        binding.mealTitle.text = mealUIModel.name
-        binding.totalKcal.text =
-            context.getString(R.string.total_kcal, mealUIModel.items.sumOf { it.kcalPer100 * it.weight!! / 100})
-        binding.totalCarbs.text =
-            context.getString(R.string.total_carbs, mealUIModel.items.sumOf { it.carbsPer100 * it.weight!! / 100})
-        binding.totalProts.text =
-            context.getString(R.string.total_prots, mealUIModel.items.sumOf { it.protsPer100 * it.weight!! / 100})
-        binding.totalFats.text =
-            context.getString(R.string.total_fats, mealUIModel.items.sumOf { it.fatsPer100 * it.weight!! / 100})
+        if (mealUIModel != null) {
+            Log.e("FeedViewHolder", mealUIModel.toString())
+            binding.mealTitle.text = mealUIModel.name
+            binding.totalKcal.text =
+                context.getString(
+                    R.string.total_kcal,
+                    mealUIModel.items.sumOf { it.kcalPer100 * it.weight!! / 100 })
+            binding.totalCarbs.text =
+                context.getString(
+                    R.string.total_carbs,
+                    mealUIModel.items.sumOf { it.carbsPer100 * it.weight!! / 100 })
+            binding.totalProts.text =
+                context.getString(
+                    R.string.total_prots,
+                    mealUIModel.items.sumOf { it.protsPer100 * it.weight!! / 100 })
+            binding.totalFats.text =
+                context.getString(
+                    R.string.total_fats,
+                    mealUIModel.items.sumOf { it.fatsPer100 * it.weight!! / 100 })
 
-        binding.ivReorder.setOnLongClickListener {
-            touchHelper.startDrag(this)
-            true
+            binding.ivReorder.setOnLongClickListener {
+                touchHelper.startDrag(this)
+                true
+            }
+
+            updateUIBasedOnState(mealUIModel.state)
+
+            val itemAdapter = ItemMealAdapter(
+                mealPosition = bindingAdapterPosition,
+                onEditFood = onEditFood,
+                onDeleteFood = onDeleteFood,
+                toggleFavorite = toggleFavorite
+            )
+            binding.recyclerViewMeal.apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = itemAdapter
+            }
+            itemAdapter.submitList(mealUIModel.items)
+
+            initStateButtonsListeners(mealUIModel)
+            initAddFoodButtonListener(mealUIModel.id, addFood)
         }
-
-        updateUIBasedOnState(mealUIModel.state)
-
-        val itemAdapter = ItemMealAdapter(
-            mealPosition = bindingAdapterPosition,
-            onEditFood = onEditFood,
-            onDeleteFood = onDeleteFood
-        )
-        binding.recyclerViewMeal.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = itemAdapter
-        }
-        itemAdapter.submitList(mealUIModel.items)
-
-        initStateButtonsListeners(mealUIModel)
-        initAddFoodButtonListener(mealUIModel.id, addFood)
     }
 
     private fun updateUIBasedOnState(state: MealState?) {

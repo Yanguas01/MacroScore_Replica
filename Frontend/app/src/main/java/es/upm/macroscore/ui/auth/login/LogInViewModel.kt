@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import es.upm.macroscore.core.exceptions.BadRequestException
 import es.upm.macroscore.domain.usecase.SaveMyUserUseCase
 import es.upm.macroscore.domain.usecase.LogUserUseCase
 import es.upm.macroscore.ui.states.NoValidationFieldState
@@ -44,11 +45,12 @@ class LogInViewModel @Inject constructor(
         _logInParamsState.update { it.copy(usernameState = newState) }
     }
 
-    fun validatePassword(password: String) {
+    fun validatePassword(password: String, username: String) {
         val newState = if (password.length < 8)
             NoValidationFieldState.Invalid("La contraseña es demasiado corta")
         else NoValidationFieldState.Valid
         _logInParamsState.update { it.copy(passwordState = newState) }
+        validateUsername(username)
     }
 
     fun logIn(
@@ -62,7 +64,7 @@ class LogInViewModel @Inject constructor(
                     OnlineOperationState.Loading
                 }
                 logUserUseCase(
-                    username = username,
+                    username = username.trimEnd(),
                     password = password,
                     keepLoggedIn = keepLoggedIn
                 )
@@ -71,14 +73,20 @@ class LogInViewModel @Inject constructor(
                             .onSuccess {
                                 _logInActionState.update { OnlineOperationState.Success }
                             }
-                            .onFailure {
-                                Log.e("LogInViewModel", it.message.toString())
-                                _logInActionState.update { _ -> OnlineOperationState.Error(it.toString()) }
+                            .onFailure { exception ->
+                                Log.e("UserRepository", "${exception.message}")
+                                _logInActionState.update { _ -> OnlineOperationState.Error(exception.toString()) }
                             }
                     }
-                    .onFailure {
-                        Log.e("LogInViewModel", it.message.toString())
-                        _logInActionState.update { _ -> OnlineOperationState.Error(it.toString()) }
+                    .onFailure { exception ->
+                        Log.e("UserRepository", "${exception.message}")
+                        if (exception is BadRequestException) {
+                            val newState = NoValidationFieldState.Invalid("Credenciales incorrectas")
+                            _logInParamsState.update { it.copy(usernameState = newState) }
+                            _logInActionState.update { _ -> OnlineOperationState.Error(exception.toString(), LoginErrorCodes.ERROR_BAD_INPUT) }
+                        } else {
+                            _logInActionState.update { _ -> OnlineOperationState.Error(exception.toString()) }
+                        }
                     }
             }
         }

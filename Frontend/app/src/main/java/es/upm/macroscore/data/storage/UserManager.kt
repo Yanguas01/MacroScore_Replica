@@ -12,4 +12,8 @@ class UserManager @Inject constructor(private val sharedPreferences: SharedPrefe
     fun saveUserId(userId: String) {
         sharedPreferences.edit().putString("user_id", userId).apply()
     }
+
+    fun clearUserId() {
+        sharedPreferences.edit().remove("user_id").apply()
+    }
 }

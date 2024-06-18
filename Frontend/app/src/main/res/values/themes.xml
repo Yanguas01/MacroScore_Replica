@@ -44,19 +44,31 @@
         <item name="textInputStyle">@style/Widget.App.TextInputLayout.OutlinedBox</item>
     </style>
 
-    <style name="Theme.MacroScore" parent="Base.Theme.MacroScore"/>
+    <style name="Theme.App" parent="Base.Theme.MacroScore"/>
 
-    <style name="Theme.MacroScore.Auth" parent="Theme.MacroScore">
+    <style name="Theme.App.Auth" parent="Theme.App">
         <item name="android:statusBarColor">@color/secondaryDark</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
 
-    <style name="Theme.FullScreenDialog" parent="Theme.MacroScore">
+    <style name="Theme.App.FullScreenDialog" parent="Theme.App">
         <item name="android:windowFullscreen">false</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@color/transparent</item>
         <item name="android:windowAnimationStyle">@style/DatePickerAnimationStyle</item>
+    </style>
+
+    <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/secondaryDark</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_animated_splash</item>
+        <item name="windowSplashScreenAnimationDuration">2000</item>
+        <item name="postSplashScreenTheme">@style/Theme.App</item>
+    </style>
+  <!-- Base application theme. -->
+    <style name="Base.Theme.App" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
 </resources>

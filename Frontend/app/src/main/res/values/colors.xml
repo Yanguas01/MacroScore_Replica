@@ -91,5 +91,8 @@
     <color name="iconDisabledButton">#9D989F</color>
     <color name="backgroundDisabledButton">#E2DDE4</color>
 
+    <!-- Specific colors for favorites foods -->
+    <color name="favorite_food_button_color">#E5CD33</color>
+
     <color name="error">#E84545</color>
 </resources>

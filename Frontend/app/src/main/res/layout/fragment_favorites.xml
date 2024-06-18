@@ -3,8 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.feed.food.FavouritesFragment">
+    tools:context=".ui.home.feed.food.FavoritesFragment">
 
-    <include layout="@layout/layout_search_food"/>
+    <include
+        android:id="@+id/layout_search_food"
+        layout="@layout/layout_search_food" />
 
 </FrameLayout>

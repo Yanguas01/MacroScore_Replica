@@ -28,6 +28,7 @@ import es.upm.macroscore.databinding.FragmentStatisticsBinding
 import es.upm.macroscore.domain.model.DailyIntakeModel
 import es.upm.macroscore.domain.model.NutritionalNeedsModel
 import es.upm.macroscore.ui.states.OnlineOperationState
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -54,6 +55,7 @@ class StatisticsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.initializeData()
         initUI()
         initUIState()
     }
@@ -63,11 +65,11 @@ class StatisticsFragment : Fragment() {
     }
 
     private fun initUIState() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.statisticsData.collect { data ->
-                        Log.e("StatisticsFragment", data.first.toString())
+                    viewModel.statisticsData.collectLatest { data ->
+                        Log.e("StatisticsFragment", "Collecting statistics Data: ${data.first.toString()}")
                         if (data.first != null) initGraphs(data)
                     }
                 }
@@ -241,5 +243,10 @@ class StatisticsFragment : Fragment() {
     private fun updateButtonsState(position: Int) {
         binding.buttonPreviousDay.isEnabled = position != 0
         binding.buttonNextDay.isEnabled = position != (binding.viewPagerMacros.adapter?.itemCount ?: 1) - 1
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.resetState()
     }
 }

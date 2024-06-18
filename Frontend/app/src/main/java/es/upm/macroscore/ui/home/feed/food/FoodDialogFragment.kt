@@ -27,7 +27,7 @@ class FoodDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.Theme_FullScreenDialog)
+        setStyle(STYLE_NORMAL, R.style.Theme_App_FullScreenDialog)
     }
 
     override fun onStart() {
@@ -66,7 +66,7 @@ class FoodDialogFragment : DialogFragment() {
                 }
                 1 -> {
                     tab.text = getString(R.string.favourites)
-                    tab.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_favourite)
+                    tab.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_favorite)
                 }
             }
         }.attach()

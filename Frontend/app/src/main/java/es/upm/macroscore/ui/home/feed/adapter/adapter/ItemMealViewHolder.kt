@@ -2,14 +2,17 @@ package es.upm.macroscore.ui.home.feed.adapter.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.drawable.InsetDrawable
 import android.view.MenuItem
 import android.view.View
 import android.view.View.VISIBLE
 import android.view.View.GONE
 import androidx.annotation.MenuRes
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import es.upm.macroscore.R
 import es.upm.macroscore.databinding.ItemRecyclerViewMealBinding
@@ -20,7 +23,8 @@ class ItemMealViewHolder(
     view: View,
     private val mealPosition: Int,
     private val onEditFood: (mealPosition: Int, foodPosition: Int) -> Unit,
-    private val onDeleteFood: (mealPosition: Int, foodId: String) -> Unit
+    private val onDeleteFood: (mealPosition: Int, foodId: String) -> Unit,
+    private val toggleFavorite: (mealPosition: Int, foodPosition: Int) -> Unit
 ): RecyclerView.ViewHolder(view) {
 
     private lateinit var context: Context
@@ -35,6 +39,13 @@ class ItemMealViewHolder(
         binding.foodCarbs.text = context.getString(R.string.carbs_per_100, foodUIModel.carbsPer100 * foodUIModel.weight / 100)
         binding.foodProts.text = context.getString(R.string.prots_per_100, foodUIModel.protsPer100 * foodUIModel.weight / 100)
         binding.foodFats.text = context.getString(R.string.fats_per_100, foodUIModel.fatsPer100 * foodUIModel.weight / 100)
+
+        binding.buttonFavourite.icon = AppCompatResources.getDrawable(context, if (foodUIModel.favorite) R.drawable.ic_favorite_filled else R.drawable.ic_favorite)
+        binding.buttonFavourite.iconTint = ColorStateList.valueOf(ContextCompat.getColor(context, if (foodUIModel.favorite) R.color.favorite_food_button_color else R.color.text))
+
+        binding.buttonFavourite.setOnClickListener {
+            toggleFavorite(mealPosition, bindingAdapterPosition)
+        }
 
         updateUIBasedOnState(foodUIModel.state)
 

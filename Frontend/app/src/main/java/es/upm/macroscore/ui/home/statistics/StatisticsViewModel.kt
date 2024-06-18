@@ -39,7 +39,7 @@ class StatisticsViewModel @Inject constructor(
     private val _weekDays = MutableStateFlow<List<String>>(emptyList())
     val weekDays get() : StateFlow<List<String>> = _weekDays
 
-    private val _statisticsState = MutableStateFlow<OnlineOperationState>(OnlineOperationState.Idle)
+    private val _statisticsState = MutableStateFlow<OnlineOperationState>(OnlineOperationState.Loading)
     val statisticState get(): StateFlow<OnlineOperationState> = _statisticsState
 
     private val _statisticsData = MutableStateFlow<Pair<NutritionalNeedsModel?, Map<String, DailyIntakeModel>>>(Pair(null, emptyMap()))
@@ -47,11 +47,11 @@ class StatisticsViewModel @Inject constructor(
 
     private var job: Job? = null
 
-    init {
+    fun initializeData() {
+        Log.e("StatisticsViewModel", "Mierda coño")
         _weekNumber.value = Pair(calendar.get(Calendar.WEEK_OF_YEAR), calendar.get(Calendar.YEAR))
         updateWeekRange(0)
     }
-
     fun nextWeek() {
         updateWeekRange(1)
         _weekNumber.value = Pair(calendar.get(Calendar.WEEK_OF_YEAR), calendar.get(Calendar.YEAR))
@@ -91,7 +91,9 @@ class StatisticsViewModel @Inject constructor(
                     startOfWeekRequest, endOfWeekRequest
                 )
                     .onSuccess { data ->
-                        _statisticsData.update { data }
+                        Log.e("StatisticsViewModel", "Updating Data First: ${data.first.toString()}")
+                        Log.e("StatisticsViewModel", "Updating Data Second: ${data.second.toString()}")
+                        _statisticsData.update { Pair(data.first.copy(), HashMap(data.second)) }
                         _statisticsState.update { OnlineOperationState.Success }
                     }
                     .onFailure { exception ->
@@ -116,7 +118,7 @@ class StatisticsViewModel @Inject constructor(
             dates.add(dateFormat.format(currentDate.time))
             currentDate.add(Calendar.DATE, 1)
         }
-
+        Log.e("StatisticsViewModel", "Updating Dates: ${dates.toString()}")
         return dates
     }
 
@@ -138,5 +140,9 @@ class StatisticsViewModel @Inject constructor(
                 _statisticsState.update { OnlineOperationState.Error("Unknown Error: ${exception.message}") }
             }
         }
+    }
+
+    fun resetState() {
+        _statisticsState.update { OnlineOperationState.Loading }
     }
 }

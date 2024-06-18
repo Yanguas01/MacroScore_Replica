@@ -21,6 +21,7 @@ class FeedAdapter(
     private val onDeleteMeal: (mealId: String) -> Unit,
     private val onEditFood: (mealPosition: Int, foodPosition: Int) -> Unit,
     private val onDeleteFood: (mealPosition: Int, foodId: String) -> Unit,
+    private val toggleFavorite: (mealPosition: Int, foodPosition: Int) -> Unit,
     private val addFood: (String) -> Unit
 ) : ListAdapter<MealUIModel, FeedViewHolder>(MealDiffUtil()) {
 
@@ -32,7 +33,8 @@ class FeedAdapter(
             onEditMeal = onEditMeal,
             onDeleteMeal = onDeleteMeal,
             onEditFood = onEditFood,
-            onDeleteFood = onDeleteFood
+            onDeleteFood = onDeleteFood,
+            toggleFavorite = toggleFavorite
         )
     }
 

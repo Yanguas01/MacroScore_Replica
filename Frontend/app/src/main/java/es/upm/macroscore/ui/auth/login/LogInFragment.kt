@@ -67,7 +67,7 @@ class LogInFragment : Fragment() {
                 }
                 launch {
                     viewModel.logInActionState.collect { logInActionState ->
-                        setLoginState(logInActionState)
+                        handleState(logInActionState)
                     }
                 }
             }
@@ -107,7 +107,7 @@ class LogInFragment : Fragment() {
         }
     }
 
-    private fun setLoginState(logInActionState: OnlineOperationState) {
+    private fun handleState(logInActionState: OnlineOperationState) {
         when (logInActionState) {
             is OnlineOperationState.Idle -> { }
             is OnlineOperationState.Loading -> {
@@ -116,12 +116,13 @@ class LogInFragment : Fragment() {
             }
             is OnlineOperationState.Success -> {
                 (binding.imageViewLoading.drawable as? Animatable)?.stop()
+                binding.imageViewLoading.visibility = View.INVISIBLE
                 navigateToHome()
             }
             is OnlineOperationState.Error -> {
                 (binding.imageViewLoading.drawable as? Animatable)?.stop()
                 binding.imageViewLoading.visibility = View.INVISIBLE
-                Toast.makeText(requireContext(), "Error de conexión, vuelva a intentarlo", Toast.LENGTH_SHORT).show()
+                if(logInActionState.errorId != LoginErrorCodes.ERROR_BAD_INPUT) Toast.makeText(requireContext(), "Error de conexión, vuelva a intentarlo", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -138,7 +139,7 @@ class LogInFragment : Fragment() {
             viewModel.validateUsername(text)
         }
         binding.editTextPassword.onTextChanged { text ->
-            viewModel.validatePassword(text)
+            viewModel.validatePassword(text, binding.editTextUsername.text.toString())
         }
     }
 
@@ -155,7 +156,7 @@ class LogInFragment : Fragment() {
                 viewModel.logIn(
                     username = binding.editTextUsername.text.toString(),
                     password = binding.editTextPassword.text.toString(),
-                    keepLoggedIn = binding.checkBoxKeepLoggedIn.isSelected
+                    keepLoggedIn = binding.checkBoxKeepLoggedIn.isChecked
                 )
             }
         }

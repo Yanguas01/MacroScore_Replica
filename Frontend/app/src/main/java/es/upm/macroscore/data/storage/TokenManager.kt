@@ -1,6 +1,7 @@
 package es.upm.macroscore.data.storage
 
 import android.content.SharedPreferences
+import android.util.Log
 import dagger.Lazy
 import es.upm.macroscore.data.network.MacroScoreApiService
 import es.upm.macroscore.data.network.response.login.LogInResponse
@@ -20,15 +21,19 @@ class TokenManager @Inject constructor(
     }
 
     fun saveTokens(logInResponse: LogInResponse) {
+        Log.e("TokenManager", "Access Token: ${logInResponse.accessToken}")
+        Log.e("TokenManager", "Refresh Token: ${logInResponse.refreshToken}")
         sharedPreferences.edit().putString("access_token", logInResponse.accessToken).apply()
         sharedPreferences.edit().putString("refresh_token", logInResponse.refreshToken).apply()
     }
 
     fun clearTokens() {
-        sharedPreferences.edit().clear().apply()
+        sharedPreferences.edit().remove("access_token").apply()
+        sharedPreferences.edit().remove("refresh_token").apply()
     }
 
     suspend fun refreshAccessToken(): String? {
+        Log.e("TokenManager", "Refresh Token: ${getRefreshToken().toString()}")
         val refreshToken = getRefreshToken() ?: return null
 
         val result = runCatching {

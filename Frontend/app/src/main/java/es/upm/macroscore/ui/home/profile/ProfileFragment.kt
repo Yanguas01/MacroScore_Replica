@@ -186,7 +186,7 @@ class ProfileFragment : Fragment() {
             }
 
             UserField.EMAIL -> {
-                title = "Editar dirección de correo electrónico"
+                title = "Editar correo electrónico"
                 text = viewModel.user.value?.email ?: ""
                 hint = R.string.email
                 inputType = InputType.TYPE_CLASS_TEXT

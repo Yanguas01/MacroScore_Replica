@@ -3,6 +3,7 @@ package es.upm.macroscore.ui.home.feed.meal
 import android.content.res.ColorStateList
 import android.graphics.drawable.Animatable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,7 +30,7 @@ class MealDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, R.style.Theme_FullScreenDialog)
+        setStyle(STYLE_NO_TITLE, R.style.Theme_App_FullScreenDialog)
     }
 
     override fun onStart() {
@@ -93,6 +94,7 @@ class MealDialogFragment : DialogFragment() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.mealDialogState.collect { state ->
+                    Log.d("MealDialogFragment", state.toString())
                     handleState(state)
                 }
             }
@@ -167,5 +169,10 @@ class MealDialogFragment : DialogFragment() {
     ): View {
         _binding = FragmentMealDialogBinding.inflate(layoutInflater, container, false)
         return binding.root
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.resetMealState()
     }
 }

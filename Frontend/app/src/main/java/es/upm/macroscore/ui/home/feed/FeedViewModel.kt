@@ -8,13 +8,16 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.upm.macroscore.core.exceptions.MealAlreadySavedException
+import es.upm.macroscore.domain.usecase.AddFavoriteUseCase
 import es.upm.macroscore.domain.usecase.AddFoodToMealUseCase
 import es.upm.macroscore.domain.usecase.AddMealUseCase
 import es.upm.macroscore.domain.usecase.DeleteFoodUseCase
 import es.upm.macroscore.domain.usecase.DeleteMealUseCase
 import es.upm.macroscore.domain.usecase.EditFoodWeightUseCase
+import es.upm.macroscore.domain.usecase.GetFavoritesUseCase
 import es.upm.macroscore.domain.usecase.GetFoodsByPatternUseCase
 import es.upm.macroscore.domain.usecase.GetMealsByDateUseCase
+import es.upm.macroscore.domain.usecase.RemoveFavoriteUseCase
 import es.upm.macroscore.domain.usecase.RenameMealUseCase
 import es.upm.macroscore.domain.usecase.ReorderMealsUseCase
 import es.upm.macroscore.ui.home.feed.meal.MealErrorCodes
@@ -40,7 +43,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -64,7 +69,10 @@ class FeedViewModel @Inject constructor(
     private val getFoodsByPatternUseCase: GetFoodsByPatternUseCase,
     private val addFoodToMealUseCase: AddFoodToMealUseCase,
     private val editFoodWeightUseCase: EditFoodWeightUseCase,
-    private val deleteFoodUseCase: DeleteFoodUseCase
+    private val deleteFoodUseCase: DeleteFoodUseCase,
+    private val getFavoritesUseCase: GetFavoritesUseCase,
+    private val addFavoriteUseCase: AddFavoriteUseCase,
+    private val removeFavoriteUseCase: RemoveFavoriteUseCase
 ) : ViewModel() {
 
     private val _calendar by lazy { MutableStateFlow<Calendar>(Calendar.getInstance()) }
@@ -79,6 +87,11 @@ class FeedViewModel @Inject constructor(
     private val _mealList = MutableStateFlow(emptyList<MealUIModel>())
     val mealList: StateFlow<List<MealUIModel>> = _mealList
 
+    private var favorites: MutableList<FoodUIModel> = mutableListOf()
+
+    private var _favoritesList: MutableStateFlow<List<FoodUIModel>> = MutableStateFlow(emptyList())
+    val favoritesList: StateFlow<List<FoodUIModel>> get() = _favoritesList
+
     private val _currentMealId: MutableStateFlow<String> = MutableStateFlow("")
 
     private val _mealDialogState: MutableStateFlow<OnlineOperationState> =
@@ -86,22 +99,15 @@ class FeedViewModel @Inject constructor(
     val mealDialogState: StateFlow<OnlineOperationState> = _mealDialogState
 
     private val _patternFlow = MutableStateFlow("")
-    val foods: Flow<PagingData<FoodUIModel>> = _patternFlow
-        .debounce(300)
-        .filter {
-            it.length > 2
+    val foods: Flow<PagingData<FoodUIModel>> = _patternFlow.debounce(300).filter {
+        it.length > 2
+    }.distinctUntilChanged().flatMapLatest { pattern ->
+        getFoodsByPatternUseCase(pattern)
+    }.map { pagingData ->
+        pagingData.map {
+            it.toUIModel(favorites)
         }
-        .distinctUntilChanged()
-        .flatMapLatest { pattern ->
-            getFoodsByPatternUseCase(pattern)
-        }
-        .map { pagingData ->
-            pagingData.map {
-                it.toUIModel()
-            }
-        }
-        .cachedIn(viewModelScope)
-        .flowOn(Dispatchers.IO)
+    }.cachedIn(viewModelScope).flowOn(Dispatchers.IO)
 
     private val _closeBottomSheetEvent = MutableSharedFlow<Unit>(replay = 0)
     val closeBottomSheetEvent: SharedFlow<Unit> = _closeBottomSheetEvent
@@ -112,6 +118,15 @@ class FeedViewModel @Inject constructor(
     private var job: Job? = null
 
     init {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                getFavoritesUseCase().onEach { list ->
+                    favorites = list.map { food -> food.toUIModel(listOf(food.toUIModel())) }
+                        .toMutableList()
+                    _favoritesList.update { favorites }
+                }.launchIn(this)
+            }
+        }
         updateDate(0)
     }
 
@@ -142,22 +157,18 @@ class FeedViewModel @Inject constructor(
 
                 _currentDate.update { DateUIModel(dayOfWeek, dayOfMonth, month) }
 
-
                 getMealsByDateUseCase(
                     SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(_calendar.value.time)
-                )
-                    .map { result ->
-                        result.map { meal ->
-                            meal.toUIModel()
-                        }
+                ).map { result ->
+                    result.map { meal ->
+                        meal.toUIModel(_favoritesList.value)
                     }
-                    .onSuccess { list ->
-                        _mealList.value = list.sortedBy { it.index }
-                        _feedActionState.update { OnlineOperationState.Success }
-                    }
-                    .onFailure { exception ->
-                        handleException(_feedActionState, exception)
-                    }
+                }.onSuccess { list ->
+                    _feedActionState.update { OnlineOperationState.Success }
+                    _mealList.value = list.sortedBy { it.index }
+                }.onFailure { exception ->
+                    handleException(_feedActionState, exception)
+                }
             }
         }
     }
@@ -169,22 +180,17 @@ class FeedViewModel @Inject constructor(
                 withContext(Dispatchers.IO) {
                     addMealUseCase(
                         MealRequest(
-                            name = name,
-                            datetime = SimpleDateFormat(
-                                "yyyy-MM-dd",
-                                Locale.getDefault()
-                            ).format(_calendar.value.time),
-                            saveMeal = saveMeal
+                            name = name, datetime = SimpleDateFormat(
+                                "yyyy-MM-dd", Locale.getDefault()
+                            ).format(_calendar.value.time), saveMeal = saveMeal
                         )
-                    )
-                        .onSuccess {
-                            val updatedList = _mealList.value + it.toUIModel()
-                            _mealList.value = updatedList
-                            _mealDialogState.update { OnlineOperationState.Success }
-                        }
-                        .onFailure { exception ->
-                            handleException(_mealDialogState, exception)
-                        }
+                    ).onSuccess {
+                        val updatedList = _mealList.value + it.toUIModel()
+                        _mealList.value = updatedList
+                        _mealDialogState.update { OnlineOperationState.Success }
+                    }.onFailure { exception ->
+                        handleException(_mealDialogState, exception)
+                    }
                 }
             }
         } else {
@@ -197,28 +203,30 @@ class FeedViewModel @Inject constructor(
         }
     }
 
+    fun resetMealState() {
+        _mealDialogState.update { OnlineOperationState.Idle }
+    }
+
     fun renameMeal(mealId: String, newName: String) {
         if (newName !in _mealList.value.map { meal -> meal.name }) {
             viewModelScope.launch {
                 withContext(Dispatchers.IO) {
-                    renameMealUseCase(mealId, newName)
-                        .onSuccess {
-                            _mealList.update { list ->
-                                val index = list.indexOfFirst { it.id == mealId }
-                                if (index != -1) {
-                                    val meal = list[index].copy(name = it.newName)
-                                    list.toMutableList().apply {
-                                        this[index] = meal
-                                    }
-                                } else {
-                                    list
+                    renameMealUseCase(mealId, newName).onSuccess {
+                        _mealList.update { list ->
+                            val index = list.indexOfFirst { it.id == mealId }
+                            if (index != -1) {
+                                val meal = list[index].copy(name = it.newName)
+                                list.toMutableList().apply {
+                                    this[index] = meal
                                 }
+                            } else {
+                                list
                             }
-                            _closeBottomSheetEvent.emit(Unit)
                         }
-                        .onFailure { exception ->
-                            handleException(_feedActionState, exception)
-                        }
+                        _closeBottomSheetEvent.emit(Unit)
+                    }.onFailure { exception ->
+                        handleException(_feedActionState, exception)
+                    }
                 }
             }
         } else {
@@ -232,8 +240,7 @@ class FeedViewModel @Inject constructor(
     }
 
     private fun handleException(
-        state: MutableStateFlow<OnlineOperationState>,
-        exception: Throwable
+        state: MutableStateFlow<OnlineOperationState>, exception: Throwable
     ) {
         when (exception) {
             is IOException -> {
@@ -266,17 +273,14 @@ class FeedViewModel @Inject constructor(
     fun deleteMeal(mealId: String) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                deleteMealUseCase(mealId)
-                    .onSuccess {
-                        _mealList.update { list ->
-                            list
-                                .filterNot { it.id == mealId }
-                                .mapIndexed { i, meal -> meal.copy(index = i) }
-                        }
+                deleteMealUseCase(mealId).onSuccess {
+                    _mealList.update { list ->
+                        list.filterNot { it.id == mealId }
+                            .mapIndexed { i, meal -> meal.copy(index = i) }
                     }
-                    .onFailure { exception ->
-                        handleException(_feedActionState, exception)
-                    }
+                }.onFailure { exception ->
+                    handleException(_feedActionState, exception)
+                }
             }
         }
     }
@@ -296,20 +300,16 @@ class FeedViewModel @Inject constructor(
     private fun reorderMeals() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                val requestList =
-                    _mealList.value.map { meal ->
-                        OrderedMealRequest(
-                            meal.id,
-                            meal.name,
-                            meal.index
-                        )
-                    }
+                val requestList = _mealList.value.map { meal ->
+                    OrderedMealRequest(
+                        meal.id, meal.name, meal.index
+                    )
+                }
                 reorderMealsUseCase(
                     requestList
-                )
-                    .onFailure { exception ->
-                        handleException(_feedActionState, exception)
-                    }
+                ).onFailure { exception ->
+                    handleException(_feedActionState, exception)
+                }
             }
         }
     }
@@ -318,25 +318,22 @@ class FeedViewModel @Inject constructor(
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 addFoodToMealUseCase(
-                    _currentMealId.value,
-                    AddFoodRequest(foodId, weight)
-                )
-                    .onSuccess { food ->
-                        _mealList.update {
-                            it.map { meal ->
-                                if (meal.id == _currentMealId.value) {
-                                    meal.state = MealState.EXPANDED
-                                    meal.copy(items = meal.items + food.toUIModel())
-                                } else {
-                                    meal
-                                }
+                    _currentMealId.value, AddFoodRequest(foodId, weight)
+                ).onSuccess { food ->
+                    _mealList.update {
+                        it.map { meal ->
+                            if (meal.id == _currentMealId.value) {
+                                meal.state = MealState.EXPANDED
+                                meal.copy(items = meal.items + food.toUIModel())
+                            } else {
+                                meal
                             }
                         }
-                        _closeFoodBottomSheetEvent.emit(Unit)
                     }
-                    .onFailure { exception ->
-                        handleException(_feedActionState, exception)
-                    }
+                    _closeFoodBottomSheetEvent.emit(Unit)
+                }.onFailure { exception ->
+                    handleException(_feedActionState, exception)
+                }
             }
         }
     }
@@ -346,29 +343,27 @@ class FeedViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 editFoodWeightUseCase(
                     mealId, foodId, newWeight
-                )
-                    .onSuccess { editFoodWeightModel ->
-                        _mealList.update {
-                            it.map { meal ->
-                                if (editFoodWeightModel.mealId == meal.id) {
-                                    val items = meal.items.map { food ->
-                                        if (editFoodWeightModel.foodId == food.id) {
-                                            food.copy(weight = editFoodWeightModel.weight)
-                                        } else {
-                                            food
-                                        }
+                ).onSuccess { editFoodWeightModel ->
+                    _mealList.update {
+                        it.map { meal ->
+                            if (editFoodWeightModel.mealId == meal.id) {
+                                val items = meal.items.map { food ->
+                                    if (editFoodWeightModel.foodId == food.id) {
+                                        food.copy(weight = editFoodWeightModel.weight)
+                                    } else {
+                                        food
                                     }
-                                    meal.copy(items = items)
-                                } else {
-                                    meal
                                 }
+                                meal.copy(items = items)
+                            } else {
+                                meal
                             }
                         }
-                        _closeBottomSheetEvent.emit(Unit)
                     }
-                    .onFailure { exception ->
-                        handleException(_feedActionState, exception)
-                    }
+                    _closeBottomSheetEvent.emit(Unit)
+                }.onFailure { exception ->
+                    handleException(_feedActionState, exception)
+                }
             }
         }
     }
@@ -378,28 +373,26 @@ class FeedViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 deleteFoodUseCase(
                     mealId, foodId
-                )
-                    .onSuccess {
-                        _mealList.update {
-                            it.map { meal ->
-                                if (meal.id == mealId) {
-                                    val items = meal.items.filterNot { food ->
-                                        food.id == foodId
-                                    }
-                                    if (items.isEmpty()) {
-                                        meal.copy(state = MealState.EMPTY, items = items)
-                                    } else {
-                                        meal.copy(items = items)
-                                    }
-                                } else {
-                                    meal
+                ).onSuccess {
+                    _mealList.update {
+                        it.map { meal ->
+                            if (meal.id == mealId) {
+                                val items = meal.items.filterNot { food ->
+                                    food.id == foodId
                                 }
+                                if (items.isEmpty()) {
+                                    meal.copy(state = MealState.EMPTY, items = items)
+                                } else {
+                                    meal.copy(items = items)
+                                }
+                            } else {
+                                meal
                             }
                         }
                     }
-                    .onFailure { exception ->
-                        handleException(_feedActionState, exception)
-                    }
+                }.onFailure { exception ->
+                    handleException(_feedActionState, exception)
+                }
             }
         }
     }
@@ -418,5 +411,42 @@ class FeedViewModel @Inject constructor(
 
     fun setStateAsSuccess() {
         _feedActionState.update { OnlineOperationState.Success }
+    }
+
+    fun toggleFavorite(foodUIModel: FoodUIModel) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                _mealList.update { list ->
+                    list.map { mealUIModel ->
+                        mealUIModel.copy(items = mealUIModel.items.map { food ->
+                            if (foodUIModel.id == food.id) {
+                                food.copy(favorite = !foodUIModel.favorite)
+                            } else {
+                                food
+                            }
+                        })
+                    }
+                }
+            }
+            if (foodUIModel.favorite) {
+                removeFavoriteUseCase(foodUIModel.id)
+                _favoritesList.update { list ->
+                    list.filterNot { it == foodUIModel }
+                }
+            } else {
+                addFavoriteUseCase(foodUIModel.toDomain())
+                _favoritesList.update { list ->
+                    if (list.none { it.name == foodUIModel.name }) list.plus(foodUIModel) else list
+                }
+            }
+        }
+    }
+
+    fun setPatternFavorites(text: String) {
+        _favoritesList.update {
+            favorites.filter {
+                it.name.lowercase().contains(text.lowercase())
+            }
+        }
     }
 }

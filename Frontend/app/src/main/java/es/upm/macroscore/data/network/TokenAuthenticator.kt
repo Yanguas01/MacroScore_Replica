@@ -1,5 +1,6 @@
 package es.upm.macroscore.data.network
 
+import android.util.Log
 import es.upm.macroscore.data.storage.TokenManager
 import kotlinx.coroutines.runBlocking
 import okhttp3.Authenticator
@@ -35,6 +36,7 @@ class TokenAuthenticator @Inject constructor(
             count++
             res = res.priorResponse
         }
+        Log.e("TokenAuthenticator", "Count: ${count.toString()}")
         return count
     }
 }

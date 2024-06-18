@@ -1,5 +1,6 @@
 package es.upm.macroscore.core.di
 
+import android.content.SharedPreferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -8,8 +9,10 @@ import es.upm.macroscore.data.implementation.FoodRepositoryImpl
 import es.upm.macroscore.data.implementation.UserRepositoryImpl
 import es.upm.macroscore.data.network.MacroScoreApiService
 import es.upm.macroscore.data.implementation.MealRepositoryImpl
+import es.upm.macroscore.data.local.dao.FoodDAO
 import es.upm.macroscore.data.local.dao.MealDAO
 import es.upm.macroscore.data.local.dao.UserDAO
+import es.upm.macroscore.data.local.dao.UserFoodDAO
 import es.upm.macroscore.data.storage.TokenManager
 import es.upm.macroscore.data.storage.UserManager
 import es.upm.macroscore.domain.repositories.FoodRepository
@@ -39,9 +42,12 @@ object RepositoriesModule {
     }
 
     @Provides
-    fun provideFoodRepositoy(
-        macroScoreApiService: MacroScoreApiService
+    fun provideFoodRepository(
+        macroScoreApiService: MacroScoreApiService,
+        foodDAO: FoodDAO,
+        userFoodDAO: UserFoodDAO,
+        userManager: UserManager
     ): FoodRepository {
-        return FoodRepositoryImpl(macroScoreApiService)
+        return FoodRepositoryImpl(macroScoreApiService, foodDAO, userFoodDAO, userManager)
     }
 }

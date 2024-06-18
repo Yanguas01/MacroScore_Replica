@@ -26,7 +26,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_marginStart="8dp"
-            app:icon="@drawable/ic_favourite"
+            app:icon="@drawable/ic_favorite"
             app:iconSize="24sp"
             app:iconTint="@color/text" />
 

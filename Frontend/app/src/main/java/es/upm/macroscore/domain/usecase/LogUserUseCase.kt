@@ -1,6 +1,5 @@
 package es.upm.macroscore.domain.usecase
 
-import es.upm.macroscore.data.network.response.login.LogInResponse
 import es.upm.macroscore.domain.model.LoginModel
 import es.upm.macroscore.domain.repositories.UserRepository
 import es.upm.macroscore.domain.request.LogInRequest

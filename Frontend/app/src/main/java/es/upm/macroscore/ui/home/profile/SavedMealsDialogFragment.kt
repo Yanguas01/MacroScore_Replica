@@ -29,7 +29,7 @@ class SavedMealsDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.Theme_FullScreenDialog)
+        setStyle(STYLE_NORMAL, R.style.Theme_App_FullScreenDialog)
     }
 
     override fun onStart() {

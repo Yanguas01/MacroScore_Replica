@@ -38,7 +38,7 @@
         android:id="@+id/foodDialogFragment"
         android:name="es.upm.macroscore.ui.home.feed.food.FoodDialogFragment"
         android:label="fragment_food_dialog"
-        android:theme="@style/Theme.FullScreenDialog"
+        android:theme="@style/Theme.App.FullScreenDialog"
         tools:layout="@layout/fragment_food_dialog">
         <argument
             android:name="meal_id"

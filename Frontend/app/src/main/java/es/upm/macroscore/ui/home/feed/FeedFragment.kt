@@ -148,6 +148,7 @@ class FeedFragment : Fragment() {
             onDeleteMeal = { onDeleteMeal(it) },
             onEditFood = { mealPosition, foodPosition -> onEditFood(mealPosition, foodPosition) },
             onDeleteFood = { mealPosition, foodId -> onDeleteFood(mealPosition, foodId) },
+            toggleFavorite = { mealPosition, foodPosition -> onToggleFavoriteFood(mealPosition, foodPosition) },
             addFood = {
             findNavController().navigate(
                 FeedFragmentDirections.actionFeedFragmentToFoodDialogFragment(it)
@@ -235,6 +236,11 @@ class FeedFragment : Fragment() {
             }.show()
     }
 
+    private fun onToggleFavoriteFood(mealPosition: Int, foodPosition: Int) {
+        val foodUIModel = feedAdapter.currentList[mealPosition].items[foodPosition]
+        viewModel.toggleFavorite(foodUIModel)
+    }
+
     private fun initUIState() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -265,7 +271,7 @@ class FeedFragment : Fragment() {
                     viewModel.feedActionState.collect { newState ->
                         Log.d("FeedFragment", state.toString())
                         state = newState
-                        setState(state)
+                        handleState(state)
                     }
                 }
                 launch {
@@ -278,7 +284,7 @@ class FeedFragment : Fragment() {
         }
     }
 
-    private fun setState(state: OnlineOperationState) {
+    private fun handleState(state: OnlineOperationState) {
         when (state) {
             is OnlineOperationState.Idle -> {}
             is OnlineOperationState.Loading -> {

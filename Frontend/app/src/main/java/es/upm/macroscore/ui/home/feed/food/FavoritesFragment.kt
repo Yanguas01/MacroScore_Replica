@@ -5,37 +5,34 @@ import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.paging.CombinedLoadStates
-import androidx.paging.LoadState
-import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import es.upm.macroscore.R
 import es.upm.macroscore.core.extensions.onTextChanged
-import es.upm.macroscore.databinding.FragmentSearchBinding
+import es.upm.macroscore.databinding.FragmentFavoritesBinding
 import es.upm.macroscore.ui.EditBottomSheet
 import es.upm.macroscore.ui.home.feed.FeedViewModel
-import es.upm.macroscore.ui.home.feed.food.adapter.FoodAdapter
+import es.upm.macroscore.ui.home.feed.food.adapter.FavoriteAdapter
+import es.upm.macroscore.ui.model.FoodUIModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class SearchFragment : Fragment() {
+class FavoritesFragment : Fragment() {
 
     private val viewModel by activityViewModels<FeedViewModel>()
 
-    private lateinit var foodAdapter: FoodAdapter
+    private lateinit var favoriteAdapter: FavoriteAdapter
 
     private var bottomSheet: EditBottomSheet? = null
 
-    private var _binding: FragmentSearchBinding? = null
+    private var _binding: FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,14 +46,19 @@ class SearchFragment : Fragment() {
         initSearchField()
     }
 
+    private fun toggleFavorite(foodPosition: Int) {
+        val foodUIModel = favoriteAdapter.currentList[foodPosition]
+        viewModel.toggleFavorite(foodUIModel)
+    }
+
     private fun initRecyclerView() {
-        foodAdapter = FoodAdapter (
+        favoriteAdapter = FavoriteAdapter(
             onItemSelected = { foodId -> onAddFoodAction(foodId) },
-            toggleFavorite = { foodPosition -> toggleFavorite(foodPosition)}
+            toggleFavorite = { foodPosition -> toggleFavorite(foodPosition) }
         )
         binding.layoutSearchFood.recyclerViewFood.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = foodAdapter
+            adapter = favoriteAdapter
         }
     }
 
@@ -82,14 +84,9 @@ class SearchFragment : Fragment() {
             }.show()
     }
 
-    private fun toggleFavorite(foodPosition: Int) {
-        val foodUIModel = foodAdapter.snapshot().items[foodPosition]
-        viewModel.toggleFavorite(foodUIModel)
-    }
-
     private fun initSearchField() {
         binding.layoutSearchFood.editTextSearch.onTextChanged { text ->
-            viewModel.setPattern(text)
+            viewModel.setPatternFavorites(text)
         }
     }
 
@@ -97,8 +94,8 @@ class SearchFragment : Fragment() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.foods.collectLatest { pagingData ->
-                        foodAdapter.submitData(pagingData)
+                    viewModel.favoritesList.collectLatest { list ->
+                        favoriteAdapter.submitList(list)
                     }
                 }
                 launch {
@@ -110,42 +107,13 @@ class SearchFragment : Fragment() {
                 }
             }
         }
-        foodAdapter.addLoadStateListener { loadState ->
-            handleLoadState(loadState)
-        }
-    }
-
-    private fun handleLoadState(loadState: CombinedLoadStates) {
-        when (val refreshState = loadState.refresh) {
-            is LoadState.Loading -> {
-                if (foodAdapter.itemCount == 0) {
-                    binding.layoutSearchFood.layoutLoadingSearchFood.visibility = View.VISIBLE
-                    binding.layoutSearchFood.layoutLoadingSearchFood.startShimmer()
-                }
-            }
-
-            is LoadState.Error -> {
-                lifecycleScope.launch {
-                    foodAdapter.submitData(PagingData.empty())
-                }
-                binding.layoutSearchFood.layoutLoadingSearchFood.stopShimmer()
-                binding.layoutSearchFood.layoutLoadingSearchFood.visibility = View.GONE
-                Toast.makeText(requireContext(), refreshState.error.message, Toast.LENGTH_SHORT)
-                    .show()
-            }
-
-            is LoadState.NotLoading -> {
-                binding.layoutSearchFood.layoutLoadingSearchFood.stopShimmer()
-                binding.layoutSearchFood.layoutLoadingSearchFood.visibility = View.GONE
-            }
-        }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSearchBinding.inflate(layoutInflater, container, false)
+        _binding = FragmentFavoritesBinding.inflate(inflater, container, false)
         return binding.root
     }
 }
